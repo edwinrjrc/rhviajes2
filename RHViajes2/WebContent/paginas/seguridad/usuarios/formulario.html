@@ -1,0 +1,198 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Sistema RHViajes version 2">
+<meta name="author" content="rhsistemas">
+</head>
+<div ng-controller="usuariosCtrl">
+	<div ng-show="buscar">
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="page-header">
+					<i class="fa fa-users" aria-hidden="true"></i>&nbsp;Usuarios
+				</h3>
+			</div>
+			<!-- /.col-lg-12 -->
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Filtro de Busqueda</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="form-group">
+									<label>Usuario</label> <input class="form-control"
+										ng-model="formularioBusqueda.usuario">
+								</div>
+								<div class="form-group">
+									<label>Rol</label> <select class="form-control"
+										ng-options="option.nombre for option in listaRoles track by option.codigoEntero"
+										ng-model="usuario.rol.id"></select>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<button type="button" ng-click="buscarUsuario()"
+									class="btn btn-success btn-sm">
+									<i class="fa fa-search" aria-hidden="true"></i>&nbsp;Buscar
+								</button>
+								<button type="reset" class="btn btn-default btn-sm">
+									<i class="fa fa-eraser" aria-hidden="true"></i>&nbsp;Limpiar
+								</button>
+								<button type="button" class="btn btn-primary btn-sm"
+									ng-click="nuevoUsuario()">
+									<i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;Nuevo
+									Usuario
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Resultado de Busqueda</div>
+					<div class="panel-body">
+						<div>
+							<table width="100%" class="table table-bordered table-hover"
+								id="idTablaUsuarios">
+								<thead>
+									<tr>
+										<th>Id</th>
+										<th>Usuario</th>
+										<th>Nombre Usuario</th>
+										<th>Fecha Nacimiento</th>
+										<th>Roles</th>
+										<th>Opciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="odd gradeX" ng-repeat="usuario in listaFiltrada">
+										<td align="right">{{usuario.codigoEntero}}</td>
+										<td>{{usuario.usuario}}</td>
+										<td>{{usuario.nombreCompleto}}</td>
+										<td class="center" align="center">{{usuario.fechaNacimiento | date :
+											'dd/MM/yyyy'}}</td>
+										<td class="center"><ul>
+												<li ng-repeat="rol in usuario.listaRoles">{{rol.nombre}}</li>
+											</ul></td>
+										<td><a href="#" ng-click="editarUsuario(usuario.codigoEntero)">Editar</a></td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="center"><ul uib-pagination
+												total-items="totalItems" items-per-page="itemsXpagina"
+												ng-model="currentPage" ng-change="pageChanged()"></ul></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div ng-show="nuevo || editar">
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="page-header" ng-show="nuevo">
+					<i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;Nuevo
+					Usuario
+				</h3>
+				<h3 class="page-header" ng-show="editar">
+					<i class="fa fa-user" aria-hidden="true"></i>&nbsp;Editar
+					Usuario
+				</h3>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading" ng-show="nuevo">Formulario de Nuevo Usuario</div>
+						<div class="panel-heading" ng-show="editar">Formulario de Editar Usuario</div>
+						<div class="panel-body">
+							<form role="form" data-toggle="validator">
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="form-group" id="idtxtusuario">
+											<label>Usuario</label> <input class="form-control"
+												placeholder="Usuario de Inicio Sesión" required
+												ng-model="usuario.usuario" ng-show="nuevo">
+												<span ng-show="editar">{{usuario.usuario}}</span>
+										</div>
+									</div>
+									<div class="col-lg-6" ng-show="nuevo">
+										<div class="form-group" id="idtxtpassword">
+											<label>Contraseña</label><input type="password"
+												class="form-control" placeholder="Ingrese la contraseña"
+												id="idPassword" ng-model="usuario.password" required>
+										</div>
+									</div>
+									<div class="col-lg-6" ng-show="nuevo">
+										<div class="form-group">
+											<label>Confirma Contraseña</label> <input type="password"
+												class="form-control" placeholder="Repita la contraseña"
+												id="idConfirmaPassword" ng-model="usuario.repassword"
+												data-match="#idPassword" required>
+										</div>
+									</div>
+									<div class="col-lg-12">
+										<div class="form-group" id="idselrol">
+											<label>Rol</label> <select multiple class="form-control"
+												ng-model="usuario.rol" required>
+												<option ng-repeat="opcion in listaRoles"
+													value="{{opcion.codigoEntero}}">{{opcion.nombre}}</option>
+											</select>
+										</div>
+										<div class="form-group" id="idtxtnombres">
+											<label>Nombre</label> <input type="text" class="form-control"
+												ng-model="usuario.nombres" placeholder="Nombre del Usuario"
+												required>
+										</div>
+									</div>
+									<div class="col-lg-6">
+										<div class="form-group" id="idtxtapepaterno">
+											<label>Apellido Paterno</label> <input type="text"
+												class="form-control" ng-model="usuario.apellidoPaterno"
+												placeholder="Apellido Paterno del Usuario" required>
+										</div>
+									</div>
+									<div class="col-lg-6">
+										<div class="form-group" id="idtxtapematerno">
+											<label>Apellido Materno</label> <input type="text"
+												class="form-control" ng-model="usuario.apellidoMaterno"
+												placeholder="Apellido Materno del Usuario">
+										</div>
+									</div>
+									<div class="col-lg-12">
+										<div class="form-group" id="idtxtfecnacimiento">
+											<label>fecha Nacimiento</label> <input type="date"
+												class="form-control" ng-model="fechaNacimiento"
+												placeholder="Fecha de nacimiento del Usuario">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-lg-12">
+										<div class="form-group">
+											<button type="submit" class="btn btn-success btn-sm"
+												ng-click="grabarUsuario()">
+												<i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;Grabar
+											</button>
+											<button type="reset" class="btn btn-default btn-sm" ng-show="nuevo">
+												<i class="fa fa-eraser" aria-hidden="true"></i>&nbsp;Limpiar
+											</button>
+											<button type="button" class="btn btn-danger btn-sm"
+												ng-click="buscador()">
+												<i class="fa fa-times" aria-hidden="true"></i>&nbsp;Cancelar
+											</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,11 @@
+/ConnectionException.class
+/EjecucionSQLException.class
+/EnvioCorreoException.class
+/ErrorConsultaDataException.class
+/ErrorEncriptacionException.class
+/ErrorRegistroDataException.class
+/InicioSesionException.class
+/NoEnvioDatoException.class
+/RHViajesException.class
+/ResultadoCeroDaoException.class
+/ValidacionException.class
