@@ -274,8 +274,8 @@ button :active {
 				<tbody>
 					<tr ng-repeat="tramo in listaTramos">
 						<td><input type="text" keyboard-poster
-							post-function="searchFlight" name="origen"
-							placeholder="Origen" list="_countries"> <datalist id="_countries">
+							post-function="searchFlight" name="origen" class="dataFormulario"
+							placeholder="Origen" list="_countries" ng-model="tramo.origen"> <datalist id="_countries">
 								<select style="display: none;" id="_select" name="_select"
 									ng-model='tramo.origen' 
 									ng-options='k as v for (k,v) in countries'></select>
@@ -283,8 +283,8 @@ button :active {
 						<td><input type="datetime-local" class="dataFormulario"
 							ng-model="tramo.fechaSalida"></td>
 						<td><input type="text" keyboard-poster
-							post-function="searchFlight" name="destino"
-							placeholder="Destino" list="_countries2"> <datalist id="_countries2">
+							post-function="searchFlight" name="destino" class="dataFormulario"
+							placeholder="Destino" list="_countries2" ng-model="tramo.destino"> <datalist id="_countries2">
 								<select style="display: none;" id="_select2" name="_select2"
 									ng-model='tramo.destino' 
 									ng-options='k as v for (k,v) in countries'></select>
@@ -292,12 +292,12 @@ button :active {
 						<td><input type="datetime-local" class="dataFormulario"
 							ng-model="tramo.fechaLlegada"></td>
 						<td><input type="number" class="dataFormulario"
-							ng-model="tramo.precioTramo" value="0"></td>
+							ng-model="tramo.precioTramo" value="0" size="20"></td>
 						<td><select class="dataFormulario"
 							ng-model="tramo.codigoAerolinea"><option>-Seleccione-</option>
 								<option ng-repeat="item in listaAerolineas"
 									ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
-						<td></td>
+						<td><button ng-click="eliminarTramo(tramo.id)">-</button></td>
 					</tr>
 				</tbody>
 				<tfoot>

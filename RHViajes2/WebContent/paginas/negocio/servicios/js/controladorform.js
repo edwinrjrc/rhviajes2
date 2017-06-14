@@ -60,22 +60,57 @@ serviciosformapp.controller('formctrl', ['$scope','$http','$timeout', function($
 	$scope.listarDestinos();
 }]);
 
-servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator) {
+servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator, $http) {
 	$scope.selectedCountry = {};	
 	$scope.countries = {};
+	$scope.listaAerolineas = [];
 	$scope.searchFlight = function(term) {
 		Geolocator.searchFlight(term).then(function(countries){
 	      $scope.countries = countries;
 	    });
 	};
 	
+	$scope.listarAerolineas = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarAerolineas'}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.estadoConsulta = response.data.exito;
+					 if ($scope.estadoConsulta){
+						 $scope.mensaje = response.data.mensaje;
+						 $scope.listaAerolineas = response.data.objeto;
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	$scope.listarAerolineas();
 	$scope.listaTramos = [];
 	$scope.agregarTramo = function(){
 		if ($scope.listaTramos.length == 0){
 			var tramo = {};
 			tramo.precioTramo = 0;
-			$scope.listaTramos.push(tramo);
+			tramo.id = 1;
 		}
+		else{
+			var tramo = {};
+			var tramoAnterior = $scope.listaTramos[$scope.listaTramos.length-1];
+			tramo.id = parseInt(tramoAnterior.id) + 1;
+			tramo.origen = tramoAnterior.destino;
+			tramo.precioTramo = 0;
+			tramo.codigoAerolinea = tramoAnterior.codigoAerolinea
+		}
+		$scope.listaTramos.push(tramo);
+	};
+	$scope.agregarTramoRegreso = function(){
+		
+	}
+	$scope.eliminarTramo = function(id){
+		$scope.listaTramos.splice(id-1,1);
+	};
+	
+	$scope.modalclose = function(){
+		var modal = document.getElementById('modalRuta');
+		modal.style.display = "none";
 	};
 }).directive('keyboardPoster', function($parse, $timeout){
 	var DELAY_TIME_BEFORE_POSTING = 0;
