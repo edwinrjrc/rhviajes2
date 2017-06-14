@@ -277,7 +277,7 @@ button :active {
 							post-function="searchFlight" name="origen" class="dataFormulario"
 							placeholder="Origen" list="_countries" ng-model="tramo.origen"> <datalist id="_countries">
 								<select style="display: none;" id="_select" name="_select"
-									ng-model='tramo.origen' 
+									ng-model='tramo.origen2' 
 									ng-options='k as v for (k,v) in countries'></select>
 							</datalist></td>
 						<td><input type="datetime-local" class="dataFormulario"
@@ -286,7 +286,7 @@ button :active {
 							post-function="searchFlight" name="destino" class="dataFormulario"
 							placeholder="Destino" list="_countries2" ng-model="tramo.destino"> <datalist id="_countries2">
 								<select style="display: none;" id="_select2" name="_select2"
-									ng-model='tramo.destino' 
+									ng-model='tramo.destino2' 
 									ng-options='k as v for (k,v) in countries'></select>
 							</datalist></td>
 						<td><input type="datetime-local" class="dataFormulario"
