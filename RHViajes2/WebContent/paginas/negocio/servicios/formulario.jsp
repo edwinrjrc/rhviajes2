@@ -73,7 +73,7 @@ div.tab button.active {
 	top: 0;
 	width: 100%; /* Full width */
 	height: 100%; /* Full height */
-	overflow: auto; /* Enable scroll if needed */
+	overflow: scroll; /* Enable scroll if needed */
 	background-color: rgb(0, 0, 0); /* Fallback color */
 	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
@@ -85,7 +85,8 @@ div.tab button.active {
 	padding: 20px;
 	border: 1px solid #888;
 	width: 80%;
-	height: 200px;
+	height: 400px;
+	overflow-y: auto;
 }
 
 /* The Close Button */
@@ -137,7 +138,20 @@ button :active {
 	top: 1px;
 }
 
-
+.error{
+	font-family: sans-serif;
+	font-size: 9pt;
+	font-weight: bold;
+	text-indent: 10px;
+	color: #8f0404;
+	border-radius: 4px 4px 4px 4px;
+	-moz-border-radius: 4px 4px 4px 4px;
+	-webkit-border-radius: 4px 4px 4px 4px;
+	background-color: #ffadad;
+	border: 1px solid #8f0404;
+    width: 100%;
+    height: 30px;
+}
 </style>
 <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js'></script>
 <script type="text/javascript"
@@ -224,18 +238,19 @@ button :active {
 					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
 					<tr>
 						<td><span class="campoFormulario">Tipo Servicio</span></td>
-						<td><select><option>-Seleccione-</option></select></td>
-						<td><span class="campoFormulario">Empresa Proveedor</span></td>
-						<td><select><option>-Seleccione-</option></select></td>
+						<td><select class="dataFormulario"><option>-Seleccione-</option>
+						<option ng-repeat="item in listaMaestroServicio" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+						<td><span class="campoFormulario" ng-show="configuracionServicio.mostrarProveedor">Empresa Proveedor</span></td>
+						<td><select class="dataFormulario" ng-show="configuracionServicio.mostrarProveedor"><option>-Seleccione-</option></select></td>
 					</tr>
 					<tr>
-						<td><span class="campoFormulario"><a href="#"
+						<td><span class="campoFormulario" ng-show="configuracionServicio.mostrarRuta"><a href="#"
 								onclick="modalShow()">Ruta</a></span></td>
-						<td colspan="3"></td>
+						<td colspan="3"><span ng-show="configuracionServicio.mostrarRuta"></span></td>
 					</tr>
 					<tr>
-						<td><span class="campoFormulario"><a href="#">Pasajeros</a></span></td>
-						<td colspan="3"></td>
+						<td><span class="campoFormulario" ng-show="configuracionServicio.mostrarPasajeros"><a href="#">Pasajeros</a></span></td>
+						<td colspan="3"><span ng-show="configuracionServicio.mostrarPasajeros"></span></td>
 					</tr>
 				</table>
 			</div>
@@ -250,6 +265,9 @@ button :active {
 	<div id="modalRuta" class="modal" ng-controller="formmodalrutactrl">
 		<!-- Modal content -->
 		<div class="modal-content">
+		    <div class="error" ng-show="mostrarError">
+				<span>{{error}}</span>
+			</div>
 			<span class="campoFormulario">Detalle Ruta Servicio</span>
 			<hr>
 			<table
@@ -302,7 +320,7 @@ button :active {
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="7" align="center"><button>Aceptar</button>
+						<td colspan="7" align="center" ng-click="aceptarRuta()"><button>Aceptar</button>
 							<button ng-click="modalclose()">Cerrar</button></td>
 					</tr>
 				</tfoot>

@@ -1,5 +1,7 @@
 var serviciosformapp = angular.module('serviciosformapp', []);
 
+var ruta = {};
+
 var config = serviciosformapp.config(['$httpProvider',function($httpProvider) {
 	$httpProvider.defaults.useXDomain = true;
 	delete $httpProvider.defaults.headers.common['X-Requested-With'];
@@ -30,8 +32,41 @@ var servicio=config.service('Geolocator', function($q, $http) {
 });
 
 serviciosformapp.controller('formctrl', ['$scope','$http','$timeout', function($scope, $http, $timeout, Geolocator) {
-	var availableTags = [];
+	$scope.listaMaestroServicio = [];
+	$scope.listarMaestroServicios = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarMaestroServicios'}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.estadoConsulta = response.data.exito;
+					 if ($scope.estadoConsulta){
+						 $scope.mensaje = response.data.mensaje;
+						 $scope.listaMaestroServicio = response.data.objeto;
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	$scope.listarMaestroServicios();
+	var modal = document.getElementById('modalRuta');
+	// When the user clicks the button, open the modal 
+	modalShow = function() {
+		modal.style.display = "block";
+	};
+	$scope.configuracionServicio = {};
+}]);
+
+servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator, $http) {
+	$scope.selectedCountry = {};	
+	$scope.countries = {};
+	$scope.listaAerolineas = [];
+	$scope.error = {};
+	$scope.searchFlight = function(term) {
+		Geolocator.searchFlight(term).then(function(countries){
+	      $scope.countries = countries;
+	    });
+	};
 	var listaDestinos = [];
+	var availableTags = [];
 	$scope.listarDestinos = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'listarDestinos',tipoMaestro:1}}).then(
 				 function successCallback(response) {
@@ -49,27 +84,7 @@ serviciosformapp.controller('formctrl', ['$scope','$http','$timeout', function($
 				     console.log('Error en la llamada');
 			  });
 	};
-	
-	var modal = document.getElementById('modalRuta');
-
-	// When the user clicks the button, open the modal 
-	modalShow = function() {
-		modal.style.display = "block";
-	}
-	
 	$scope.listarDestinos();
-}]);
-
-servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator, $http) {
-	$scope.selectedCountry = {};	
-	$scope.countries = {};
-	$scope.listaAerolineas = [];
-	$scope.searchFlight = function(term) {
-		Geolocator.searchFlight(term).then(function(countries){
-	      $scope.countries = countries;
-	    });
-	};
-	
 	$scope.listarAerolineas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarAerolineas'}}).then(
 				 function successCallback(response) {
@@ -102,15 +117,71 @@ servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator, 
 		$scope.listaTramos.push(tramo);
 	};
 	$scope.agregarTramoRegreso = function(){
-		
+		if ($scope.listaTramos.length > 0){
+			var tramo = {};
+			for (var i=$scope.listaTramos.length-1; i>=0; i--){
+				var tramoAnterior = $scope.listaTramos[i];
+				tramo = {};
+				tramo.id = $scope.listaTramos.length;
+				tramo.origen = tramoAnterior.destino;
+				tramo.destino = tramoAnterior.origen;
+				tramo.precioTramo = 0;
+				tramo.codigoAerolinea = tramoAnterior.codigoAerolinea;
+				$scope.listaTramos.push(tramo);
+			}
+		}
 	}
 	$scope.eliminarTramo = function(id){
-		$scope.listaTramos.splice(id-1,1);
+		var idx = 0;
+		for (var i=0; i<$scope.listaTramos.length; i++){
+			var tramo = $scope.listaTramos[i];
+			if (tramo.id == id){
+				idx = i;
+				break;
+			}
+		}
+		$scope.listaTramos.splice(idx,1);
 	};
-	
+	$scope.mostrarError = false;
+	$scope.aceptarRuta = function (){
+		if (validarRuta()){
+			ruta.tramos = $scope.listaTramos;
+			$scope.modalclose();
+		}
+		else{
+			$scope.mostrarError = true;
+		}
+	};
 	$scope.modalclose = function(){
 		var modal = document.getElementById('modalRuta');
 		modal.style.display = "none";
+	};
+	
+	validarRuta = function(){
+		for (var i=0; i<$scope.listaTramos.length; i++){
+			var tramo = $scope.listaTramos[i];
+			if (tramo.origen == "" || tramo.origen == "undefined" || tramo.origen == null){
+				$scope.error = "Ingrese el origen del tramo "+tramo.id;
+				return false;
+			}
+			else if (tramo.fechaSalida == "" || tramo.fechaSalida == "undefined" || tramo.fechaSalida == null){
+				$scope.error = "Ingrese la fecha salida del tramo "+tramo.id;
+				return false;
+			}
+			else if (tramo.destino == "" || tramo.destino == "undefined" || tramo.destino == null){
+				$scope.error = "Ingrese el destino del tramo "+tramo.id;
+				return false;
+			}
+			else if (tramo.fechaLlegada == "" || tramo.fechaLlegada == "undefined" || tramo.fechaLlegada == null){
+				$scope.error = "Ingrese la fecha de llegada del tramo "+tramo.id;
+				return false;
+			}
+			else if (tramo.codigoAerolinea == "" || tramo.codigoAerolinea == "undefined" || tramo.codigoAerolinea == null){
+				$scope.error = "Seleccione la aerolinea del tramo "+tramo.id;
+				return false;
+			}
+		}
+		return true;
 	};
 }).directive('keyboardPoster', function($parse, $timeout){
 	var DELAY_TIME_BEFORE_POSTING = 0;
