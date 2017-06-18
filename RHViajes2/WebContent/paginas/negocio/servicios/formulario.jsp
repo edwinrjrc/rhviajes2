@@ -62,6 +62,13 @@ div.tab button.active {
 .dataFormulario {
 	font-family: sans-serif;
 	font-size: 8pt;
+	height: 15px;
+}
+
+.dataTabla {
+	font-family: sans-serif;
+	font-size: 9pt;
+	text-align: center;
 }
 /* The Modal (background) */
 .modal {
@@ -84,7 +91,7 @@ div.tab button.active {
 	margin: auto;
 	padding: 20px;
 	border: 1px solid #888;
-	width: 80%;
+	width: 90%;
 	height: 400px;
 	overflow-y: auto;
 }
@@ -138,7 +145,7 @@ button :active {
 	top: 1px;
 }
 
-.error{
+.error {
 	font-family: sans-serif;
 	font-size: 9pt;
 	font-weight: bold;
@@ -149,11 +156,15 @@ button :active {
 	-webkit-border-radius: 4px 4px 4px 4px;
 	background-color: #ffadad;
 	border: 1px solid #8f0404;
-    width: 100%;
-    height: 30px;
+	width: 100%;
+	height: 30px;
+}
+.subtitulo{
+ font-family: sans-serif;
 }
 </style>
-<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js'></script>
+<script type="text/javascript"
+	src="<%=request.getContextPath()%>/resources/js/angular.min.js"></script>
 <script type="text/javascript"
 	src="<%=request.getContextPath()%>/paginas/negocio/servicios/js/controladorform.js"></script>
 <script type="text/javascript">
@@ -192,7 +203,7 @@ button :active {
 			</table>
 		</div>
 		<div>
-			<h3>Registrar Venta</h3>
+			<h3 class="subtitulo">Registrar Venta</h3>
 			<div class="tab">
 				<button class="tablinks" onclick="openCity(event, 'informacion')">Información
 					Venta</button>
@@ -237,20 +248,106 @@ button :active {
 				<table
 					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
 					<tr>
-						<td><span class="campoFormulario">Tipo Servicio</span></td>
-						<td><select class="dataFormulario"><option>-Seleccione-</option>
-						<option ng-repeat="item in listaMaestroServicio" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
-						<td><span class="campoFormulario" ng-show="configuracionServicio.mostrarProveedor">Empresa Proveedor</span></td>
-						<td><select class="dataFormulario" ng-show="configuracionServicio.mostrarProveedor"><option>-Seleccione-</option></select></td>
+						<td style="width: 15%"><span class="campoFormulario">Tipo
+								Servicio</span></td>
+						<td style="width: 35%"><select class="dataFormulario"
+							ng-model="detalleServicio.tipoServicio"
+							ng-change="consultarConfiguracionServicio()">
+								<option ng-repeat="item in listaMaestroServicio"
+									ng-value="item.codigoEntero">{{item.nombre}}</option>
+						</select></td>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraProveedor">Empresa
+								Proveedor</span></td>
+						<td style="width: 35%"><select class="dataFormulario"
+							ng-show="configuracionServicio.muestraProveedor"
+							ng-model="detalleServicio.idProveedor">
+								<option>-Seleccione-</option>
+								<option ng-repeat="item in listaProveedores"
+									ng-value="item.codigoEntero">{{item.nombreProveedor}}</option>
+						</select></td>
 					</tr>
 					<tr>
-						<td><span class="campoFormulario" ng-show="configuracionServicio.mostrarRuta"><a href="#"
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraRuta"><a href="#"
 								onclick="modalShow()">Ruta</a></span></td>
-						<td colspan="3"><span ng-show="configuracionServicio.mostrarRuta"></span></td>
+						<td colspan="3" style="width: 85%"><span
+							ng-show="configuracionServicio.muestraRuta"></span></td>
 					</tr>
 					<tr>
-						<td><span class="campoFormulario" ng-show="configuracionServicio.mostrarPasajeros"><a href="#">Pasajeros</a></span></td>
-						<td colspan="3"><span ng-show="configuracionServicio.mostrarPasajeros"></span></td>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraPasajeros"><a
+								href="#">Pasajeros</a></span></td>
+						<td colspan="3" style="width: 85%"><span
+							ng-show="configuracionServicio.muestraPasajeros"></span></td>
+					</tr>
+					<tr>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraHotel">Hotel</span></td>
+						<td style="width: 35%"><select class="dataFormulario"
+							ng-show="configuracionServicio.muestraHotel"><option>-Seleccione-</option></select></td>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraOperadora">Operador</span></td>
+						<td style="width: 35%"><select class="dataFormulario"
+							ng-show="configuracionServicio.muestraOperadora"><option>-Seleccione-</option></select></td>
+					</tr>
+					<tr>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraDescServicio">Descripción
+								Servicio</span></td>
+						<td colspan="3"><textarea class="dataFormulario" rows="10"
+								cols="80" style="height: 50px; width: 600px;"
+								ng-show="configuracionServicio.muestraDescServicio"></textarea></td>
+					</tr>
+					<tr>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraCantidad">Cantidad</span></td>
+						<td style="width: 35%"><input
+							style="width: 50px; text-align: right;" class="dataFormulario"
+							type="number" ng-model="detalleServicio.cantidad"
+							ng-show="configuracionServicio.muestraCantidad"></td>
+						<td style="width: 15%"><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraPrecioBase">Precio
+								Base</span></td>
+						<td style="width: 35%"><input
+							style="width: 150px; text-align: right;" class="dataFormulario"
+							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select
+							ng-show="configuracionServicio.muestraPrecioBase"><option>Dolares
+									Americanos</option></select></td>
+					</tr>
+					<tr>
+						<td colspan="4" align="center"><button>Agregar</button></td>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<br><br>
+							<span class="campoFormulario">Servicios Agregados</span>
+							<hr>
+							<table style="width: 90%;" align="center">
+								<thead>
+									<tr>
+										<th class="cabeceraTabla">Unid.</th>
+										<th class="cabeceraTabla">Fecha Servicio</th>
+										<th class="cabeceraTabla">Servicio - Descripción</th>
+										<th class="cabeceraTabla">Proveedor</th>
+										<th class="cabeceraTabla">Precio Unitario</th>
+										<th class="cabeceraTabla">Total</th>
+										<th class="cabeceraTabla">Opción</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="dataTabla">1</td>
+										<td class="dataTabla">23/05/2017</td>
+										<td class="dataTabla">BOLETO AEREO -
+											LIMA>MIAMI/MIAMI>LIMA</td>
+										<td class="dataTabla">COSTAMAR</td>
+										<td class="dataTabla">1,022.02</td>
+										<td class="dataTabla">1,022.02</td>
+										<td class="dataTabla"><a href="#"><span>(-)</span></a></td>
+									</tr>
+								</tbody>
+							</table></td>
 					</tr>
 				</table>
 			</div>
@@ -265,7 +362,7 @@ button :active {
 	<div id="modalRuta" class="modal" ng-controller="formmodalrutactrl">
 		<!-- Modal content -->
 		<div class="modal-content">
-		    <div class="error" ng-show="mostrarError">
+			<div class="error" ng-show="mostrarError">
 				<span>{{error}}</span>
 			</div>
 			<span class="campoFormulario">Detalle Ruta Servicio</span>
@@ -291,22 +388,18 @@ button :active {
 				</thead>
 				<tbody>
 					<tr ng-repeat="tramo in listaTramos">
-						<td><input type="text" keyboard-poster
-							post-function="searchFlight" name="origen" class="dataFormulario"
-							placeholder="Origen" list="_countries" ng-model="tramo.origen"> <datalist id="_countries">
-								<select style="display: none;" id="_select" name="_select"
-									ng-model='tramo.origen2' 
-									ng-options='k as v for (k,v) in countries'></select>
-							</datalist></td>
+						<td><select ng-model='tramo.origen' class="dataFormulario">
+								<option>-Seleccione-</option>
+								<option ng-repeat="item in listaDestinos"
+									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})
+								</option>
+						</select></td>
 						<td><input type="datetime-local" class="dataFormulario"
 							ng-model="tramo.fechaSalida"></td>
-						<td><input type="text" keyboard-poster
-							post-function="searchFlight" name="destino" class="dataFormulario"
-							placeholder="Destino" list="_countries2" ng-model="tramo.destino"> <datalist id="_countries2">
-								<select style="display: none;" id="_select2" name="_select2"
-									ng-model='tramo.destino2' 
-									ng-options='k as v for (k,v) in countries'></select>
-							</datalist></td>
+						<td><select ng-model='tramo.destino' class="dataFormulario">
+								<option ng-repeat="item in listaDestinos"
+									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})</option>
+						</select></td>
 						<td><input type="datetime-local" class="dataFormulario"
 							ng-model="tramo.fechaLlegada"></td>
 						<td><input type="number" class="dataFormulario"
@@ -320,7 +413,8 @@ button :active {
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="7" align="center" ng-click="aceptarRuta()"><button>Aceptar</button>
+						<td colspan="7" align="center"><button
+								ng-click="aceptarRuta()">Aceptar</button>
 							<button ng-click="modalclose()">Cerrar</button></td>
 					</tr>
 				</tfoot>

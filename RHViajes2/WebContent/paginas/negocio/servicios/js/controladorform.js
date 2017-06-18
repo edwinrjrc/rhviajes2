@@ -1,7 +1,7 @@
 var serviciosformapp = angular.module('serviciosformapp', []);
 
 var ruta = {};
-
+/*
 var config = serviciosformapp.config(['$httpProvider',function($httpProvider) {
 	$httpProvider.defaults.useXDomain = true;
 	delete $httpProvider.defaults.headers.common['X-Requested-With'];
@@ -29,10 +29,11 @@ var servicio=config.service('Geolocator', function($q, $http) {
 		  });
 	      return deferred.promise;
 	  	};
-});
+});*/
 
-serviciosformapp.controller('formctrl', ['$scope','$http','$timeout', function($scope, $http, $timeout, Geolocator) {
+serviciosformapp.controller('formctrl', ['$scope','$http', function($scope, $http) {
 	$scope.listaMaestroServicio = [];
+	$scope.detalleServicio = {};
 	$scope.listarMaestroServicios = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarMaestroServicios'}}).then(
 				 function successCallback(response) {
@@ -53,32 +54,48 @@ serviciosformapp.controller('formctrl', ['$scope','$http','$timeout', function($
 		modal.style.display = "block";
 	};
 	$scope.configuracionServicio = {};
+	
+	$scope.consultarConfiguracionServicio = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarConfiguacion',formulario:$scope.detalleServicio}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.configuracionServicio = response.data.objeto;
+					 $scope.configuracionServicio.muestraPasajeros = true;
+					 listarEmpresasServicio();
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	$scope.listaProveedores = [];
+	listarEmpresasServicio = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'proveedoresXServicio',formulario:$scope.detalleServicio}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.listaProveedores = response.data.objeto;
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
 }]);
 
-servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator, $http) {
+serviciosformapp.controller('formmodalrutactrl', function($scope, $http) {
 	$scope.selectedCountry = {};	
 	$scope.countries = {};
 	$scope.listaAerolineas = [];
 	$scope.error = {};
-	$scope.searchFlight = function(term) {
-		Geolocator.searchFlight(term).then(function(countries){
-	      $scope.countries = countries;
-	    });
-	};
-	var listaDestinos = [];
-	var availableTags = [];
+	$scope.listaDestinos = [];
 	$scope.listarDestinos = function(){
-		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'listarDestinos',tipoMaestro:1}}).then(
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarDestinos',tipoMaestro:1}}).then(
 				 function successCallback(response) {
 					 console.log('Exito en la llamada');
 					 $scope.estadoConsulta = response.data.exito;
 					 if ($scope.estadoConsulta){
 						 $scope.mensaje = response.data.mensaje;
-						 listaDestinos = response.data.objeto;
-						 for (var i=0; i<listaDestinos.length; i++){
+						 $scope.listaDestinos = response.data.objeto;
+						 /*for (var i=0; i<listaDestinos.length; i++){
 							 var item = listaDestinos[i];
 							 availableTags.push(item.descripcion+"("+item.codigoIATA+")")
-						 }
+						 }*/
 					 }
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
@@ -181,25 +198,30 @@ servicio.controller('formmodalrutactrl', function($scope, $timeout, Geolocator, 
 				return false;
 			}
 		}
+		$scope.mostrarError = false;
 		return true;
 	};
-}).directive('keyboardPoster', function($parse, $timeout){
-	var DELAY_TIME_BEFORE_POSTING = 0;
-	  return function(scope, elem, attrs) {
-	    
-	    var element = angular.element(elem)[0];
-	    var currentTimeout = null;
-	   
-	    element.oninput = function() {
-	      var model = $parse(attrs.postFunction);
-	      var poster = model(scope);
-	      
-	      if(currentTimeout) {
-	        $timeout.cancel(currentTimeout)
-	      }
-	      currentTimeout = $timeout(function(){
-	        poster(angular.element(element).val());
-	      }, DELAY_TIME_BEFORE_POSTING)
-	    }
-	  }
 });
+
+/*
+.directive('keyboardPoster', function($parse, $timeout){
+var DELAY_TIME_BEFORE_POSTING = 0;
+  return function(scope, elem, attrs) {
+    
+    var element = angular.element(elem)[0];
+    var currentTimeout = null;
+   
+    element.oninput = function() {
+      var model = $parse(attrs.postFunction);
+      var poster = model(scope);
+      
+      if(currentTimeout) {
+        $timeout.cancel(currentTimeout)
+      }
+      currentTimeout = $timeout(function(){
+        poster(angular.element(element).val());
+      }, DELAY_TIME_BEFORE_POSTING)
+    }
+  }
+})
+*/

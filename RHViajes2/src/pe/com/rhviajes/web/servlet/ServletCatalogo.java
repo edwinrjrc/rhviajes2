@@ -33,7 +33,7 @@ public class ServletCatalogo extends BaseServlet {
        
 	@EJB(lookup="java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/SoporteSession!pe.com.viajes.negocio.ejb.SoporteRemote")
 	private SoporteRemote soporteRemote;
-	@EJB(lookup="java:jboss/exported/RHViajesNegocioEAR/RHViajesNegocio/ConsultaNegocioSession!pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote")
+	@EJB(lookup="java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/ConsultaNegocioSession!pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote")
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
     /**
      * @see HttpServlet#HttpServlet()
@@ -78,6 +78,11 @@ public class ServletCatalogo extends BaseServlet {
 			else if ("listarMaestroServicios".equals(accion)){
 				retorno.put("objeto", consultaNegocioSessionRemote.listarMaestroServicio(obtenerIdEmpresa(request)));
 				retorno.put("mensaje", "Consulta completada");
+				retorno.put("exito", true);
+			}
+			else if ("listarDestinos".equals(accion)){
+				retorno.put("objeto", soporteRemote.listarDestinos(this.obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
 		} catch (ErrorConsultaDataException e) {

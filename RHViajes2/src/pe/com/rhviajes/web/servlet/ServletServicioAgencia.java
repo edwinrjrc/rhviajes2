@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pe.com.rhviajes.web.util.UtilWeb;
+import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.negocio.ServicioAgencia;
 import pe.com.viajes.bean.negocio.ServicioAgenciaBusqueda;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
@@ -87,8 +88,19 @@ public class ServletServicioAgencia extends BaseServlet {
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
-			else if ("listarDestinos".equals(accion)){
-				retorno.put("objeto", soporteRemote.listarDestinos(this.obtenerIdEmpresa(request)));
+			else if ("consultarConfiguacion".equals(accion)){
+				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
+				Integer idTipoServicio = Double.valueOf(mapeo.get("tipoServicio").toString()).intValue();
+				retorno.put("objeto", soporteRemote.consultarConfiguracionServicio(idTipoServicio,this.obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);
+			}
+			else if("proveedoresXServicio".equals(accion)){
+				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
+				Integer idTipoServicio = Double.valueOf(mapeo.get("tipoServicio").toString()).intValue();
+				BaseVO servicio = new BaseVO(idTipoServicio);
+				servicio.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
+				retorno.put("objeto", consultaNegocioSessionRemote.proveedoresXServicio(servicio));
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
@@ -103,5 +115,4 @@ public class ServletServicioAgencia extends BaseServlet {
 		}
 		respuesta.println(gson.toJson(retorno));
 	}
-
 }
