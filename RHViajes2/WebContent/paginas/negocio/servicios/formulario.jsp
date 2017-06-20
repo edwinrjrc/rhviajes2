@@ -159,8 +159,9 @@ button :active {
 	width: 100%;
 	height: 30px;
 }
-.subtitulo{
- font-family: sans-serif;
+
+.subtitulo {
+	font-family: sans-serif;
 }
 </style>
 <script type="text/javascript"
@@ -285,11 +286,17 @@ button :active {
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraHotel">Hotel</span></td>
 						<td style="width: 35%"><select class="dataFormulario"
-							ng-show="configuracionServicio.muestraHotel"><option>-Seleccione-</option></select></td>
+							ng-model="detalleServicio.idHotel"
+							ng-show="configuracionServicio.muestraHotel"><option>-Seleccione-</option>
+								<option ng-repeat="item in listaHoteles"
+									ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraOperadora">Operador</span></td>
 						<td style="width: 35%"><select class="dataFormulario"
-							ng-show="configuracionServicio.muestraOperadora"><option>-Seleccione-</option></select></td>
+							ng-model="detalleServicio.idOperador"
+							ng-show="configuracionServicio.muestraOperadora"><option>-Seleccione-</option>
+								<option ng-repeat="item in listaOperadores"
+									ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
 					</tr>
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
@@ -297,10 +304,12 @@ button :active {
 								Servicio</span></td>
 						<td colspan="3"><textarea class="dataFormulario" rows="10"
 								cols="80" style="height: 50px; width: 600px;"
+								ng-model="detalleServicio.descripcionServicio"
 								ng-show="configuracionServicio.muestraDescServicio"></textarea></td>
 					</tr>
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
+							ng-model="detalleServicio.cantidad"
 							ng-show="configuracionServicio.muestraCantidad">Cantidad</span></td>
 						<td style="width: 35%"><input
 							style="width: 50px; text-align: right;" class="dataFormulario"
@@ -310,18 +319,45 @@ button :active {
 							ng-show="configuracionServicio.muestraPrecioBase">Precio
 								Base</span></td>
 						<td style="width: 35%"><input
+							ng-model="detalleServicio.precioBase"
 							style="width: 150px; text-align: right;" class="dataFormulario"
 							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select
-							ng-show="configuracionServicio.muestraPrecioBase"><option>Dolares
-									Americanos</option></select></td>
+							ng-show="configuracionServicio.muestraPrecioBase"
+							class="dataFormulario"><option
+									ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+					</tr>
+					<tr>
+						<td><span class="campoFormulario">Aplica IGV</span></td>
+						<td><input type="checkbox" ng-model="detalle" 
+							ng-model="detalleServicio.aplicaIgv"></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="4"><span class="campoFormulario">Datos
+								Comisión Servicio</span>
+							<hr></td>
+					</tr>
+					<tr>
+						<td><span class="campoFormulario">Tipo Valor Comisión</span></td>
+						<td><select class="dataFormulario"><option>-Seleccione-</option>
+								<option value="1">Porcentaje (%)</option>
+								<option value="2">Monto Fijo</option></select></td>
+						<td><span class="campoFormulario">Valor Comisión</span></td>
+						<td><input class="dataFormulario" type="number"></td>
+					</tr>
+					<tr>
+						<td><span class="campoFormulario">Aplicar IGV</span></td>
+						<td><input type="checkbox"></td>
+						<td><span class="campoFormulario">Tarifa Negociada</span></td>
+						<td><input type="checkbox"></td>
 					</tr>
 					<tr>
 						<td colspan="4" align="center"><button>Agregar</button></td>
 					</tr>
 					<tr>
-						<td colspan="4">
-							<br><br>
-							<span class="campoFormulario">Servicios Agregados</span>
+						<td colspan="4"><br> <br> <span
+							class="campoFormulario">Servicios Agregados</span>
 							<hr>
 							<table style="width: 90%;" align="center">
 								<thead>
@@ -427,7 +463,7 @@ button :active {
 	<div id="modalPasajeros" class="modal">
 
 		<!-- Modal content -->
-		<div class="modal-content">
+		<div class="modal-content" style="height: 600px;">
 			<span class="campoFormulario">Detalle Pasajeros</span>
 			<hr>
 			<table

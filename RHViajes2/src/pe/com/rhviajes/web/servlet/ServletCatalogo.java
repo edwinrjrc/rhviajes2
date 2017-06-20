@@ -85,6 +85,15 @@ public class ServletCatalogo extends BaseServlet {
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
+			else if ("proveedoresXTipo".equals(accion)){
+				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
+				Integer idTipoServicio = Double.valueOf(mapeo.get("tipoServicio").toString()).intValue();
+				BaseVO servicio = new BaseVO(idTipoServicio);
+				servicio.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
+				retorno.put("objeto", soporteRemote.listarProveedorTipo(servicio));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);
+			}
 		} catch (ErrorConsultaDataException e) {
 			log.error(e.getMessage(), e);
 			retorno.put("mensaje", e.getMessage());

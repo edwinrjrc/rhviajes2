@@ -58,10 +58,15 @@ serviciosformapp.controller('formctrl', ['$scope','$http', function($scope, $htt
 	$scope.consultarConfiguracionServicio = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarConfiguacion',formulario:$scope.detalleServicio}}).then(
 				 function successCallback(response) {
-					 console.log('Exito en la llamada');
-					 $scope.configuracionServicio = response.data.objeto;
-					 $scope.configuracionServicio.muestraPasajeros = true;
-					 listarEmpresasServicio();
+					 if (response.status == 200){
+						 console.log('Exito en la llamada');
+						 $scope.configuracionServicio = response.data.objeto;
+						 $scope.configuracionServicio.muestraPasajeros = true;
+						 listarEmpresasServicio();
+						 listarHoteles();
+						 listarOperadores();
+					 }
+					 
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
@@ -76,6 +81,38 @@ serviciosformapp.controller('formctrl', ['$scope','$http', function($scope, $htt
 				     console.log('Error en la llamada');
 			  });
 	};
+	$scope.listaHoteles = [];
+	listarHoteles = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'proveedoresXTipo',formulario:{tipoServicio:6}}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.listaHoteles = response.data.objeto;
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	$scope.listaOperadores = [];
+	listarOperadores = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'proveedoresXTipo',formulario:{tipoServicio:3}}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.listaOperadores = response.data.objeto;
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	
+	$scope.listaMonedas = [];
+	listarMonedas = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:18}}).then(
+				 function successCallback(response) {
+					 console.log('Exito en la llamada');
+					 $scope.listaMonedas = response.data.objeto;
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	listarMonedas();
 }]);
 
 serviciosformapp.controller('formmodalrutactrl', function($scope, $http) {
