@@ -28,18 +28,24 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 		
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'listar',formulario:$scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
-					 console.log('Exito en la llamada');
-					 $scope.formulario = response.data.objeto;
-					 $scope.activaBotones = response.data.exito;
-					 $scope.estadoConsulta = response.data.exito;
-					 if ($scope.estadoConsulta){
-						 $scope.mensaje = response.data.mensaje;
-						 $scope.mostrarMensajeError = true;
-						 $scope.listaVentas = response.data.objeto;
-						 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
-						 $scope.paginas = $scope.paginas + 1;
-						 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
 					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.formulario = response.data.objeto;
+							 $scope.activaBotones = response.data.exito;
+							 $scope.estadoConsulta = response.data.exito;
+							 $scope.mensaje = response.data.mensaje;
+							 $scope.mostrarMensajeError = true;
+							 $scope.listaVentas = response.data.objeto;
+							 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
+							 $scope.paginas = $scope.paginas + 1;
+							 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
+						 }
+					 }
+					
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
@@ -49,16 +55,24 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.buscarVentas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'buscar',formulario:$scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
-					 console.log('Exito en la llamada');
-					 $scope.activaBotones = response.data.exito;
-					 $scope.estadoConsulta = response.data.exito;
-					 if ($scope.estadoConsulta){
-						 $scope.mensaje = response.data.mensaje;
-						 $scope.listaVentas = response.data.objeto;
-						 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
-						 $scope.paginas = $scope.paginas + 1;
-						 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
 					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.activaBotones = response.data.exito;
+							 $scope.estadoConsulta = response.data.exito;
+							 if ($scope.estadoConsulta){
+								 $scope.mensaje = response.data.mensaje;
+								 $scope.listaVentas = response.data.objeto;
+								 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
+								 $scope.paginas = $scope.paginas + 1;
+								 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
+							 }
+						 }
+					 }
+					 
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
@@ -67,11 +81,18 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.listarTipoDocumento = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
 				 function successCallback(response) {
-					 console.log('Exito en la llamada');
-					 $scope.estadoConsulta = response.data.exito;
-					 if ($scope.estadoConsulta){
-						 $scope.mensaje = response.data.mensaje;
-						 $scope.listaTipoDocumento = response.data.objeto;
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.estadoConsulta = response.data.exito;
+							 if ($scope.estadoConsulta){
+								 $scope.mensaje = response.data.mensaje;
+								 $scope.listaTipoDocumento = response.data.objeto;
+							 }
+						 }
 					 }
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');

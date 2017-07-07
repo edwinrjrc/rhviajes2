@@ -3,8 +3,6 @@
  */
 package pe.com.viajes.bean.negocio;
 
-import java.util.Date;
-
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.base.Persona;
 

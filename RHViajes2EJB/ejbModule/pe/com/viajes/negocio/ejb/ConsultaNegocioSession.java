@@ -994,5 +994,25 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 			throw new ErrorConsultaDataException(e);
 		}
 	}
+
+	@Override
+	public Pasajero consultarPasajero(Pasajero pasajero) throws ErrorConsultaDataException {
+		boolean encontrado = false;
+		if (!encontrado) {
+			List<Pasajero> listaPax = consultarPasajeroHistorico(pasajero);
+			if (!listaPax.isEmpty()) {
+				encontrado = true;
+				return listaPax.get(0);
+			}
+		}
+		if (!encontrado){
+			return consultaClientePasajero(pasajero);
+			
+		}
+		if (!encontrado){
+			return consultaContactoPasajero(pasajero);
+		}
+		return pasajero;
+	}
 	
 }

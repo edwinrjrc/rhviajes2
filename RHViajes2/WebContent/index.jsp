@@ -57,7 +57,7 @@
 							<fieldset>
 								<div class="row">
 									<div class="center-block">
-										<img class="profile-img" src="<%= request.getContextPath() %>/resources/img/logosistema-01.jpg"/>
+										<img class="profile-img" src="<%= request.getContextPath() %>/resources/images/logosistema-01.jpg"/>
 									</div>
 								</div>
 								<div class="row">

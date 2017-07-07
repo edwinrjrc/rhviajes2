@@ -21,10 +21,13 @@ import com.google.gson.GsonBuilder;
 
 import pe.com.rhviajes.web.util.UtilWeb;
 import pe.com.viajes.bean.base.BaseVO;
+import pe.com.viajes.bean.negocio.DetalleServicioAgencia;
+import pe.com.viajes.bean.negocio.Pasajero;
 import pe.com.viajes.bean.negocio.ServicioAgencia;
 import pe.com.viajes.bean.negocio.ServicioAgenciaBusqueda;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.SoporteRemote;
+import pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote;
 
 /**
  * Servlet implementation class ServletServicioAgencia
@@ -38,6 +41,8 @@ public class ServletServicioAgencia extends BaseServlet {
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
 	@EJB(lookup="java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/SoporteSession!pe.com.viajes.negocio.ejb.SoporteRemote")
 	private SoporteRemote soporteRemote;
+	
+	private UtilNegocioSessionRemote utilNegocioSessionRemote;
     /**
      * @see BaseServlet#BaseServlet()
      */
@@ -103,6 +108,20 @@ public class ServletServicioAgencia extends BaseServlet {
 				retorno.put("objeto", consultaNegocioSessionRemote.proveedoresXServicio(servicio));
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
+			}
+			else if("consultarPasajero".equals(accion)){
+				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
+				Pasajero pasajero = new Pasajero();
+				pasajero.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(Double.valueOf(mapeo.get("tipoDocumento").toString()).intValue());
+				pasajero.getDocumentoIdentidad().setNumeroDocumento(mapeo.get("numeroDocumento").toString());
+				pasajero.setEmpresa(this.obtenerEmpresa(request));
+				retorno.put("objeto", consultaNegocioSessionRemote.consultarPasajero(pasajero));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);
+			}
+			else if ("consultarComision".equals(accion)){
+				DetalleServicioAgencia detalleServicio = new DetalleServicioAgencia();
+				utilNegocioSessionRemote.calculaPorcentajeComision(detalleServicio);
 			}
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);

@@ -477,7 +477,7 @@ public class ServicioNegocioDaoImpl implements ServicioNegocioDao {
 				pasajero2.getDocumentoIdentidad().setNumeroDocumento(UtilJdbc.obtenerCadena(rs, "numerodocumento"));
 				pasajero2.setNombres(UtilJdbc.obtenerCadena(rs, "nombres"));
 				pasajero2.setApellidoPaterno(UtilJdbc.obtenerCadena(rs, "apellidopaterno"));
-				pasajero2.setApellidoMaterno(UtilJdbc.obtenerCadena(rs, "apellidopaterno"));
+				pasajero2.setApellidoMaterno(UtilJdbc.obtenerCadena(rs, "apellidomaterno"));
 				pasajero2.setTelefono1(UtilJdbc.obtenerCadena(rs, "telefono1"));
 				pasajero2.setTelefono2(UtilJdbc.obtenerCadena(rs, "telefono2"));
 				pasajero2.setCorreoElectronico(UtilJdbc.obtenerCadena(rs, "correoelectronico"));
@@ -488,7 +488,7 @@ public class ServicioNegocioDaoImpl implements ServicioNegocioDao {
 				pasajero2.setFechaVctoPasaporte(UtilJdbc.obtenerFecha(rs, "fechavctopasaporte"));
 				pasajero2.setFechaNacimiento(UtilJdbc.obtenerFecha(rs, "fechanacimiento"));
 				pasajero2.getRelacion().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idrelacion"));
-				
+				pasajero2.getPais().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idpais"));
 				resultado.add(pasajero2);
 			}
 			

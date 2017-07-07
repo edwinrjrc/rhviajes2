@@ -85,6 +85,11 @@ public class ServletCatalogo extends BaseServlet {
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
+			else if ("listarNacionalidad".equals(accion)){
+				retorno.put("objeto", soporteRemote.consultarPaisesContinente(0,this.obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);
+			}
 			else if ("proveedoresXTipo".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
 				Integer idTipoServicio = Double.valueOf(mapeo.get("tipoServicio").toString()).intValue();
@@ -92,6 +97,11 @@ public class ServletCatalogo extends BaseServlet {
 				servicio.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
 				retorno.put("objeto", soporteRemote.listarProveedorTipo(servicio));
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);
+			}
+			else if ("listarCatalogoMaestro".equals(accion)){
+				retorno.put("objeto", soporteRemote.listarCatalogoMaestro(21 , obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Consulta completada");
 				retorno.put("exito", true);
 			}
 		} catch (ErrorConsultaDataException e) {

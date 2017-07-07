@@ -197,4 +197,6 @@ public interface ConsultaNegocioSessionRemote {
 	List<DetalleServicioAgencia> consultarDescripcionServicioDC(
 			Integer idEmpresa, Integer idServicio)
 			throws ErrorConsultaDataException;
+
+	Pasajero consultarPasajero(Pasajero pasajero) throws ErrorConsultaDataException;
 }
