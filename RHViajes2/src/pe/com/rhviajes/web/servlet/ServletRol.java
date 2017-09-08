@@ -43,6 +43,7 @@ public class ServletRol extends BaseServlet {
 	 */
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	response.sendRedirect("paginas/inicio.jsp");
 	}
 
 	/**

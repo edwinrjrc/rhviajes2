@@ -104,6 +104,11 @@ public class ServletCatalogo extends BaseServlet {
 				retorno.put("mensaje", "Consulta completada");
 				retorno.put("exito", true);
 			}
+			else if ("listarMonedas".equals(accion)){
+				retorno.put("objeto", soporteRemote.listarCatalogoMaestro(18 , obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Consulta completada");
+				retorno.put("exito", true);
+			}
 		} catch (ErrorConsultaDataException e) {
 			log.error(e.getMessage(), e);
 			retorno.put("mensaje", e.getMessage());

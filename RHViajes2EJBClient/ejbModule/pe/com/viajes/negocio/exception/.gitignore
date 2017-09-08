@@ -9,3 +9,5 @@
 /RHViajesException.class
 /ResultadoCeroDaoException.class
 /ValidacionException.class
+/ConversionStringDateException.class
+/ConvertirStringAIntegerException.class

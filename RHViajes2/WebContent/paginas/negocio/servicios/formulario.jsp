@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="serviciosformapp" lang="es">
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="UTF-8">
 <title>Insert title here</title>
 <link
 	href="<%=request.getContextPath()%>/resources/css/jquery-ui.min.css"
@@ -227,7 +227,7 @@ div.tab button.active {
 					<tr>
 						<td style="width: 20%"><span class="campoFormulario">Fecha
 								Servicio</span></td>
-						<td style="width: 80%"><input type="date"></td>
+						<td style="width: 80%"><input type="date" ng-model="servicioVenta.fechaServicio"></td>
 					</tr>
 					<tr
 						style="margin: 0px; border-width: 0px; padding: 0px; border-spacing: 0px;">
@@ -238,11 +238,12 @@ div.tab button.active {
 								<tr>
 									<td style="width: 20%"><span class="campoFormulario">Agente
 											Viajes</span></td>
-									<td style="width: 30%"><select><option>-Seleccione
+									<td style="width: 30%"><select class="dataFormulario"><option>-Seleccione
 												el agente-</option></select></td>
 									<td style="width: 20%"><span class="campoFormulario">Moneda
 											Facturación</span></td>
-									<td style="width: 30%"><select><option>-Seleccione-</option></select></td>
+									<td style="width: 30%"><select class="dataFormulario" ng-model="servicioVenta.monedaFacturacion"><option>-Seleccione-</option>
+									<option ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
 								</tr>
 							</table></td>
 					</tr>
@@ -253,12 +254,12 @@ div.tab button.active {
 				<span class="campoFormulario">Datos Servicio</span>
 				<hr>
 				<table
-					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
+					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px; border-collapse: collapse;">
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario">Tipo
 								Servicio</span></td>
 						<td style="width: 35%"><select class="dataFormulario"
-							ng-model="detalleServicio.tipoServicio"
+							ng-model="detalleServicio.idTipoServicio"
 							ng-change="consultarConfiguracionServicio()">
 								<option ng-repeat="item in listaMaestroServicio"
 									ng-value="item.codigoEntero">{{item.nombre}}</option>
@@ -325,19 +326,20 @@ div.tab button.active {
 							ng-show="configuracionServicio.muestraPrecioBase">Precio
 								Base</span></td>
 						<td style="width: 35%"><input
-							ng-model="detalleServicio.precioBase"
-							style="width: 150px; text-align: right;" class="dataFormulario"
-							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select
+							ng-model="detalleServicio.precioBaseInicial"
+							style="width: 100px; text-align: right;" class="dataFormulario"
+							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select ng-model="detalleServicio.idmoneda"
 							ng-show="configuracionServicio.muestraPrecioBase"
 							class="dataFormulario"><option
-									ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+									ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select>
+							<input type="checkbox" ng-model="detalleServicio.conIgv" ng-show="configuracionServicio.muestraPrecioBase"><span class="campoFormulario" ng-show="configuracionServicio.muestraPrecioBase">Con IGV</span></td>
 					</tr>
 					<tr>
-						<td><span class="campoFormulario">Aplica IGV</span></td>
-						<td><input type="checkbox" ng-model="detalle" 
+						<td><span class="campoFormulario" ng-show="muestraAplicaIgv">Aplica IGV</span></td>
+						<td><input type="checkbox" ng-show="muestraAplicaIgv"
 							ng-model="detalleServicio.aplicaIgv"></td>
-						<td></td>
-						<td></td>
+						<td><span class="campoFormulario" ng-show="configuracionServicio.muestraTarifaNegociada">Tarifa Negociada</span></td>
+						<td><input type="checkbox" ng-show="configuracionServicio.muestraTarifaNegociada"></td>
 					</tr>
 					<tr ng-show="muestraComision">
 						<td colspan="4"><span class="campoFormulario">Datos
@@ -346,20 +348,20 @@ div.tab button.active {
 					</tr>
 					<tr ng-show="muestraComision">
 						<td><span class="campoFormulario">Tipo Valor Comisión</span></td>
-						<td><select class="dataFormulario"><option>-Seleccione-</option>
+						<td><select class="dataFormulario" ng-model="detalleServicio.tipoComision"><option>-Seleccione-</option>
 								<option value="1">Porcentaje (%)</option>
 								<option value="2">Monto Fijo</option></select></td>
 						<td><span class="campoFormulario">Valor Comisión</span></td>
-						<td><input class="dataFormulario" type="number"></td>
+						<td><input class="dataFormulario" type="number" ng-model="detalleServicio.valorComision" style="width: 50px; text-align: right;"></td>
 					</tr>
 					<tr ng-show="muestraComision">
 						<td><span class="campoFormulario">Aplicar IGV</span></td>
-						<td><input type="checkbox"></td>
-						<td><span class="campoFormulario">Tarifa Negociada</span></td>
-						<td><input type="checkbox"></td>
+						<td><input type="checkbox" ng-model="detalleServicio.aplicaIgvComision"></td>
+						<td><span class="campoFormulario"></span></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td colspan="4" align="center"><a href="#" class="botonSistema">Agregar</a></td>
+						<td colspan="4" align="center"><a href="#" class="botonSistema" ng-click="agregarServicio()">Agregar</a></td>
 					</tr>
 					<tr ng-show="listaDetalleServicio.length > 0 ">
 						<td colspan="4"><br> <br> <span
@@ -378,18 +380,34 @@ div.tab button.active {
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<td class="dataTabla">1</td>
-										<td class="dataTabla">23/05/2017</td>
-										<td class="dataTabla">BOLETO AEREO -
-											LIMA>MIAMI/MIAMI>LIMA</td>
-										<td class="dataTabla">COSTAMAR</td>
-										<td class="dataTabla">1,022.02</td>
-										<td class="dataTabla">1,022.02</td>
-										<td class="dataTabla"><a href="#"><span>(-)</span></a></td>
+									<tr ng-repeat="item in listaDetalleServicio">
+										<td class="dataTabla">{{item.cantidad}}</td>
+										<td class="dataTabla">{{item.fechaServicio | date : 'dd/MM/yyyy'}}</td>
+										<td class="dataTabla">{{item.descripcionServicio}}</td>
+										<td class="dataTabla">{{item.servicioProveedor.proveedor.nombre}}</td>
+										<td class="dataTabla">{{item.precioUnitario | number : 2}}</td>
+										<td class="dataTabla">{{item.totalServicio | number : 2}}</td>
+										<td class="dataTabla"><a href="#" ng-click="eliminarServicio(item.id)"><img src="../../../resources/images/tacho.gif" alt="Eliminar Servicio"/></a>
+						<a href="#" ng-click="consultaServicio(item.id)"><img src="../../../resources/images/editar.png" alt="Editar Servicio"/></a></td>
 									</tr>
 								</tbody>
 							</table></td>
+					</tr>
+				</table>
+				<hr>
+				<table
+					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
+					<tr>
+						<td><span class="campoFormulario">Total Comisión</span></td>
+						<td><span class="dataFormulario">{{servicioVenta.totalComision | number:2}}</span></td>
+					</tr>
+					<tr>
+						<td><span class="campoFormulario">Total Fee</span></td>
+						<td><span class="dataFormulario">{{servicioVenta.totalFee | number:2}}</span></td>
+					</tr>
+					<tr>
+						<td><span class="campoFormulario">Total Servicios</span></td>
+						<td><span class="dataFormulario">{{servicioVenta.totalServicios | number:2}}</span></td>
 					</tr>
 				</table>
 			</div>
@@ -429,7 +447,7 @@ div.tab button.active {
 				</thead>
 				<tbody>
 					<tr ng-repeat="tramo in listaTramos">
-						<td><select ng-model='tramo.origen' class="dataFormulario">
+						<td><select ng-model='tramo.origen.id' class="dataFormulario">
 								<option>-Seleccione-</option>
 								<option ng-repeat="item in listaDestinos"
 									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})
@@ -437,7 +455,7 @@ div.tab button.active {
 						</select></td>
 						<td><input type="datetime-local" class="dataFormulario"
 							ng-model="tramo.fechaSalida"></td>
-						<td><select ng-model='tramo.destino' class="dataFormulario">
+						<td><select ng-model='tramo.destino.id' class="dataFormulario">
 								<option ng-repeat="item in listaDestinos"
 									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})</option>
 						</select></td>

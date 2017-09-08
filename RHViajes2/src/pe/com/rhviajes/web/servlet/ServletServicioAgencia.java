@@ -95,14 +95,15 @@ public class ServletServicioAgencia extends BaseServlet {
 			}
 			else if ("consultarConfiguacion".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer idTipoServicio = Double.valueOf(mapeo.get("tipoServicio").toString()).intValue();
+				Integer idTipoServicio = Double.valueOf(mapeo.get("idTipoServicio").toString()).intValue();
 				retorno.put("objeto", soporteRemote.consultarConfiguracionServicio(idTipoServicio,this.obtenerIdEmpresa(request)));
+				retorno.put("objeto2",consultaNegocioSessionRemote.consultarMaestroServicio(idTipoServicio, this.obtenerIdEmpresa(request)));
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
 			else if("proveedoresXServicio".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer idTipoServicio = Double.valueOf(mapeo.get("tipoServicio").toString()).intValue();
+				Integer idTipoServicio = Double.valueOf(mapeo.get("idTipoServicio").toString()).intValue();
 				BaseVO servicio = new BaseVO(idTipoServicio);
 				servicio.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
 				retorno.put("objeto", consultaNegocioSessionRemote.proveedoresXServicio(servicio));
@@ -122,6 +123,12 @@ public class ServletServicioAgencia extends BaseServlet {
 			else if ("consultarComision".equals(accion)){
 				DetalleServicioAgencia detalleServicio = new DetalleServicioAgencia();
 				utilNegocioSessionRemote.calculaPorcentajeComision(detalleServicio);
+			}
+			else if ("consultarAplicaIgv".equals(accion)){
+				int idServicio = Integer.parseInt(request.getParameter("idservicio"));
+				retorno.put("objeto", consultaNegocioSessionRemote.servicioAplicaIgv(idServicio, this.obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);	
 			}
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);

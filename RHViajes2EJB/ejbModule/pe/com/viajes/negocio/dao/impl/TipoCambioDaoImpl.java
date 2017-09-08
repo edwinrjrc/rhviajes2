@@ -3,6 +3,7 @@
  */
 package pe.com.viajes.negocio.dao.impl;
 
+import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -227,6 +228,44 @@ public class TipoCambioDaoImpl implements TipoCambioDao {
 				cs.close();
 			}
 			if (conn != null) {
+				conn.close();
+			}
+		}
+	}
+	
+	@Override
+	public BigDecimal consultarTipoCambio(Integer idMonedaOrigen,
+			Integer idMonedaDestino, Date fecha) throws SQLException {
+		Connection conn = null;
+		BigDecimal resultado = null;
+		CallableStatement cs = null;
+		ResultSet rs = null;
+		String sql = "";
+
+		try {
+			sql = "{ ? = call negocio.fn_consultartipocambiomonto(?,?,?,?) }";
+			conn = UtilConexion.obtenerConexion();
+			cs = conn.prepareCall(sql);
+			cs.registerOutParameter(1, Types.DECIMAL);
+			cs.setInt(2, idEmpresa.intValue());
+			cs.setInt(3, idMonedaOrigen.intValue());
+			cs.setInt(4, idMonedaDestino.intValue());
+			cs.execute();
+
+			resultado = cs.getBigDecimal(1);
+
+			return resultado;
+		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new SQLException(e);
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (cs != null) {
+				cs.close();
+			}
+			if (conn != null){
 				conn.close();
 			}
 		}

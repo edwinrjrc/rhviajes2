@@ -860,7 +860,7 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 	
 	@Override
 	public List<DocumentoAdicional> listarDocumentosAdicionales(Persona persona) throws ErrorConsultaDataException{
-		List documentosAdicionales = null;
+		List<DocumentoAdicional> documentosAdicionales = null;
 		try {
 			ClienteDao clienteDao = new ClienteDaoImpl();
 			documentosAdicionales = clienteDao.listarAdjuntosPersona(persona);
@@ -1015,4 +1015,44 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 		return pasajero;
 	}
 	
+	@Override
+	public BigDecimal consultarTipoCambio(Integer idMonedaOrigen, Integer idMonedaDestino, Date fecha, Integer idEmpresa) throws ErrorConsultaDataException{
+		try {
+			TipoCambioDao tipoCambioDao = new TipoCambioDaoImpl(idEmpresa);
+			return tipoCambioDao.consultarTipoCambio(idMonedaOrigen, idMonedaDestino, fecha);
+		} catch (SQLException e) {
+			throw new ErrorConsultaDataException(e);
+		}
+	}
+	
+	@Override
+	public MaestroServicio consultarTipoServicio(Integer tipo,Integer idEmpresa) throws ErrorConsultaDataException{
+		try {
+			MaestroServicioDao maestroServicioDao = new MaestroServicioDaoImpl();
+			return maestroServicioDao
+					.consultarMaestroServicio(tipo, idEmpresa);
+		} catch (SQLException e) {
+			throw new ErrorConsultaDataException(e);
+		}
+	}
+	
+	@Override
+	public Proveedor consultarProveedor(Integer idProveedor, Integer idEmpresa) throws ErrorConsultaDataException{
+		try {
+			ProveedorDao proveedorDao = new ProveedorDaoImpl();
+			return proveedorDao.consultarProveedor(idProveedor, idEmpresa);
+		} catch (SQLException e) {
+			throw new ErrorConsultaDataException(e);
+		}
+	}
+	
+	@Override
+	public boolean servicioAplicaIgv(int idServicio, int idEmpresa) throws ErrorConsultaDataException{
+		try {
+			ServicioNovaViajesDao servicioNovaViajesDao = new ServicioNovaViajesDaoImpl(idEmpresa);
+			return servicioNovaViajesDao.aplicaIgv(idServicio, idEmpresa);
+		} catch (SQLException e) {
+			throw new ErrorConsultaDataException(e);
+		}
+	}
 }

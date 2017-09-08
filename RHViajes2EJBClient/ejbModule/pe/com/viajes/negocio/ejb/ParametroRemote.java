@@ -11,10 +11,7 @@ import pe.com.viajes.bean.negocio.Parametro;
 public interface ParametroRemote {
 
 	void registrarParametro(Parametro parametro) throws SQLException;
-
 	void actualizarParametro(Parametro parametro) throws SQLException;
-
 	List<Parametro> listarParametros(Integer idEmpresa) throws SQLException;
-
 	Parametro consultarParametro(int id, Integer idEmpresa) throws SQLException;
 }

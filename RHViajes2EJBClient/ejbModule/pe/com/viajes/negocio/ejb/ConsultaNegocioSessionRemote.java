@@ -199,4 +199,13 @@ public interface ConsultaNegocioSessionRemote {
 			throws ErrorConsultaDataException;
 
 	Pasajero consultarPasajero(Pasajero pasajero) throws ErrorConsultaDataException;
+
+	BigDecimal consultarTipoCambio(Integer idMonedaOrigen, Integer idMonedaDestino, Date fecha, Integer idEmpresa)
+			throws ErrorConsultaDataException;
+
+	MaestroServicio consultarTipoServicio(Integer tipo, Integer idEmpresa) throws ErrorConsultaDataException;
+
+	Proveedor consultarProveedor(Integer idProveedor, Integer idEmpresa) throws ErrorConsultaDataException;
+
+	boolean servicioAplicaIgv(int idServicio, int idEmpresa) throws ErrorConsultaDataException;
 }

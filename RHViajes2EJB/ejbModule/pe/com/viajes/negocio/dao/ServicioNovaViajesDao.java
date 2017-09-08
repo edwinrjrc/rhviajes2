@@ -175,4 +175,6 @@ public interface ServicioNovaViajesDao {
 
 	List<DetalleServicioAgencia> consultarDescripcionServicioDC(
 			Integer idEmpresa, Integer idServicio) throws SQLException;
+
+	boolean aplicaIgv(int idServicio, int idEmpresa) throws SQLException;
 }

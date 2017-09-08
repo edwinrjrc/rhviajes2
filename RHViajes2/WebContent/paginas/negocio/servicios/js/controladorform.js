@@ -3,34 +3,23 @@ var serviciosformapp = angular.module('serviciosformapp', []);
 var ruta = {};
 var pasajeros = [];
 /*
-var config = serviciosformapp.config(['$httpProvider',function($httpProvider) {
-	$httpProvider.defaults.useXDomain = true;
-	delete $httpProvider.defaults.headers.common['X-Requested-With'];
-}]);
-
-var servicio=config.service('Geolocator', function($q, $http) {
-	this.searchFlight = function(term) {
-		var deferred = $q.defer();
-		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'listarDestinos',tipoMaestro:1}}).then(
-			 function successCallback(response) {
-				 console.log('Exito en la llamada');
-				 var estadoConsulta = response.data.exito;
-				 var destinos = {};
-				 if (estadoConsulta){
-					 listaDestinos = response.data.objeto;
-					 for (var i=0; i<listaDestinos.length; i++){
-						 var item = listaDestinos[i];
-						 destinos[item.descripcion+"("+item.codigoIATA+")"] = item.codigoIATA; 
-					 }
-				 }
-				 deferred.resolve(destinos);
-		  }, function errorCallback(response) {
-			  	 deferred.reject(arguments);
-			     console.log('Error en la llamada');
-		  });
-	      return deferred.promise;
-	  	};
-});*/
+ * var config = serviciosformapp.config(['$httpProvider',function($httpProvider) {
+ * $httpProvider.defaults.useXDomain = true; delete
+ * $httpProvider.defaults.headers.common['X-Requested-With']; }]);
+ * 
+ * var servicio=config.service('Geolocator', function($q, $http) {
+ * this.searchFlight = function(term) { var deferred = $q.defer();
+ * $http({method: 'POST', url: '../../../servlets/ServletServicioAgencia',
+ * params:{accion:'listarDestinos',tipoMaestro:1}}).then( function
+ * successCallback(response) { console.log('Exito en la llamada'); var
+ * estadoConsulta = response.data.exito; var destinos = {}; if (estadoConsulta){
+ * listaDestinos = response.data.objeto; for (var i=0; i<listaDestinos.length;
+ * i++){ var item = listaDestinos[i];
+ * destinos[item.descripcion+"("+item.codigoIATA+")"] = item.codigoIATA; } }
+ * deferred.resolve(destinos); }, function errorCallback(response) {
+ * deferred.reject(arguments); console.log('Error en la llamada'); }); return
+ * deferred.promise; }; });
+ */
 
 serviciosformapp.factory('servicioCompartido', function($rootScope) {
     var servicioCompartido = {};
@@ -52,7 +41,12 @@ serviciosformapp.factory('servicioCompartido', function($rootScope) {
 
 var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,servicioCompartido) {
 	$scope.listaMaestroServicio = [];
+	$scope.servicioVenta = {};
 	$scope.detalleServicio = {};
+	$scope.servicioVenta.totalComision = 0;
+	$scope.servicioVenta.totalServicios = 0;
+	$scope.detalleServicio.conIgv = true;
+	$scope.muestraAplicaIgv = false;
 	$scope.listarMaestroServicios = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarMaestroServicios'}}).then(
 				 function successCallback(response) {
@@ -75,7 +69,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	};
 	$scope.listarMaestroServicios();
 	var modal = document.getElementById('modalRuta');
-	// When the user clicks the button, open the modal 
+	// When the user clicks the button, open the modal
 	modalShow = function() {
 		modal.style.display = "block";
 	};
@@ -97,9 +91,25 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 							 console.log('Exito en la llamada');
 							 $scope.configuracionServicio = response.data.objeto;
 							 $scope.configuracionServicio.muestraPasajeros = true;
+							 $scope.detalleServicio.tipoServicio = response.data.objeto2;
 							 listarEmpresasServicio();
 							 listarHoteles();
 							 listarOperadores();
+							 $scope.detalleServicio.idmoneda = $scope.servicioVenta.monedaFacturacion; 
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarAplicaIgv',idservicio:$scope.detalleServicio.idTipoServicio}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.muestraAplicaIgv = response.data.objeto;
 						 }
 					 }
 			  }, function errorCallback(response) {
@@ -179,18 +189,280 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	
 	$scope.$on('handleBroadcast', function() {
         $scope.detalleServicio.pasajeros = servicioCompartido.pasajeros;
+        $scope.detalleServicio.cantidad = $scope.detalleServicio.pasajeros.length;
         $scope.detalleServicio.ruta = servicioCompartido.ruta;
     });
 	
 	$scope.seleccionarProveedor = function(){
 		$scope.muestraComision = true;
+		$scope.detalleServicio.servicioProveedor = {};
+		$scope.detalleServicio.servicioProveedor.proveedor = {};
+		$scope.detalleServicio.servicioProveedor.proveedor.id = $scope.detalleServicio.idProveedor; 
 	}
+	var valorIgv =0;
+    $scope.consultaValorIGV = function(){
+    	$http({method: 'POST', url: '../../../servlets/ServletParametros', 
+			params:{accion:'consultarIGV'}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 valorIgv = response.data.objeto;
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	}
+    $scope.consultaValorIGV();
 	
 	$scope.consultaComision = function(){
 		
 	}
 	
 	$scope.listaDetalleServicio = [];
+	$scope.agregarServicio = function(){
+		//$scope.listaDetalleServicio.push($scope.detalleServicio);
+		var tipoCambio = 1;
+		if ($scope.detalleServicio.idmoneda != $scope.servicioVenta.monedaFacturacion){
+			var form = {};
+			form.monedaOrigen = $scope.detalleServicio.idmoneda;
+			form.monedaDestino = $scope.servicioVenta.monedaFacturacion;
+			form.fecha = $scope.servicioVenta.fechaServicio;
+			$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
+				params:{accion:'consultaTipoCambio',formulario:form}}).then(
+					 function successCallback(response) {
+						 if (response.data.exito == "undefined" || response.data.exito == undefined){
+							 location.href="../../../";
+						 }
+						 else{
+							 if (response.data.exito){
+								 console.log('Exito en la llamada');
+								 tipoCambio = response.data.objeto;
+							 }
+						 }
+				  }, function errorCallback(response) {
+					     console.log('Error en la llamada');
+				  });
+		}
+		var form = {};
+		form.tipoServicio = $scope.detalleServicio.idTipoServicio;
+		$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
+			params:{accion:'consultaTipoServicio',formulario:form}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.detalleServicio.tipoServicio = response.data.objeto;
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+		if(!$scope.detalleServicio.tipoServicio.servicioPadre){
+			for(var i=0; i<$scope.listaDetalleServicio.length; i++){
+				var detalle = $scope.listaDetalleServicio[0];
+				if (detalle.codigoEntero==$scope.detalleServicio.servicioPadre.codigoEntero){
+					if ($scope.detalleServicio.fechaIda ==null|| $scope.detalleServicio.fechaIda ==undefined){
+						$scope.detalleServicio.fechaIda= detalle.fechaIda;
+					}
+					break;
+				}
+			}
+		}
+		if ($scope.detalleServicio.fechaIda ==null|| $scope.detalleServicio.fechaIda ==undefined){
+			$scope.detalleServicio.fechaIda= new Date();
+		}
+		if ($scope.detalleServicio.fechaServicio == null || $scope.detalleServicio.fechaServicio == undefined){
+			if ($scope.detalleServicio.ruta.tramos != null && $scope.detalleServicio.ruta.tramos != undefined){
+				$scope.detalleServicio.fechaServicio = $scope.detalleServicio.ruta.tramos[0].fechaSalida;
+			}
+		}
+		if ($scope.detalleServicio.idProveedor ==null || $scope.detalleServicio.idProveedor ==undefined){
+			form.idProveedor = $scope.detalleServicio.idProveedor;
+			$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
+				params:{accion:'consultarProveedor',formulario:form}}).then(
+					 function successCallback(response) {
+						 if (response.data.exito == "undefined"){
+							 location.href="../../../";
+						 }
+						 else{
+							 if (response.data.exito){
+								 console.log('Exito en la llamada');
+								 $scope.detalleServicio.servicioProveedor.proveedor = response.data.objeto;
+							 }
+						 }
+				  }, function errorCallback(response) {
+					     console.log('Error en la llamada');
+				  });
+		}
+		else{
+			for(var i=0; i<$scope.listaProveedores.length; i++){
+				if ($scope.listaProveedores[i].codigoEntero == $scope.detalleServicio.servicioProveedor.proveedor.id){
+					$scope.detalleServicio.servicioProveedor.proveedor.nombre = $scope.listaProveedores[i].nombreProveedor;
+					break;
+				}
+			}
+		}
+		if($scope.configuracionServicio.muestraAerolinea){
+			if ($scope.detalleServicio.idAerolinea ==null || $scope.detalleServicio.idAerolinea ==undefined){
+				form.idProveedor = $scope.detalleServicio.idAerolinea;
+				$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
+					params:{accion:'consultarProveedor',formulario:form}}).then(
+						 function successCallback(response) {
+							 if (response.data.exito == "undefined"){
+								 location.href="../../../";
+							 }
+							 else{
+								 if (response.data.exito){
+									 console.log('Exito en la llamada');
+									 $scope.detalleServicio.aerolinea = response.data.objeto;
+								 }
+							 }
+					  }, function errorCallback(response) {
+						     console.log('Error en la llamada');
+					  });
+			}
+		}
+		if($scope.configuracionServicio.muestraOperadora){
+			if ($scope.detalleServicio.idOperador ==null || $scope.detalleServicio.idOperador ==undefined){
+				form.idProveedor = $scope.detalleServicio.idOperador;
+				$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
+					params:{accion:'consultarProveedor',formulario:form}}).then(
+						 function successCallback(response) {
+							 if (response.data.exito == "undefined"){
+								 location.href="../../../";
+							 }
+							 else{
+								 if (response.data.exito){
+									 console.log('Exito en la llamada');
+									 $scope.detalleServicio.operador = response.data.objeto;
+								 }
+							 }
+					  }, function errorCallback(response) {
+						     console.log('Error en la llamada');
+					  });
+			}
+		}
+		if($scope.configuracionServicio.muestraHotel){
+			if ($scope.detalleServicio.idHotel ==null || $scope.detalleServicio.idHotel ==undefined){
+				form.idProveedor = $scope.detalleServicio.idHotel;
+				$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
+					params:{accion:'consultarProveedor',formulario:form}}).then(
+						 function successCallback(response) {
+							 if (response.data.exito == "undefined"){
+								 location.href="../../../";
+							 }
+							 else{
+								 if (response.data.exito){
+									 console.log('Exito en la llamada');
+									 $scope.detalleServicio.hotel = response.data.objeto;
+								 }
+							 }
+					  }, function errorCallback(response) {
+						     console.log('Error en la llamada');
+					  });
+			}
+		}
+		$scope.detalleServicio.descripcionServicio = generarDescripcionServicio($scope.detalleServicio);
+		
+		if ($scope.detalleServicio.cantidad == 0) {
+			$scope.detalleServicio.cantidad = (1);
+		}
+		$scope.detalleServicio.precioUnitario = tipoCambio * $scope.detalleServicio.precioBaseInicial;
+		$scope.detalleServicio.total = $scope.detalleServicio.cantidad * $scope.detalleServicio.precioUnitario;
+		if ($scope.detalleServicio.aplicaIgv){
+			if ($scope.detalleServicio.conIgv){
+				$scope.detalleServicio.precioSinIgv = $scope.detalleServicio.total / (1+valorIgv);
+				$scope.detalleServicio.montoIgv = $scope.detalleServicio.total - $scope.detalleServicio.total;
+				$scope.detalleServicio.totalServicio = $scope.detalleServicio.precioSinIgv + $scope.detalleServicio.montoIgv;
+			}
+			else{
+				$scope.detalleServicio.precioSinIgv = $scope.detalleServicio.total;
+				$scope.detalleServicio.montoIgv = $scope.detalleServicio.total * valorIgv;
+				$scope.detalleServicio.totalServicio = $scope.detalleServicio.precioSinIgv + $scope.detalleServicio.montoIgv;
+			}
+		}
+		else{
+			if ($scope.detalleServicio.conIgv){
+				$scope.detalleServicio.precioSinIgv = $scope.detalleServicio.total / (1+valorIgv);
+				$scope.detalleServicio.montoIgv = $scope.detalleServicio.total - $scope.detalleServicio.total;
+				$scope.detalleServicio.totalServicio = $scope.detalleServicio.precioSinIgv + $scope.detalleServicio.montoIgv;
+			}
+			else{
+				$scope.detalleServicio.precioSinIgv = $scope.detalleServicio.total;
+				$scope.detalleServicio.montoIgv = $scope.detalleServicio.total * 0;
+				$scope.detalleServicio.totalServicio = $scope.detalleServicio.precioSinIgv + $scope.detalleServicio.montoIgv;
+			}
+		}
+		if ($scope.muestraComision){
+			if ($scope.detalleServicio.tipoComision == "1"){
+				$scope.detalleServicio.totalComision = $scope.detalleServicio.totalServicio * $scope.detalleServicio.valorComision/100;
+				if ($scope.detalleServicio.aplicaIgvComision){
+					$scope.detalleServicio.totalIgvComision = $scope.detalleServicio.totalComision * valorIgv;
+					$scope.detalleServicio.totalComision = $scope.detalleServicio.totalComision + $scope.detalleServicio.totalIgvComision;
+				}
+			}
+			else if($scope.detalleServicio.tipoComision == "2"){
+				$scope.detalleServicio.totalComision = $scope.detalleServicio.valorComision;
+				$scope.detalleServicio.totalIgvComision = $scope.detalleServicio.totalComision / (1+valorIgv);
+			}
+		}
+		$scope.servicioVenta.totalComision = $scope.servicioVenta.totalComision + $scope.detalleServicio.totalComision;
+		$scope.servicioVenta.totalServicios = $scope.servicioVenta.totalServicios + $scope.detalleServicio.totalServicio;
+		$scope.listaDetalleServicio.push($scope.detalleServicio);
+		
+		$scope.detalleServicio = {};
+		$scope.configuracionServicio = {};
+		$scope.muestraComision = false;
+	}
+	
+	generarDescripcionServicio = function(detalle){
+		var descripcion = "";
+		descripcion = descripcion + $scope.detalleServicio.tipoServicio.nombre + " ";
+		if ($scope.configuracionServicio.muestraRuta) {
+			// descripcion = descripcion +
+			// detalle.getRuta().getTramos().get(0).getOrigen().getDescripcion()
+			// + " / ";
+			for (var i=0; i<detalle.ruta.tramos.length; i++){
+				var tramo = detalle.ruta.tramos[i];
+				descripcion = descripcion +tramo.origen.descripcion+ ">" + tramo.destino.descripcion;
+				if (i<detalle.ruta.tramos.length){
+					descripcion = descripcion + " / ";
+				}
+			}
+		}
+		/*
+		 * if (configuracion.isMuestraAerolinea()) { descripcion = descripcion + "
+		 * con " + detalle.getAerolinea().getNombre() + " "; }
+		 */
+		/*if (configuracion.isMuestraFechaServicio()) {
+			descripcion = descripcion + " desde "
+					+ sdf.format(detalle.getFechaIda());
+		}
+		if (configuracion.isMuestraFechaRegreso()) {
+			descripcion = descripcion + " hasta "
+					+ sdf.format(detalle.getFechaRegreso());
+		}
+		if (configuracion.isMuestraHotel()) {
+			descripcion = descripcion + " en hotel "
+					+ detalle.getHotel().getNombre();
+		}
+		/*
+		 * if (configuracion.isMuestraCodigoReserva()) { descripcion =
+		 * descripcion + " con codigo de reserva: " +
+		 * detalle.getCodigoReserva(); } if
+		 * (configuracion.isMuestraNumeroBoleto()) { descripcion = descripcion + "
+		 * numero de boleto: " + detalle.getNumeroBoleto(); }
+		 */
+		return descripcion;
+	}
 });
 
 var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', function($scope, $http, servicioCompartido) {
@@ -212,10 +484,11 @@ var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', functi
 							 if ($scope.estadoConsulta){
 								 $scope.mensaje = response.data.mensaje;
 								 $scope.listaDestinos = response.data.objeto;
-								 /*for (var i=0; i<listaDestinos.length; i++){
-									 var item = listaDestinos[i];
-									 availableTags.push(item.descripcion+"("+item.codigoIATA+")")
-								 }*/
+								 /*
+									 * for (var i=0; i<listaDestinos.length;
+									 * i++){ var item = listaDestinos[i];
+									 * availableTags.push(item.descripcion+"("+item.codigoIATA+")") }
+									 */
 							 }
 						 }
 					 }
@@ -250,6 +523,7 @@ var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', functi
 	$scope.agregarTramo = function(){
 		if ($scope.listaTramos.length == 0){
 			var tramo = {};
+			tramo.origen = {};
 			tramo.precioTramo = 0;
 			tramo.id = 1;
 		}
@@ -257,7 +531,8 @@ var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', functi
 			var tramo = {};
 			var tramoAnterior = $scope.listaTramos[$scope.listaTramos.length-1];
 			tramo.id = parseInt(tramoAnterior.id) + 1;
-			tramo.origen = tramoAnterior.destino;
+			tramo.origen = {};
+			tramo.origen.id = tramoAnterior.destino;
 			tramo.precioTramo = 0;
 			tramo.codigoAerolinea = tramoAnterior.codigoAerolinea
 		}
@@ -270,7 +545,9 @@ var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', functi
 				var tramoAnterior = $scope.listaTramos[i];
 				tramo = {};
 				tramo.id = $scope.listaTramos.length;
+				tramo.origen = {};
 				tramo.origen = tramoAnterior.destino;
+				tramo.destino = {};
 				tramo.destino = tramoAnterior.origen;
 				tramo.precioTramo = 0;
 				tramo.codigoAerolinea = tramoAnterior.codigoAerolinea;
@@ -292,7 +569,18 @@ var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', functi
 	$scope.mostrarError = false;
 	$scope.aceptarRuta = function (){
 		if (validarRuta()){
-			ruta.tramos = $scope.listaTramos;
+			ruta.tramos = [];
+			for(var i=0; i<$scope.listaTramos.length; i++){
+				var tramo = $scope.listaTramos[i];
+				var tramoBusqueda = encontrarDescripcionDestino(tramo.origen.id);
+				tramo.origen.descripcion = tramoBusqueda.descripcion;
+				tramo.origen.codigoIATA = tramoBusqueda.codigoIATA;
+				tramoBusqueda = encontrarDescripcionDestino(tramo.destino.id);
+				tramo.destino.descripcion = tramoBusqueda.descripcion;
+				tramo.destino.codigoIATA = tramoBusqueda.codigoIATA;
+				ruta.tramos.push(tramo);
+			}
+			//ruta.tramos = $scope.listaTramos;
 			servicioCompartido.setRuta(ruta);
 			$scope.modalclose();
 		}
@@ -332,7 +620,13 @@ var formmodalrutactrl =  serviciosformapp.controller('formmodalrutactrl', functi
 		$scope.mostrarError = false;
 		return true;
 	};
-	
+	var encontrarDescripcionDestino = function(id){
+		for(var i=0; i<$scope.listaDestinos.length; i++){
+			if ($scope.listaDestinos[i].codigoEntero == id){
+				return $scope.listaDestinos[i];
+			}
+		}
+	}
 });
 
 
@@ -585,24 +879,15 @@ formctrl.$inject = ['$scope', 'servicioCompartido'];
 formmodalrutactrl.$inject = ['$scope', 'servicioCompartido'];
 formmodalpasajeros.$inject = ['$scope', 'servicioCompartido'];
 /*
-.directive('keyboardPoster', function($parse, $timeout){
-var DELAY_TIME_BEFORE_POSTING = 0;
-  return function(scope, elem, attrs) {
-    
-    var element = angular.element(elem)[0];
-    var currentTimeout = null;
-   
-    element.oninput = function() {
-      var model = $parse(attrs.postFunction);
-      var poster = model(scope);
-      
-      if(currentTimeout) {
-        $timeout.cancel(currentTimeout)
-      }
-      currentTimeout = $timeout(function(){
-        poster(angular.element(element).val());
-      }, DELAY_TIME_BEFORE_POSTING)
-    }
-  }
-})
-*/
+ * .directive('keyboardPoster', function($parse, $timeout){ var
+ * DELAY_TIME_BEFORE_POSTING = 0; return function(scope, elem, attrs) {
+ * 
+ * var element = angular.element(elem)[0]; var currentTimeout = null;
+ * 
+ * element.oninput = function() { var model = $parse(attrs.postFunction); var
+ * poster = model(scope);
+ * 
+ * if(currentTimeout) { $timeout.cancel(currentTimeout) } currentTimeout =
+ * $timeout(function(){ poster(angular.element(element).val()); },
+ * DELAY_TIME_BEFORE_POSTING) } } })
+ */

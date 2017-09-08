@@ -73,8 +73,7 @@ public class ServletUsuario extends BaseServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("do get");
-		
+		response.sendRedirect("paginas/inicio.jsp");
 	}
 
 	@Override

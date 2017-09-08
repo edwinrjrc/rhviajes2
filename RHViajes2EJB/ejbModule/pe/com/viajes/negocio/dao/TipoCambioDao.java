@@ -3,6 +3,7 @@
  */
 package pe.com.viajes.negocio.dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -26,4 +27,6 @@ public interface TipoCambioDao {
 
 	TipoCambio consultarTipoCambio(Integer idMonedaOrigen,
 			Integer idMonedaDestino) throws SQLException;
+
+	BigDecimal consultarTipoCambio(Integer idMonedaOrigen, Integer idMonedaDestino, Date fecha) throws SQLException;
 }
