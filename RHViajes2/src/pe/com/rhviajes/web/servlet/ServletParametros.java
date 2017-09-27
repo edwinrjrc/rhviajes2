@@ -61,9 +61,9 @@ public class ServletParametros extends BaseServlet {
 		Map<String,Object> retorno = new HashMap<String, Object>();
 		try {
 			if ("consultarIGV".equals(accion)){
-				retorno.put("objeto", parametroRemote.consultarParametro(UtilWeb.obtenerEnteroPropertieMaestro("codigoParametroIGV","aplicacionDatos"), obtenerIdEmpresa(request)));
+				retorno.put("objeto", parametroRemote.consultarParametro(UtilWeb.obtenerEnteroPropertieMaestro("codigoParametroIGV","aplicacionDatos"), obtenerIdEmpresa(request)).getValor());
 				retorno.put("mensaje", "Consulta satisfactoria");
-				retorno.put("exito", false);
+				retorno.put("exito", true);
 			}
 		} catch (ConvertirStringAIntegerException e) {
 			log.error(e.getMessage(), e);

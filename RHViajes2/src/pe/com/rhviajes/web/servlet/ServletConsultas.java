@@ -63,13 +63,15 @@ public class ServletConsultas extends BaseServlet{
 		try {
 			if("consultaTipoCambio".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer idMonedaOrigen = UtilWeb.convertirStringAInteger(mapeo.get("monedaOrigen").toString());
-				Integer idMonedaDestino = UtilWeb.convertirStringAInteger(mapeo.get("monedaDestino").toString());
-				Date fecha = UtilWeb.convertirStringADate(mapeo.get("fecha").toString());
-				Integer idEmpresa = obtenerIdEmpresa(request);
-				retorno.put("objeto", consultaNegocioSessionRemote.consultarTipoCambio(idMonedaOrigen, idMonedaDestino,fecha,idEmpresa));
-				retorno.put("mensaje", "Consulta exitosa");
-				retorno.put("exito", true);
+				if (request.getParameter("formulario") != null && mapeo.get("monedaOrigen") != null && mapeo.get("monedaDestino") != null){
+					Integer idMonedaOrigen = UtilWeb.convertirStringAInteger(mapeo.get("monedaOrigen").toString());
+					Integer idMonedaDestino = UtilWeb.convertirStringAInteger(mapeo.get("monedaDestino").toString());
+					Date fecha = UtilWeb.convertirStringADate(mapeo.get("fecha").toString());
+					Integer idEmpresa = obtenerIdEmpresa(request);
+					retorno.put("objeto", consultaNegocioSessionRemote.consultarTipoCambio(idMonedaOrigen, idMonedaDestino,fecha,idEmpresa));
+					retorno.put("mensaje", "Consulta exitosa");
+					retorno.put("exito", true);
+				}
 			}
 			else if("consultaTipoServicio".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
@@ -81,7 +83,7 @@ public class ServletConsultas extends BaseServlet{
 			}
 			else if("consultarProveedor".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer idProveedor = UtilWeb.convertirStringAInteger(mapeo.get("idproveedor").toString());
+				Integer idProveedor = UtilWeb.convertirStringAInteger(mapeo.get("idProveedor").toString());
 				Integer idEmpresa = obtenerIdEmpresa(request);
 				retorno.put("objeto", consultaNegocioSessionRemote.consultarProveedor(idProveedor , idEmpresa));
 				retorno.put("mensaje", "Consulta exitosa");

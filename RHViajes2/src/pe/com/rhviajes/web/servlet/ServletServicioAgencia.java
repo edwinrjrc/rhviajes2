@@ -112,13 +112,15 @@ public class ServletServicioAgencia extends BaseServlet {
 			}
 			else if("consultarPasajero".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Pasajero pasajero = new Pasajero();
-				pasajero.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(Double.valueOf(mapeo.get("tipoDocumento").toString()).intValue());
-				pasajero.getDocumentoIdentidad().setNumeroDocumento(mapeo.get("numeroDocumento").toString());
-				pasajero.setEmpresa(this.obtenerEmpresa(request));
-				retorno.put("objeto", consultaNegocioSessionRemote.consultarPasajero(pasajero));
-				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
-				retorno.put("exito", true);
+				if (mapeo.get("tipoDocumento") != null && mapeo.get("numeroDocumento") != null){
+					Pasajero pasajero = new Pasajero();
+					pasajero.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(Double.valueOf(mapeo.get("tipoDocumento").toString()).intValue());
+					pasajero.getDocumentoIdentidad().setNumeroDocumento(mapeo.get("numeroDocumento").toString());
+					pasajero.setEmpresa(this.obtenerEmpresa(request));
+					retorno.put("objeto", consultaNegocioSessionRemote.consultarPasajero(pasajero));
+					retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+					retorno.put("exito", true);
+				}
 			}
 			else if ("consultarComision".equals(accion)){
 				DetalleServicioAgencia detalleServicio = new DetalleServicioAgencia();

@@ -279,15 +279,15 @@ div.tab button.active {
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraRuta"><a href="#"
 								onclick="modalShow()">Ruta</a></span></td>
-						<td colspan="3" style="width: 85%"><span
-							ng-show="configuracionServicio.muestraRuta"></span></td>
+						<td colspan="3" style="width: 85%"><span class="dataFormulario"
+							ng-show="configuracionServicio.muestraRuta">{{detalleServicio.ruta.descripcion}}</span></td>
 					</tr>
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraPasajeros"><a
 								href="#" onclick="modalShowPasajeros()">Pasajeros</a></span></td>
-						<td colspan="3" style="width: 85%"><span
-							ng-show="configuracionServicio.muestraPasajeros"></span></td>
+						<td colspan="3" style="width: 85%"><span class="dataFormulario"
+							ng-show="configuracionServicio.muestraPasajeros">{{detalleServicio.descpasajeros}}</span></td>
 					</tr>
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
@@ -317,11 +317,14 @@ div.tab button.active {
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-model="detalleServicio.cantidad"
-							ng-show="configuracionServicio.muestraCantidad">Cantidad</span></td>
+							ng-show="configuracionServicio.muestraCantidad">Cantidad</span>
+							<span class="campoFormulario" ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre">Servicios Padre</span></td>
 						<td style="width: 35%"><input
 							style="width: 50px; text-align: right;" class="dataFormulario"
 							type="number" ng-model="detalleServicio.cantidad"
-							ng-show="configuracionServicio.muestraCantidad"></td>
+							ng-show="configuracionServicio.muestraCantidad">
+							<select class="dataFormulario" ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre" ng-model="detalleServicio.codigoServicioPadre">
+							<option ng-repeat="item in listaServiciosPadre" ng-value="item.codigo">{{item.descripcion}}</option></select></td>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraPrecioBase">Precio
 								Base</span></td>
@@ -332,7 +335,7 @@ div.tab button.active {
 							ng-show="configuracionServicio.muestraPrecioBase"
 							class="dataFormulario"><option
 									ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select>
-							<input type="checkbox" ng-model="detalleServicio.conIgv" ng-show="configuracionServicio.muestraPrecioBase"><span class="campoFormulario" ng-show="configuracionServicio.muestraPrecioBase">Con IGV</span></td>
+							<input type="checkbox" ng-model="detalleServicio.conIgv" ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv"><span class="campoFormulario" ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con IGV</span></td>
 					</tr>
 					<tr>
 						<td><span class="campoFormulario" ng-show="muestraAplicaIgv">Aplica IGV</span></td>
