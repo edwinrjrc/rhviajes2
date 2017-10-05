@@ -89,6 +89,7 @@ public class ConfiguracionServicioDaoImpl implements ConfiguracionServicioDao {
 						"muestracodigoreserva"));
 				resultado.setMuestraNumeroBoleto(UtilJdbc.obtenerBoolean(rs,
 						"muestranumeroboleto"));
+				resultado.setMuestraPasajeros(UtilJdbc.obtenerBoolean(rs, "muestrapasajeros"));
 			}
 		} catch (SQLException e) {
 			throw new SQLException(e);

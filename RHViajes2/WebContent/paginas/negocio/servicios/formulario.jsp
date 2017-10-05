@@ -70,6 +70,18 @@ div.tab button.active {
 	font-size: 8pt;
 	text-align: center;
 }
+
+.dataTablaNumero {
+	font-family: sans-serif;
+	font-size: 8pt;
+	text-align: right;
+}
+
+.dataTablaCadena {
+	font-family: sans-serif;
+	font-size: 8pt;
+	text-align: left;
+}
 /* The Modal (background) */
 .modal {
 	display: none; /* Hidden by default */
@@ -95,6 +107,16 @@ div.tab button.active {
 	height: 400px;
 	overflow-y: auto;
 }
+.modal-content-cliente {
+	background-color: #fefefe;
+	margin: auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 50%;
+	height: 400px;
+	overflow-y: auto;
+}
+
 
 /* The Close Button */
 .close {
@@ -114,41 +136,47 @@ div.tab button.active {
 	-moz-box-shadow: 0px 0px 0px 2px #9fb4f2;
 	-webkit-box-shadow: 0px 0px 0px 2px #9fb4f2;
 	box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #7892c2), color-stop(1, #476e9e));
-	background:-moz-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background:-webkit-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background:-o-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background:-ms-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#7892c2', endColorstr='#476e9e',GradientType=0);
-	background-color:#7892c2;
-	-moz-border-radius:7px;
-	-webkit-border-radius:7px;
-	border-radius:7px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Trebuchet MS;
-	font-size:10px;
-	font-weight:bold;
-	padding:4px 34px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #7892c2
+		), color-stop(1, #476e9e));
+	background: -moz-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background: -webkit-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background: -o-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background: -ms-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background: linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7892c2',
+		endColorstr='#476e9e', GradientType=0);
+	background-color: #7892c2;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	border-radius: 7px;
+	border: 1px solid #4e6096;
+	display: inline-block;
+	cursor: pointer;
+	color: #ffffff;
+	font-family: Trebuchet MS;
+	font-size: 10px;
+	font-weight: bold;
+	padding: 4px 34px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #283966;
 }
+
 .botonSistema:hover {
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #476e9e), color-stop(1, #7892c2));
-	background:-moz-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background:-webkit-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background:-o-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background:-ms-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background:linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#476e9e', endColorstr='#7892c2',GradientType=0);
-	background-color:#476e9e;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #476e9e
+		), color-stop(1, #7892c2));
+	background: -moz-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+	background: -webkit-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+	background: -o-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+	background: -ms-linear-gradient(top, #476e9e 5%, #7892c2 100%);
+	background: linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#476e9e',
+		endColorstr='#7892c2', GradientType=0);
+	background-color: #476e9e;
 }
+
 .botonSistema:active {
-	position:relative;
-	top:1px;
+	position: relative;
+	top: 1px;
 }
 
 .error {
@@ -222,12 +250,15 @@ div.tab button.active {
 					border="0">
 					<tr>
 						<td style="width: 20%"><span class="campoFormulario">Cliente</span></td>
-						<td style="width: 80%"><input type="text" style="width: 90%;"></td>
+						<td style="width: 80%"><input type="text" style="width: 90%;"><a
+							href="#" onclick="mostrarModalCliente()"><img
+								src="../../../resources/images/iconoLupa.gif" /></a></td>
 					</tr>
 					<tr>
 						<td style="width: 20%"><span class="campoFormulario">Fecha
 								Servicio</span></td>
-						<td style="width: 80%"><input type="date" ng-model="servicioVenta.fechaServicio"></td>
+						<td style="width: 80%"><input type="date"
+							ng-model="servicioVenta.fechaServicio"></td>
 					</tr>
 					<tr
 						style="margin: 0px; border-width: 0px; padding: 0px; border-spacing: 0px;">
@@ -239,11 +270,16 @@ div.tab button.active {
 									<td style="width: 20%"><span class="campoFormulario">Agente
 											Viajes</span></td>
 									<td style="width: 30%"><select class="dataFormulario"><option>-Seleccione
-												el agente-</option></select></td>
+												el agente-</option>
+											<option ng-repeat="item in listaVendedores"
+												ng-value="item.codigoEntero">{{item.nombres}}
+												{{item.apellidoPaterno}}</option></select></td>
 									<td style="width: 20%"><span class="campoFormulario">Moneda
 											Facturación</span></td>
-									<td style="width: 30%"><select class="dataFormulario" ng-model="servicioVenta.monedaFacturacion"><option>-Seleccione-</option>
-									<option ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+									<td style="width: 30%"><select class="dataFormulario"
+										ng-model="servicioVenta.monedaFacturacion"><option>-Seleccione-</option>
+											<option ng-repeat="item in listaMonedas"
+												ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
 								</tr>
 							</table></td>
 					</tr>
@@ -269,7 +305,8 @@ div.tab button.active {
 								Proveedor</span></td>
 						<td style="width: 35%"><select class="dataFormulario"
 							ng-show="configuracionServicio.muestraProveedor"
-							ng-model="detalleServicio.idProveedor" ng-change="seleccionarProveedor()">
+							ng-model="detalleServicio.idProveedor"
+							ng-change="seleccionarProveedor()">
 								<option>-Seleccione-</option>
 								<option ng-repeat="item in listaProveedores"
 									ng-value="item.codigoEntero">{{item.nombreProveedor}}</option>
@@ -279,14 +316,16 @@ div.tab button.active {
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraRuta"><a href="#"
 								onclick="modalShow()">Ruta</a></span></td>
-						<td colspan="3" style="width: 85%"><span class="dataFormulario"
+						<td colspan="3" style="width: 85%"><span
+							class="dataFormulario"
 							ng-show="configuracionServicio.muestraRuta">{{detalleServicio.ruta.descripcion}}</span></td>
 					</tr>
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraPasajeros"><a
 								href="#" onclick="modalShowPasajeros()">Pasajeros</a></span></td>
-						<td colspan="3" style="width: 85%"><span class="dataFormulario"
+						<td colspan="3" style="width: 85%"><span
+							class="dataFormulario"
 							ng-show="configuracionServicio.muestraPasajeros">{{detalleServicio.descpasajeros}}</span></td>
 					</tr>
 					<tr>
@@ -317,32 +356,47 @@ div.tab button.active {
 					<tr>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-model="detalleServicio.cantidad"
-							ng-show="configuracionServicio.muestraCantidad">Cantidad</span>
-							<span class="campoFormulario" ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre">Servicios Padre</span></td>
+							ng-show="configuracionServicio.muestraCantidad">Cantidad</span> <span
+							class="campoFormulario"
+							ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre">Servicios
+								Padre</span></td>
 						<td style="width: 35%"><input
 							style="width: 50px; text-align: right;" class="dataFormulario"
 							type="number" ng-model="detalleServicio.cantidad"
-							ng-show="configuracionServicio.muestraCantidad">
-							<select class="dataFormulario" ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre" ng-model="detalleServicio.codigoServicioPadre">
-							<option ng-repeat="item in listaServiciosPadre" ng-value="item.codigo">{{item.descripcion}}</option></select></td>
+							ng-show="configuracionServicio.muestraCantidad"> <select
+							class="dataFormulario"
+							ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre"
+							ng-model="detalleServicio.codigoServicioPadre">
+								<option ng-repeat="item in listaServiciosPadre"
+									ng-value="item.codigo">{{item.descripcion}}</option>
+						</select></td>
 						<td style="width: 15%"><span class="campoFormulario"
 							ng-show="configuracionServicio.muestraPrecioBase">Precio
 								Base</span></td>
 						<td style="width: 35%"><input
 							ng-model="detalleServicio.precioBaseInicial"
 							style="width: 100px; text-align: right;" class="dataFormulario"
-							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select ng-model="detalleServicio.idmoneda"
+							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select
+							ng-model="detalleServicio.idmoneda"
 							ng-show="configuracionServicio.muestraPrecioBase"
 							class="dataFormulario"><option
 									ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select>
-							<input type="checkbox" ng-model="detalleServicio.conIgv" ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv"><span class="campoFormulario" ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con IGV</span></td>
+							<input type="checkbox" ng-model="detalleServicio.conIgv"
+							ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv"><span
+							class="campoFormulario"
+							ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con
+								IGV</span></td>
 					</tr>
 					<tr>
-						<td><span class="campoFormulario" ng-show="muestraAplicaIgv">Aplica IGV</span></td>
+						<td><span class="campoFormulario" ng-show="muestraAplicaIgv">Aplica
+								IGV</span></td>
 						<td><input type="checkbox" ng-show="muestraAplicaIgv"
 							ng-model="detalleServicio.aplicaIgv"></td>
-						<td><span class="campoFormulario" ng-show="configuracionServicio.muestraTarifaNegociada">Tarifa Negociada</span></td>
-						<td><input type="checkbox" ng-show="configuracionServicio.muestraTarifaNegociada"></td>
+						<td><span class="campoFormulario"
+							ng-show="configuracionServicio.muestraTarifaNegociada">Tarifa
+								Negociada</span></td>
+						<td><input type="checkbox"
+							ng-show="configuracionServicio.muestraTarifaNegociada"></td>
 					</tr>
 					<tr ng-show="muestraComision">
 						<td colspan="4"><span class="campoFormulario">Datos
@@ -351,20 +405,25 @@ div.tab button.active {
 					</tr>
 					<tr ng-show="muestraComision">
 						<td><span class="campoFormulario">Tipo Valor Comisión</span></td>
-						<td><select class="dataFormulario" ng-model="detalleServicio.tipoComision"><option>-Seleccione-</option>
+						<td><select class="dataFormulario"
+							ng-model="detalleServicio.tipoComision"><option>-Seleccione-</option>
 								<option value="1">Porcentaje (%)</option>
 								<option value="2">Monto Fijo</option></select></td>
 						<td><span class="campoFormulario">Valor Comisión</span></td>
-						<td><input class="dataFormulario" type="number" ng-model="detalleServicio.valorComision" style="width: 50px; text-align: right;"></td>
+						<td><input class="dataFormulario" type="number"
+							ng-model="detalleServicio.valorComision"
+							style="width: 50px; text-align: right;"></td>
 					</tr>
 					<tr ng-show="muestraComision">
 						<td><span class="campoFormulario">Aplicar IGV</span></td>
-						<td><input type="checkbox" ng-model="detalleServicio.aplicaIgvComision"></td>
+						<td><input type="checkbox"
+							ng-model="detalleServicio.aplicaIgvComision"></td>
 						<td><span class="campoFormulario"></span></td>
 						<td></td>
 					</tr>
 					<tr>
-						<td colspan="4" align="center"><a href="#" class="botonSistema" ng-click="agregarServicio()">Agregar</a></td>
+						<td colspan="4" align="center"><a href="#"
+							class="botonSistema" ng-click="agregarServicio()">Agregar</a></td>
 					</tr>
 					<tr ng-show="listaDetalleServicio.length > 0 ">
 						<td colspan="4"><br> <br> <span
@@ -385,13 +444,21 @@ div.tab button.active {
 								<tbody>
 									<tr ng-repeat="item in listaDetalleServicio">
 										<td class="dataTabla">{{item.cantidad}}</td>
-										<td class="dataTabla">{{item.fechaServicio | date : 'dd/MM/yyyy'}}</td>
-										<td class="dataTabla">{{item.descripcionServicio}}</td>
+										<td class="dataTabla">{{item.fechaServicio | date :
+											'dd/MM/yyyy'}}</td>
+										<td class="dataTablaCadena">{{item.descripcionServicio}}</td>
 										<td class="dataTabla">{{item.servicioProveedor.proveedor.nombre}}</td>
-										<td class="dataTabla">{{item.precioUnitario | number : 2}}</td>
-										<td class="dataTabla">{{item.totalServicio | number : 2}}</td>
-										<td class="dataTabla"><a href="#" ng-click="eliminarServicio(item.id)"><img src="../../../resources/images/tacho.gif" alt="Eliminar Servicio"/></a>
-						<a href="#" ng-click="consultaServicio(item.id)"><img src="../../../resources/images/editar.png" alt="Editar Servicio"/></a></td>
+										<td class="dataTablaNumero">{{item.precioUnitario |
+											number : 2}}</td>
+										<td class="dataTablaNumero">{{item.totalServicio | number
+											: 2}}</td>
+										<td class="dataTabla"><a href="#"
+											ng-click="eliminarServicio(item.id)"><img
+												src="../../../resources/images/tacho.gif"
+												alt="Eliminar Servicio" /></a> <a href="#"
+											ng-click="consultaServicio(item.id)"><img
+												src="../../../resources/images/editar.png"
+												alt="Editar Servicio" /></a></td>
 									</tr>
 								</tbody>
 							</table></td>
@@ -402,22 +469,24 @@ div.tab button.active {
 					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
 					<tr>
 						<td><span class="campoFormulario">Total Comisión</span></td>
-						<td><span class="dataFormulario">{{servicioVenta.totalComision | number:2}}</span></td>
+						<td><span class="dataFormulario">{{servicioVenta.totalComision
+								| number:2}}</span></td>
 					</tr>
 					<tr>
 						<td><span class="campoFormulario">Total Fee</span></td>
-						<td><span class="dataFormulario">{{servicioVenta.totalFee | number:2}}</span></td>
+						<td><span class="dataFormulario">{{servicioVenta.totalFee
+								| number:2}}</span></td>
 					</tr>
 					<tr>
 						<td><span class="campoFormulario">Total Servicios</span></td>
-						<td><span class="dataFormulario">{{servicioVenta.totalServicios | number:2}}</span></td>
+						<td><span class="dataFormulario">{{servicioVenta.totalServicios
+								| number:2}}</span></td>
 					</tr>
 				</table>
 			</div>
 		</div>
 		<div align="center">
-			<br>
-			<a href="#" class="botonSistema">Grabar</a>
+			<br> <a href="#" class="botonSistema">Grabar</a>
 		</div>
 	</div>
 
@@ -434,9 +503,10 @@ div.tab button.active {
 				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
 				<thead>
 					<tr>
-						<td colspan="7"><a href="#" class="botonSistema" ng-click="agregarTramo()">Agregar</a>
-						<a href="#" class="botonSistema" ng-click="agregarTramoRegreso()">Agregar Tramo
-								Regreso</a></td>
+						<td colspan="7"><a href="#" class="botonSistema"
+							ng-click="agregarTramo()">Agregar</a> <a href="#"
+							class="botonSistema" ng-click="agregarTramoRegreso()">Agregar
+								Tramo Regreso</a></td>
 					</tr>
 					<tr>
 						<td class="cabeceraTabla">Origen</td>
@@ -458,7 +528,8 @@ div.tab button.active {
 						</select></td>
 						<td><input type="datetime-local" class="dataFormulario"
 							ng-model="tramo.fechaSalida"></td>
-						<td><select ng-model='tramo.destino.id' class="dataFormulario">
+						<td><select ng-model='tramo.destino.id'
+							class="dataFormulario">
 								<option ng-repeat="item in listaDestinos"
 									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})</option>
 						</select></td>
@@ -475,9 +546,10 @@ div.tab button.active {
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="7" align="center"><a href="#" class="botonSistema" ng-click="aceptarRuta()">Aceptar</a>
-						<a href="#" class="botonSistema" ng-click="modalclose()">Cerrar</a>
-							</td>
+						<td colspan="7" align="center"><a href="#"
+							class="botonSistema" ng-click="aceptarRuta()">Aceptar</a> <a
+							href="#" class="botonSistema" ng-click="modalclose()">Cerrar</a>
+						</td>
 					</tr>
 				</tfoot>
 			</table>
@@ -489,7 +561,8 @@ div.tab button.active {
 	<div id="modalPasajeros" class="modal">
 
 		<!-- Modal content -->
-		<div class="modal-content" style="height: 400px;" ng-controller="formmodalpasajeros">
+		<div class="modal-content" style="height: 400px;"
+			ng-controller="formmodalpasajeros">
 			<div class="error" ng-show="mostrarError">
 				<span>{{error}}</span>
 			</div>
@@ -499,66 +572,90 @@ div.tab button.active {
 				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
 				<tr>
 					<td><span class="campoFormulario">Tipo Documento</span></td>
-					<td><select class="dataFormulario" ng-model="pasajero.tipoDocumento"><option>-Seleccione-</option>
-					<option	ng-repeat="item in listaTipoDocumento" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+					<td><select class="dataFormulario"
+						ng-model="pasajero.tipoDocumento"><option>-Seleccione-</option>
+							<option ng-repeat="item in listaTipoDocumento"
+								ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
 					<td><span class="campoFormulario">Número Documento</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.numeroDocumento"><a href="#" class="botonSistema" ng-click="consultarPaxsSistema()">Buscar</a></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.numeroDocumento"><a href="#"
+						class="botonSistema" ng-click="consultarPaxsSistema()">Buscar</a></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Nombres</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.nombres"></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.nombres"></td>
 					<td><span class="campoFormulario">Nacionalidad</span></td>
-					<td><select class="dataFormulario" ng-model="pasajero.nacionalidad"><option>-Seleccione-</option>
-					<option ng-repeat="item in listaNacionalidad" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+					<td><select class="dataFormulario"
+						ng-model="pasajero.nacionalidad"><option>-Seleccione-</option>
+							<option ng-repeat="item in listaNacionalidad"
+								ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Apellido Paterno</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.apePaterno" ></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.apePaterno"></td>
 					<td><span class="campoFormulario">Apellido Materno</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.apeMaterno"></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.apeMaterno"></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Teléfono 1</span></td>
-					<td><input type="tel" class="dataFormulario" ng-model="pasajero.telefono1"></td>
+					<td><input type="tel" class="dataFormulario"
+						ng-model="pasajero.telefono1"></td>
 					<td><span class="campoFormulario">Teléfono 2</span></td>
-					<td><input type="tel" class="dataFormulario" ng-model="pasajero.telefono2"></td>
+					<td><input type="tel" class="dataFormulario"
+						ng-model="pasajero.telefono2"></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Correo Electrónico</span></td>
-					<td><input type="email" class="dataFormulario" ng-model="pasajero.correoElectronico"></td>
+					<td><input type="email" class="dataFormulario"
+						ng-model="pasajero.correoElectronico"></td>
 					<td><span class="campoFormulario">Relación</span></td>
-					<td><select class="dataFormulario" ng-model="pasajero.codigoRelacion"><option>-Seleccione-</option>
-					<option ng-repeat="item in listaRelaciones" ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
+					<td><select class="dataFormulario"
+						ng-model="pasajero.codigoRelacion"><option>-Seleccione-</option>
+							<option ng-repeat="item in listaRelaciones"
+								ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Número pasajero
 							frecuente</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.numPasajeroFrecuente"></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.numPasajeroFrecuente"></td>
 					<td><span class="campoFormulario">Aerolinea</span></td>
-					<td><select class="dataFormulario" ng-model="pasajero.aerolinea"><option>-Seleccione-</option>
-					<option ng-repeat="item in listaAerolineas" ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
+					<td><select class="dataFormulario"
+						ng-model="pasajero.aerolinea"><option>-Seleccione-</option>
+							<option ng-repeat="item in listaAerolineas"
+								ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Fecha Vcto Pasaporte</span></td>
-					<td><input type="date" class="dataFormulario" ng-model="pasajero.fechaVctoPasaporte"></td>
+					<td><input type="date" class="dataFormulario"
+						ng-model="pasajero.fechaVctoPasaporte"></td>
 					<td><span class="campoFormulario">Fecha Nacimiento</span></td>
-					<td><input type="date" class="dataFormulario" ng-model="pasajero.fechaNacimiento"></td>
+					<td><input type="date" class="dataFormulario"
+						ng-model="pasajero.fechaNacimiento"></td>
 				</tr>
 				<tr>
 					<td><span class="campoFormulario">Código Reserva</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.codigoReserva"></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.codigoReserva"></td>
 					<td><span class="campoFormulario">Número Boleto</span></td>
-					<td><input type="text" class="dataFormulario" ng-model="pasajero.numBoleto"></td>
+					<td><input type="text" class="dataFormulario"
+						ng-model="pasajero.numBoleto"></td>
 				</tr>
 			</table>
 			<table
 				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
 				<tr>
-					<td align="center"><a href="#" class="botonSistema" ng-click="agregarPasajero()" ng-show="nuevo">Agregar</a>
-					<a href="#" class="botonSistema" ng-click="actualizarPaxs()" ng-show="editar">Actualizar</a></td>
+					<td align="center"><a href="#" class="botonSistema"
+						ng-click="agregarPasajero()" ng-show="nuevo">Agregar</a> <a
+						href="#" class="botonSistema" ng-click="actualizarPaxs()"
+						ng-show="editar">Actualizar</a></td>
 				</tr>
 			</table>
-			<span class="campoFormulario" ng-show="listaPasajeros.length != 0">Pasajeros Agregados</span>
+			<span class="campoFormulario" ng-show="listaPasajeros.length != 0">Pasajeros
+				Agregados</span>
 			<hr ng-show="listaPasajeros.length != 0">
 			<table ng-show="listaPasajeros.length != 0"
 				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
@@ -583,16 +680,70 @@ div.tab button.active {
 						<td class="dataTabla">{{item.telefono1}}</td>
 						<td class="dataTabla">{{item.telefono2}}</td>
 						<td class="dataTabla">{{item.relacion}}</td>
-						<td class="dataTabla"><a href="#" ng-click="eliminarPasajero(item.id)"><img src="../../../resources/images/tacho.gif" alt="Eliminar Pasajero"/></a>
-						<a href="#" ng-click="consultaLocalPaxs(item.id)"><img src="../../../resources/images/editar.png" alt="Editar Pasajero"/></a>
+						<td class="dataTabla"><a href="#"
+							ng-click="eliminarPasajero(item.id)"><img
+								src="../../../resources/images/tacho.gif"
+								alt="Eliminar Pasajero" /></a> <a href="#"
+							ng-click="consultaLocalPaxs(item.id)"><img
+								src="../../../resources/images/editar.png" alt="Editar Pasajero" /></a>
 						</td>
 					</tr>
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="8" align="center"><a href="#" class="botonSistema" ng-click="aceptarPasajeros()">Aceptar</a></td>
+						<td colspan="8" align="center"><a href="#"
+							class="botonSistema" ng-click="aceptarPasajeros()">Aceptar</a></td>
 					</tr>
 				</tfoot>
+			</table>
+		</div>
+	</div>
+	<div id="modalcliente" class="modal">
+		<div class="modal-content-cliente" style="height: 200px;"
+			ng-controller="formmodalbusquedacliente">
+			<div class="error" ng-show="mostrarError">
+				<span>{{error}}</span>
+			</div>
+			<span class="campoFormulario">Buscar Cliente</span>
+			<hr>
+			<table style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
+				<tr>
+					<td><span class="campoFormulario">Tipo Documento</span></td>
+					<td><select class="dataFormulario" ng-model="busquedaCliente.tipoDocumento"><option value="">-Seleccione-</option>
+					<option ng-repeat="item in listaTipoDocumento" ng-value="item.codigoEntero">{{item.nombre}}</option>
+					</select></td>
+					<td><span class="campoFormulario">Número Documento</span></td>
+					<td><input type="text" class="dataFormulario" ng-model="busquedaCliente.numeroDocumento"></td>
+				</tr>
+				<tr>
+					<td><span class="campoFormulario">Nombre</span></td>
+					<td colspan="3">
+						<input type="text" class="dataFormulario" ng-model="busquedaCliente.nombres">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4" align="center">
+						<button type="button" ng-click="cerrar()" class="botonSistema">Cerrar</button>
+						<button type="button" ng-click="buscarCliente()" class="botonSistema">Buscar</button>
+						<button type="button" ng-click="limpiarBusqueda()" class="botonSistema">Limpiar</button>
+					</td>
+				</tr>
+			</table>
+			<table style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
+				<thead>
+					<tr>
+						<th class="cabeceraTabla">Documento Identidad</th>
+						<th class="cabeceraTabla">Nombre Cliente</th>
+						<th class="cabeceraTabla">Seleccionar</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="item in listaClientes">
+						<td class="dataTablaCadena">{{item.documentoIdentidad.tipoDocumento.nombre}} - {{item.documentoIdentidad.numeroDocumento}} </td>
+						<td class="dataTablaCadena">{{item.nombres}} {{item.apellidoPaterno}} {{item.apellidoMaterno}}</td>
+						<td class="dataTabla"><a href="#">Este</a></td>
+					</tr>
+				</tbody>
 			</table>
 		</div>
 	</div>

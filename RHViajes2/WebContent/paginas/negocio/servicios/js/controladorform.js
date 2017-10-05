@@ -45,10 +45,12 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.detalleServicio = {};
 	$scope.servicioVenta.totalComision = 0;
 	$scope.servicioVenta.totalServicios = 0;
+	$scope.servicioVenta.totalFee = 0;
 	$scope.detalleServicio.conIgv = true;
 	$scope.muestraAplicaIgv = false;
 	$scope.listaServiciosPadre = [];
 	$scope.muestraServicioPadre = false;
+	$scope.listaVendedores = [];
 	$scope.listarMaestroServicios = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarMaestroServicios'}}).then(
 				 function successCallback(response) {
@@ -79,6 +81,28 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	modalShowPasajeros = function() {
 		modalPasajeros.style.display = "block";
 	};
+	mostrarModalCliente = function(){
+		var modalcliente = document.getElementById('modalcliente');
+		modalcliente.style.display = "block";
+	}
+	
+	var vendedores = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarVendedores'}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.listaVendedores = response.data.objeto;
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	}
+	vendedores();
 	
 	$scope.configuracionServicio = {};
 	
@@ -92,7 +116,6 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 						 if (response.data.exito){
 							 console.log('Exito en la llamada');
 							 $scope.configuracionServicio = response.data.objeto;
-							 $scope.configuracionServicio.muestraPasajeros = true;
 							 $scope.detalleServicio.tipoServicio = response.data.objeto2;
 							 listarEmpresasServicio();
 							 listarHoteles();
@@ -380,6 +403,10 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		if ($scope.detalleServicio.cantidad == 0 || $scope.detalleServicio.cantidad == undefined) {
 			$scope.detalleServicio.cantidad = 1;
 		}
+		if ($scope.detalleServicio.tipoServicio.esFee){
+			$scope.detalleServicio.cantidad = 1;
+		}
+		
 		$scope.detalleServicio.precioUnitario = tipoCambio * $scope.detalleServicio.precioBaseInicial;
 		$scope.detalleServicio.total = $scope.detalleServicio.cantidad * $scope.detalleServicio.precioUnitario;
 		if ($scope.detalleServicio.aplicaIgv){
@@ -423,7 +450,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 			$scope.servicioVenta.totalComision = $scope.servicioVenta.totalComision + $scope.detalleServicio.totalComision;
 		}
 		$scope.servicioVenta.totalServicios = $scope.servicioVenta.totalServicios + $scope.detalleServicio.totalServicio;
-		if($scope.detalleServicio.tipoServicio.esfee){
+		if($scope.detalleServicio.tipoServicio.esFee){
 			$scope.servicioVenta.totalFee = $scope.servicioVenta.totalFee + $scope.detalleServicio.totalServicio;
 		}
 		$scope.detalleServicio.codigoEntero = $scope.listaDetalleServicio.length;
@@ -914,10 +941,64 @@ var formmodalpasajeros = serviciosformapp.controller('formmodalpasajeros', funct
 		servicioCompartido.setPasajeros($scope.listaPasajeros);
 	}
 });
-
+var formmodalbusquedacliente = serviciosformapp.controller('formmodalbusquedacliente', function($scope,$http,servicioCompartido){
+	$scope.listaClientes = [];
+	$scope.listaTipoDocumento = [];
+	$scope.busquedaCliente = {};
+	var listarTipoDocumento = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.estadoConsulta = response.data.exito;
+							 if ($scope.estadoConsulta){
+								 $scope.mensaje = response.data.mensaje;
+								 $scope.listaTipoDocumento = response.data.objeto;
+							 }
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	};
+	listarTipoDocumento();
+	$scope.buscarCliente = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'buscarCliente',cliente:$scope.busquedaCliente}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.estadoConsulta = response.data.exito;
+							 if ($scope.estadoConsulta){
+								 $scope.listaClientes = response.data.objeto;
+							 }
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	}
+	$scope.buscarCliente();
+	$scope.limpiarBusqueda = function(){
+		$scope.busquedaCliente = {};
+		$scope.buscarCliente();
+	}
+	$scope.cerrar = function(){
+		var modalPasajeros = document.getElementById('modalcliente');
+		modalPasajeros.style.display = "none";
+	}
+})
 formctrl.$inject = ['$scope', 'servicioCompartido'];
 formmodalrutactrl.$inject = ['$scope', 'servicioCompartido'];
 formmodalpasajeros.$inject = ['$scope', 'servicioCompartido'];
+formmodalbusquedacliente.$inject = ['$scope', 'servicioCompartido'];
 /*
  * .directive('keyboardPoster', function($parse, $timeout){ var
  * DELAY_TIME_BEFORE_POSTING = 0; return function(scope, elem, attrs) {

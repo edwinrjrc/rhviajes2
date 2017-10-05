@@ -21,11 +21,13 @@ import com.google.gson.GsonBuilder;
 
 import pe.com.rhviajes.web.util.UtilWeb;
 import pe.com.viajes.bean.base.BaseVO;
+import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.DetalleServicioAgencia;
 import pe.com.viajes.bean.negocio.Pasajero;
 import pe.com.viajes.bean.negocio.ServicioAgencia;
 import pe.com.viajes.bean.negocio.ServicioAgenciaBusqueda;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
+import pe.com.viajes.negocio.ejb.SeguridadRemote;
 import pe.com.viajes.negocio.ejb.SoporteRemote;
 import pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote;
 
@@ -41,6 +43,8 @@ public class ServletServicioAgencia extends BaseServlet {
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
 	@EJB(lookup="java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/SoporteSession!pe.com.viajes.negocio.ejb.SoporteRemote")
 	private SoporteRemote soporteRemote;
+	@EJB(lookup="java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/SeguridadSession!pe.com.viajes.negocio.ejb.SeguridadRemote")
+	private SeguridadRemote seguridadRemote;
 	
 	private UtilNegocioSessionRemote utilNegocioSessionRemote;
     /**
@@ -131,6 +135,36 @@ public class ServletServicioAgencia extends BaseServlet {
 				retorno.put("objeto", consultaNegocioSessionRemote.servicioAplicaIgv(idServicio, this.obtenerIdEmpresa(request)));
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);	
+			}
+			else if ("consultarVendedores".equals(accion)){
+				retorno.put("objeto", seguridadRemote.listarVendedores(this.obtenerIdEmpresa(request)));
+				retorno.put("mensaje", "Vendedores cargados satisfactoriamente");
+				retorno.put("exito", true);
+			}
+			else if("buscarCliente".equals(accion)){
+				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("cliente"));
+				Integer tipo = 0;
+				String numero = "";
+				String nombres = "";
+				if (mapeo != null){
+					if (mapeo.get("tipoDocumento") != null && !"".equals(mapeo.get("tipoDocumento"))){
+						tipo = Double.valueOf(mapeo.get("tipoDocumento").toString()).intValue();
+					}
+					if (mapeo.get("numeroDocumento") != null){
+						numero = mapeo.get("numeroDocumento").toString();
+					}
+					if (mapeo.get("nombres") != null){
+						nombres = mapeo.get("nombres").toString();
+					}
+				}
+				Cliente cliente = new Cliente();
+				cliente.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(tipo);
+				cliente.getDocumentoIdentidad().setNumeroDocumento(numero);
+				cliente.setEmpresa(this.obtenerEmpresa(request));
+				cliente.setNombres(nombres);
+				retorno.put("objeto", consultaNegocioSessionRemote.buscarCliente(cliente));
+				retorno.put("mensaje", "Clientes consultados satisfactoriamente");
+				retorno.put("exito", true);
 			}
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
