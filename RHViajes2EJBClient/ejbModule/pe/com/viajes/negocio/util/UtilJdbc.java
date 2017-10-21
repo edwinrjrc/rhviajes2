@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -106,7 +107,8 @@ public class UtilJdbc {
 	}
 
 	public static Timestamp convertirUtilDateTimeStamp(java.util.Date fecha) {
-		return new Timestamp(fecha.getTime());
+		Timestamp timestamp = new Timestamp(fecha.getTime());
+		return timestamp;
 	}
 
 	public static boolean enteroNoNuloNoCero(Integer numero) {

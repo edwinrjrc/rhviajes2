@@ -451,14 +451,11 @@ public class UtilNegocioSession implements UtilNegocioSessionRemote,
 			}
 
 			detalleServicio.setMontoComision(comision);
-
-			int idDetServicio = comunDao.obtenerSiguienteSecuencia(conn);
-			detalleServicio.setCodigoEntero(idDetServicio);
 			listaServiciosVenta.add(detalleServicio);
 
 			List<DetalleServicioAgencia> listaInvisibles = null;
 			if (detalleServicio.getTipoServicio().isServicioPadre()) {
-				listaInvisibles = agregarServicioVentaInvisible(idDetServicio,
+				listaInvisibles = agregarServicioVentaInvisible(detalleServicio.getCodigoEntero(),
 						detalleServicio, calcularIGV);
 			} else {
 				listaInvisibles = agregarServicioVentaInvisible(detalleServicio

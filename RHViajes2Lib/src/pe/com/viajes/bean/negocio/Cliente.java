@@ -12,9 +12,6 @@ import pe.com.viajes.bean.base.Persona;
  */
 public class Cliente extends Persona {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6169046402465472276L;
 	private String correoElectronico;
 	private List<Contacto> listaContactos;

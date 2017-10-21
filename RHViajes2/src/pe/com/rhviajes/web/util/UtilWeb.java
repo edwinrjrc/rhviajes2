@@ -4,11 +4,15 @@
 package pe.com.rhviajes.web.util;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,5 +72,47 @@ public class UtilWeb {
 	public static int obtenerEnteroPropertieMaestro(String llave,
 			String maestroPropertie) throws ConvertirStringAIntegerException {
 		return convertirStringAInteger(obtenerCadenaPropertieMaestro(llave,maestroPropertie));
+	}
+	
+	public static BigDecimal obtenerBigDecimalMapeo(Object valor){
+		if (valor == null || StringUtils.isBlank(valor.toString())){
+			return BigDecimal.ZERO;
+		}
+		return BigDecimal.valueOf(Double.parseDouble(valor.toString()));
+	}
+	public static Integer obtenerIntMapeo(Object valor){
+		if (valor == null || StringUtils.isBlank(valor.toString())){
+			return 0;
+		}
+		return Double.valueOf(valor.toString()).intValue();
+	}
+	public static Date obtenerFechaMapeo(Object valor){
+		try {
+			if (valor == null || StringUtils.isBlank(valor.toString())){
+				return null;
+			}
+			String fecha = valor.toString();
+			fecha = fecha.substring(0, fecha.length()-1);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+			sdf.setTimeZone(TimeZone.getDefault());
+			Calendar cal = Calendar.getInstance(Locale.getDefault());
+			cal.setTime(sdf.parse(fecha));
+			cal.add(Calendar.HOUR, -5);
+			return cal.getTime();
+		} catch (ParseException e) {
+			return null;
+		}
+	}
+	public static boolean obtenerBooleanMapeo(Object valor){
+		if (valor == null || StringUtils.isBlank(valor.toString())){
+			return false;
+		}
+		return Boolean.valueOf(valor.toString());
+	}
+	public static String obtenerCadenaMapeo(Object valor){
+		if (valor == null || StringUtils.isBlank(valor.toString())){
+			return "";
+		}
+		return valor.toString();
 	}
 }
