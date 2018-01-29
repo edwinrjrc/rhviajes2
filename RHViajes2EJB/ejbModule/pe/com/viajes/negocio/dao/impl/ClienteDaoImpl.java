@@ -15,8 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.negocio.Cliente;
+import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.bean.negocio.DocumentoAdicional;
-import pe.com.viajes.bean.negocio.Pasajero;
 import pe.com.viajes.bean.negocio.Telefono;
 import pe.com.viajes.negocio.dao.ClienteDao;
 import pe.com.viajes.negocio.util.UtilConexion;
@@ -131,42 +131,43 @@ public class ClienteDaoImpl implements ClienteDao {
 	}
 
 	@Override
-	public List<Cliente> buscarPersona(Persona persona) throws SQLException {
+	public List<Cliente> buscarPersona(ClienteBusqueda persona) throws SQLException {
 		List<Cliente> resultado = null;
 		Connection conn = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
-		String sql = "{ ? = call negocio.fn_consultarpersonas(?,?,?,?,?)}";
+		String sql = "{ ? = call negocio.fn_buscarpersonas3(?,?,?,?,?,?,?)}";
 
 		try {
 			conn = UtilConexion.obtenerConexion();
 			cs = conn.prepareCall(sql);
-			int i = 1;
-			cs.registerOutParameter(i++, Types.OTHER);
-			cs.setInt(i++, persona.getEmpresa().getCodigoEntero().intValue());
-			cs.setInt(i++, 1);
+			cs.registerOutParameter(1, Types.OTHER);
+			cs.setInt(2, persona.getEmpresa().getCodigoEntero().intValue());
+			cs.setInt(3, 1);
 			if (persona.getDocumentoIdentidad().getTipoDocumento()
 					.getCodigoEntero() != null
 					&& persona.getDocumentoIdentidad().getTipoDocumento()
 							.getCodigoEntero().intValue() != 0) {
-				cs.setInt(i++, persona.getDocumentoIdentidad()
+				cs.setInt(4, persona.getDocumentoIdentidad()
 						.getTipoDocumento().getCodigoEntero().intValue());
 			} else {
-				cs.setNull(i++, Types.INTEGER);
+				cs.setNull(4, Types.INTEGER);
 			}
 			if (StringUtils.isNotBlank(persona.getDocumentoIdentidad()
 					.getNumeroDocumento())) {
-				cs.setString(i++, persona.getDocumentoIdentidad()
+				cs.setString(5, persona.getDocumentoIdentidad()
 						.getNumeroDocumento());
 			} else {
-				cs.setNull(i++, Types.VARCHAR);
+				cs.setNull(5, Types.VARCHAR);
 			}
 			if (StringUtils.isNotBlank(persona.getNombres())) {
-				cs.setString(i++,
+				cs.setString(6,
 						UtilJdbc.convertirMayuscula(persona.getNombres()));
 			} else {
-				cs.setNull(i++, Types.VARCHAR);
+				cs.setNull(6, Types.VARCHAR);
 			}
+			cs.setInt(7, persona.getNumeroPagina());
+			cs.setInt(8, persona.getTamanioPagina());
 			cs.execute();
 			rs = (ResultSet) cs.getObject(1);
 
@@ -175,7 +176,7 @@ public class ClienteDaoImpl implements ClienteDao {
 			while (rs.next()) {
 				persona2 = new Cliente();
 				persona2.setCodigoEntero(UtilJdbc.obtenerNumero(rs,
-						"idproveedor"));
+						"id"));
 				persona2.getDocumentoIdentidad()
 						.getTipoDocumento()
 						.setCodigoEntero(
@@ -192,50 +193,19 @@ public class ClienteDaoImpl implements ClienteDao {
 						"apellidopaterno"));
 				persona2.setApellidoMaterno(UtilJdbc.obtenerCadena(rs,
 						"apellidomaterno"));
-				persona2.getDireccion().getVia()
-						.setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idvia"));
-				persona2.getDireccion().getVia()
-						.setNombre(UtilJdbc.obtenerCadena(rs, "nombretipovia"));
-				persona2.getDireccion().setNombreVia(
-						UtilJdbc.obtenerCadena(rs, "nombrevia"));
-				persona2.getDireccion().setNumero(
-						UtilJdbc.obtenerCadena(rs, "numero"));
-				persona2.getDireccion().setInterior(
-						UtilJdbc.obtenerCadena(rs, "interior"));
-				persona2.getDireccion().setManzana(
-						UtilJdbc.obtenerCadena(rs, "manzana"));
-				persona2.getDireccion().setLote(
-						UtilJdbc.obtenerCadena(rs, "lote"));
-				Telefono teldireccion = new Telefono();
-				teldireccion.setNumeroTelefono(UtilJdbc.obtenerCadena(rs,
-						"teledireccion"));
-				persona2.getDireccion().getTelefonos().add(teldireccion);
+				persona2.setNombreCompleto(persona2.getNombres()+" "+persona2.getApellidoPaterno()+" "+persona2.getApellidoMaterno());
+				persona2.setTotalRegistros(UtilJdbc.obtenerNumero(rs, "totalregistros"));
 				resultado.add(persona2);
 			}
-
-		} catch (SQLException e) {
-			resultado = null;
-			throw new SQLException(e);
 		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (cs != null) {
-					cs.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				try {
-					if (conn != null) {
-						conn.close();
-					}
-					throw new SQLException(e);
-				} catch (SQLException e1) {
-					throw new SQLException(e);
-				}
+			if (rs != null) {
+				rs.close();
+			}
+			if (cs != null) {
+				cs.close();
+			}
+			if (conn != null) {
+				conn.close();
 			}
 		}
 
@@ -999,5 +969,11 @@ public class ClienteDaoImpl implements ClienteDao {
 		}
 
 		return resultado;
+	}
+
+	@Override
+	public List<Cliente> buscarPersona(Persona persona) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

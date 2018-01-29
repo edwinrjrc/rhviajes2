@@ -11,6 +11,7 @@ import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.cargaexcel.ReporteArchivoBusqueda;
 import pe.com.viajes.bean.negocio.Cliente;
+import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.bean.negocio.Comprobante;
 import pe.com.viajes.bean.negocio.ComprobanteBusqueda;
 import pe.com.viajes.bean.negocio.Consolidador;
@@ -208,4 +209,6 @@ public interface ConsultaNegocioSessionRemote {
 	Proveedor consultarProveedor(Integer idProveedor, Integer idEmpresa) throws ErrorConsultaDataException;
 
 	boolean servicioAplicaIgv(int idServicio, int idEmpresa) throws ErrorConsultaDataException;
+
+	List<Cliente> buscarCliente(ClienteBusqueda cliente) throws ErrorConsultaDataException;
 }

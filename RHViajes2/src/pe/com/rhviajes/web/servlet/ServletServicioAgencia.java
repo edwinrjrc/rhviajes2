@@ -24,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import pe.com.rhviajes.web.util.UtilWeb;
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.negocio.Cliente;
+import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.bean.negocio.DetalleServicioAgencia;
 import pe.com.viajes.bean.negocio.Pasajero;
 import pe.com.viajes.bean.negocio.ServicioAgencia;
@@ -94,6 +95,10 @@ public class ServletServicioAgencia extends BaseServlet {
 			else if (ACCION_BUSCAR.equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
 				ServicioAgenciaBusqueda servicioAgencia = new ServicioAgenciaBusqueda();
+				servicioAgencia.setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("idVenta")));
+				servicioAgencia.getCliente().setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
+				servicioAgencia.getCliente().getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("tipoDocumento")));
+				servicioAgencia.getCliente().getDocumentoIdentidad().setNumeroDocumento(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroDocumento")));
 				SimpleDateFormat sdf = new SimpleDateFormat(UtilWeb.PATTERN_GSON);
 				servicioAgencia.setFechaDesde(sdf.parse(mapeo.get("fechaDesde").toString()));
 				servicioAgencia.setFechaHasta(sdf.parse(mapeo.get("fechaHasta").toString()));
@@ -148,10 +153,12 @@ public class ServletServicioAgencia extends BaseServlet {
 				retorno.put("exito", true);
 			}
 			else if("buscarCliente".equals(accion)){
-				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("cliente"));
+				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
 				Integer tipo = 0;
 				String numero = "";
 				String nombres = "";
+				int numpagina = 0;
+				int tamaniopag = 0;
 				if (mapeo != null){
 					if (mapeo.get("tipoDocumento") != null && !"".equals(mapeo.get("tipoDocumento"))){
 						tipo = Double.valueOf(mapeo.get("tipoDocumento").toString()).intValue();
@@ -162,13 +169,26 @@ public class ServletServicioAgencia extends BaseServlet {
 					if (mapeo.get("nombres") != null){
 						nombres = mapeo.get("nombres").toString();
 					}
+					if (mapeo.get("tamaniopag") != null){
+						tamaniopag = Double.valueOf(mapeo.get("tamaniopag").toString()).intValue();
+					}
+					if (mapeo.get("numpag") != null){
+						numpagina = Double.valueOf(mapeo.get("numpag").toString()).intValue();
+					}
 				}
-				Cliente cliente = new Cliente();
+				ClienteBusqueda cliente = new ClienteBusqueda();
 				cliente.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(tipo);
 				cliente.getDocumentoIdentidad().setNumeroDocumento(numero);
 				cliente.setEmpresa(this.obtenerEmpresa(request));
 				cliente.setNombres(nombres);
-				retorno.put("objeto", consultaNegocioSessionRemote.buscarCliente(cliente));
+				cliente.setTamanioPagina(tamaniopag);
+				cliente.setNumeroPagina(numpagina);
+				List<Cliente> lista = consultaNegocioSessionRemote.buscarCliente(cliente);
+				if (lista != null && !lista.isEmpty()){
+					int total = lista.get(0).getTotalRegistros();
+					retorno.put("objeto", lista);
+					retorno.put("paginas", ((int)total / tamaniopag));
+				}
 				retorno.put("mensaje", "Clientes consultados satisfactoriamente");
 				retorno.put("exito", true);
 			}

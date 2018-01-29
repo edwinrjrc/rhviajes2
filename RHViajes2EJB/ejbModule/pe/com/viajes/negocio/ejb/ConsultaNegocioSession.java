@@ -16,6 +16,7 @@ import pe.com.viajes.bean.base.CorreoElectronico;
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.cargaexcel.ReporteArchivoBusqueda;
 import pe.com.viajes.bean.negocio.Cliente;
+import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.bean.negocio.Comprobante;
 import pe.com.viajes.bean.negocio.ComprobanteBusqueda;
 import pe.com.viajes.bean.negocio.Consolidador;
@@ -214,6 +215,17 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 		}
 
 		return listaClientes;
+	}
+	
+	@Override
+	public List<Cliente> buscarCliente(ClienteBusqueda cliente) throws ErrorConsultaDataException{
+		try {
+			ClienteDao clienteDao = new ClienteDaoImpl();
+			List<Cliente> listaClientes = clienteDao.buscarPersona(cliente);
+			return listaClientes;
+		} catch (SQLException e) {
+			throw new ErrorConsultaDataException(e);
+		}
 	}
 
 	@Override

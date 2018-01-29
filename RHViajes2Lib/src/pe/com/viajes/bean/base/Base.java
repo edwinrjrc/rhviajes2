@@ -21,6 +21,7 @@ public class Base implements Serializable {
 	private BaseVO estado;
 	
 	private BaseVO empresa;
+	private int totalRegistros;
 
 	/**
 	 * 
@@ -92,6 +93,20 @@ public class Base implements Serializable {
 	 */
 	public void setEmpresa(BaseVO empresa) {
 		this.empresa = empresa;
+	}
+
+	/**
+	 * @return the totalRegistros
+	 */
+	public int getTotalRegistros() {
+		return totalRegistros;
+	}
+
+	/**
+	 * @param totalRegistros the totalRegistros to set
+	 */
+	public void setTotalRegistros(int totalRegistros) {
+		this.totalRegistros = totalRegistros;
 	}
 
 }

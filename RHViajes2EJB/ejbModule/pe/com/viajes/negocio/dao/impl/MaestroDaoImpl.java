@@ -174,6 +174,7 @@ public class MaestroDaoImpl implements MaestroDao {
 						UtilJdbc.obtenerCadena(rs, "estado"));
 				maestro.getEstado().setNombre(
 						UtilJdbc.obtenerCadena(rs, "descestado"));
+				maestro.setAbreviatura(UtilJdbc.obtenerCadena(rs, "abreviatura"));
 				resultado.add(maestro);
 			}
 		} catch (SQLException e) {

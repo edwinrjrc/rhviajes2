@@ -1,4 +1,4 @@
-var serviciosapp = angular.module('serviciosapp', ['ngAnimate', 'ngSanitize','ui.bootstrap']);
+var serviciosapp = angular.module('serviciosapp', ['ngAnimate', 'ngSanitize']);
 
 serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.tituloPagina = 'Administrar Registro Servicios';
@@ -16,8 +16,6 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.totalItems = 0;
 	$scope.paginas = 0;
 	$scope.listaTipoDocumento = [];
-	$scope.maxSize = 5;
-	$scope.numPages = 5;
 	
 	$scope.nuevoRegistroVenta = function (){
 		location.href="formulario.jsp";
@@ -25,6 +23,7 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	
 	$scope.listarVentas = function(){
 		$scope.listaFiltrada = [];
+		
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'listar',formulario:$scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
 					 if (response.data.exito == "undefined"){
@@ -39,7 +38,6 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 							 $scope.mensaje = response.data.mensaje;
 							 $scope.mostrarMensajeError = true;
 							 $scope.listaVentas = response.data.objeto;
-							 $scope.totalItems = $scope.listaVentas.length;
 							 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
 							 $scope.paginas = $scope.paginas + 1;
 							 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
@@ -66,8 +64,7 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 							 if ($scope.estadoConsulta){
 								 $scope.mensaje = response.data.mensaje;
 								 $scope.listaVentas = response.data.objeto;
-								 $scope.totalItems = $scope.listaVentas.length;
-								 $scope.paginas = parseInt($scope.totalItems /$scope.itemsXpagina);
+								 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
 								 $scope.paginas = $scope.paginas + 1;
 								 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
 							 }
@@ -99,14 +96,6 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 				     console.log('Error en la llamada');
 			  });
 	};
-	
-	$scope.limpiarBusqueda = function(){
-		$scope.formularioBusqueda = {};
-		$scope.formularioBusqueda.fechaHasta = new Date();
-		$scope.formularioBusqueda.fechaDesde = new Date();
-		$scope.formularioBusqueda.fechaDesde.setDate($scope.formularioBusqueda.fechaDesde.getDate()-7);
-		$scope.listarVentas();
-	}
 	
 	$scope.principio = function(pagina){
 		$scope.listaFiltrada = filtrar($scope.listaFiltrada, 1, $scope.listaVentas);

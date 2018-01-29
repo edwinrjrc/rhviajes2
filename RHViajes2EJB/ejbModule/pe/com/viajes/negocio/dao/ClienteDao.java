@@ -9,6 +9,7 @@ import java.util.List;
 
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.negocio.Cliente;
+import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.bean.negocio.DocumentoAdicional;
 import pe.com.viajes.bean.negocio.Pasajero;
 
@@ -56,4 +57,6 @@ public interface ClienteDao {
 
 	List<DocumentoAdicional> listarAdjuntosPersona(Persona persona)
 			throws SQLException;
+
+	List<Cliente> buscarPersona(ClienteBusqueda persona) throws SQLException;
 }

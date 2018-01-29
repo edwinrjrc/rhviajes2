@@ -1,776 +1,901 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html ng-app="serviciosformapp" lang="es">
+<html lang="es" ng-app="serviciosformapp">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<link
-	href="<%=request.getContextPath()%>/resources/css/jquery-ui.min.css"
-	rel="stylesheet" type="text/css" />
-<style type="text/css">
-.cabeceraTabla {
-	font-family: sans-serif;
-	font-size: 8pt;
-	font-weight: bold;
-	text-align: center;
-	background-color: #E3DFDE;
-	border-color: gray;
-	border-width: 1px;
-}
-
-div.tab {
-	overflow: hidden;
-	border: 1px solid #ccc;
-	background-color: #f1f1f1;
-}
-
-/* Style the buttons inside the tab */
-div.tab button {
-	background-color: inherit;
-	float: left;
-	border: none;
-	outline: none;
-	cursor: pointer;
-	padding: 5px 20px;
-	transition: 0.3s;
-}
-
-/* Change background color of buttons on hover */
-div.tab button:hover {
-	background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-div.tab button.active {
-	background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-	display: none;
-	padding: 6px 12px;
-	border: 1px solid #ccc;
-	border-top: none;
-}
-
-.campoFormulario {
-	font-family: sans-serif;
-	font-size: 8pt;
-	font-weight: bold;
-	text-align: center;
-}
-
-.dataFormulario {
-	font-family: sans-serif;
-	font-size: 8pt;
-	height: 15px;
-}
-
-.dataTabla {
-	font-family: sans-serif;
-	font-size: 8pt;
-	text-align: center;
-}
-
-.dataTablaNumero {
-	font-family: sans-serif;
-	font-size: 8pt;
-	text-align: right;
-}
-
-.dataTablaCadena {
-	font-family: sans-serif;
-	font-size: 8pt;
-	text-align: left;
-}
-/* The Modal (background) */
-.modal {
-	display: none; /* Hidden by default */
-	position: fixed; /* Stay in place */
-	z-index: 1; /* Sit on top */
-	padding-top: 20px; /* Location of the box */
-	left: 0;
-	top: 0;
-	width: 100%; /* Full width */
-	height: 100%; /* Full height */
-	overflow: scroll; /* Enable scroll if needed */
-	background-color: rgb(0, 0, 0); /* Fallback color */
-	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-
-/* Modal Content */
-.modal-content {
-	background-color: #fefefe;
-	margin: auto;
-	padding: 20px;
-	border: 1px solid #888;
-	width: 90%;
-	height: 400px;
-	overflow-y: auto;
-}
-
-.modal-content-cliente {
-	background-color: #fefefe;
-	margin: auto;
-	padding: 20px;
-	border: 1px solid #888;
-	width: 50%;
-	height: 400px;
-	overflow-y: auto;
-}
-
-/* The Close Button */
-.close {
-	color: #aaaaaa;
-	float: right;
-	font-size: 28px;
-	font-weight: bold;
-}
-
-.close:hover, .close:focus {
-	color: #000;
-	text-decoration: none;
-	cursor: pointer;
-}
-
-.botonSistema {
-	-moz-box-shadow: 0px 0px 0px 2px #9fb4f2;
-	-webkit-box-shadow: 0px 0px 0px 2px #9fb4f2;
-	box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #7892c2
-		), color-stop(1, #476e9e));
-	background: -moz-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background: -webkit-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background: -o-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background: -ms-linear-gradient(top, #7892c2 5%, #476e9e 100%);
-	background: linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7892c2',
-		endColorstr='#476e9e', GradientType=0);
-	background-color: #7892c2;
-	-moz-border-radius: 7px;
-	-webkit-border-radius: 7px;
-	border-radius: 7px;
-	border: 1px solid #4e6096;
-	display: inline-block;
-	cursor: pointer;
-	color: #ffffff;
-	font-family: Trebuchet MS;
-	font-size: 10px;
-	font-weight: bold;
-	padding: 4px 34px;
-	text-decoration: none;
-	text-shadow: 0px 1px 0px #283966;
-}
-
-.botonSistema:hover {
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #476e9e
-		), color-stop(1, #7892c2));
-	background: -moz-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background: -webkit-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background: -o-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background: -ms-linear-gradient(top, #476e9e 5%, #7892c2 100%);
-	background: linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#476e9e',
-		endColorstr='#7892c2', GradientType=0);
-	background-color: #476e9e;
-}
-
-.botonSistema:active {
-	position: relative;
-	top: 1px;
-}
-
-.error {
-	font-family: sans-serif;
-	font-size: 9pt;
-	font-weight: bold;
-	text-indent: 10px;
-	color: #8f0404;
-	border-radius: 4px 4px 4px 4px;
-	-moz-border-radius: 4px 4px 4px 4px;
-	-webkit-border-radius: 4px 4px 4px 4px;
-	background-color: #ffadad;
-	border: 1px solid #8f0404;
-	width: 100%;
-	height: 30px;
-}
-
-.subtitulo {
-	font-family: sans-serif;
-}
-</style>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/resources/js/angular.min.js"></script>
-<script type="text/javascript"
-	src="<%=request.getContextPath()%>/paginas/negocio/servicios/js/controladorform.js"></script>
-<script type="text/javascript">
-	function openCity(evt, cityName) {
-		// Declare all variables
-		var i, tabcontent, tablinks;
-
-		// Get all elements with class="tabcontent" and hide them
-		tabcontent = document.getElementsByClassName("tabcontent");
-		for (i = 0; i < tabcontent.length; i++) {
-			tabcontent[i].style.display = "none";
-		}
-
-		// Get all elements with class="tablinks" and remove the class "active"
-		tablinks = document.getElementsByClassName("tablinks");
-		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className
-					.replace(" active", "");
-		}
-
-		// Show the current tab, and add an "active" class to the button that opened the tab
-		document.getElementById(cityName).style.display = "block";
-		evt.currentTarget.className += " active";
-	}
-</script>
+<!-- META SECTION -->
+<title>RHViajes 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+<!-- END META SECTION -->
+<!-- CSS INCLUDE -->
+<link rel="stylesheet" type="text/css" id="theme"
+	href="/RHViajes2/recursos/css/theme-white.css" />
+<!-- EOF CSS INCLUDE -->
 </head>
 <body>
-	<div ng-controller="formctrl">
-		<div>
-			<table>
-				<tr>
-					<td><a
-						href="<%=request.getContextPath()%>/paginas/negocio/servicios/adm.jsp">Registrar
-							Venta</a></td>
-				</tr>
-			</table>
+	<!-- START PAGE CONTAINER -->
+	<div class="page-container">
+		<div class="page-sidebar">
+			<jsp:include page="/recursos/include/menu.jsp"></jsp:include>
 		</div>
-		<div>
-			<h3 class="subtitulo">Registrar Venta</h3>
-			<div class="tab">
-				<button class="tablinks" onclick="openCity(event, 'informacion')">Informaci髇
-					Venta</button>
-				<button class="tablinks" onclick="openCity(event, 'servicios')">Servicios</button>
-			</div>
-			<div id="informacion" class="tabcontent">
-				<table
-					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;"
-					border="0">
-					<tr>
-						<td style="width: 20%"><span class="campoFormulario">Cliente</span></td>
-						<td style="width: 80%"><input type="text" style="width: 90%;"
-							class="dataFormulario" ng-disabled="true"
-							ng-model="servicioVenta.cliente.nombreCompleto"><a
-							href="#" onclick="mostrarModalCliente()"><img
-								src="../../../resources/images/iconoLupa.gif" /></a></td>
-					</tr>
-					<tr>
-						<td style="width: 20%"><span class="campoFormulario">Fecha
-								Servicio</span></td>
-						<td style="width: 80%"><input type="date"
-							ng-model="servicioVenta.fechaServicio"></td>
-					</tr>
-					<tr
-						style="margin: 0px; border-width: 0px; padding: 0px; border-spacing: 0px;">
-						<td colspan="2"
-							style="margin: 0px; border-width: 0px; padding: 0px; border-spacing: 0px;"><table
-								style="margin: 0px; width: 100%; border-width: 0px; padding: 0px; border-spacing: 0px;"
-								border="0">
-								<tr>
-									<td style="width: 20%"><span class="campoFormulario">Agente
-											Viajes</span></td>
-									<td style="width: 30%"><select class="dataFormulario"
-										ng-model="servicioVenta.codigoVendedor"><option
-												value="">-Seleccione el agente-</option>
-											<option ng-repeat="item in listaVendedores"
-												ng-value="item.codigoEntero">{{item.nombres}}
-												{{item.apellidoPaterno}}</option></select></td>
-									<td style="width: 20%"><span class="campoFormulario">Moneda
-											Facturaci髇</span></td>
-									<td style="width: 30%"><select class="dataFormulario"
-										ng-model="servicioVenta.monedaFacturacion"><option
-												value="">-Seleccione-</option>
-											<option ng-repeat="item in listaMonedas"
-												ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
-								</tr>
-							</table></td>
-					</tr>
-				</table>
-			</div>
+		<!-- PAGE CONTENT -->
+		<div class="page-content">
+			<!-- START X-NAVIGATION VERTICAL -->
+			<ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+				<!-- TOGGLE NAVIGATION -->
+				<li class="xn-icon-button"><a href="#"
+					class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
+				</li>
+				<!-- END TOGGLE NAVIGATION -->
+				<!-- SEARCH -->
+				<li class="xn-search">
+					<form role="form">
+						<input type="text" name="search" placeholder="Search..." />
+					</form>
+				</li>
+				<!-- END SEARCH -->
+				<!-- SIGN OUT -->
+				<li class="xn-icon-button pull-right"><a href="#"
+					class="mb-control" data-box="#mb-signout"><span
+						class="fa fa-sign-out"></span></a></li>
+				<!-- END SIGN OUT -->
+				<!-- MESSAGES -->
+				<li class="xn-icon-button pull-right"><a href="#"><span
+						class="fa fa-comments"></span></a>
+					<div class="informer informer-danger">4</div>
+					<div
+						class="panel panel-primary animated zoomIn xn-drop-left xn-panel-dragging">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<span class="fa fa-comments"></span> Messages
+							</h3>
+							<div class="pull-right">
+								<span class="label label-danger">4 new</span>
+							</div>
+						</div>
+						<div class="panel-body list-group list-group-contacts scroll"
+							style="height: 200px;">
+							<a href="#" class="list-group-item">
+								<div class="list-group-status status-online"></div> <img
+								src="/RHViajes2/recursos/images/user2.jpg" class="pull-left"
+								alt="John Doe" /> <span class="contacts-title">John Doe</span>
+								<p>Praesent placerat tellus id augue condimentum</p>
+							</a> <a href="#" class="list-group-item">
+								<div class="list-group-status status-away"></div> <img
+								src="/RHViajes2/recursos/images/user2.jpg" class="pull-left"
+								alt="Dmitry Ivaniuk" /> <span class="contacts-title">Dmitry
+									Ivaniuk</span>
+								<p>Donec risus sapien, sagittis et magna quis</p>
+							</a> <a href="#" class="list-group-item">
+								<div class="list-group-status status-away"></div> <img
+								src="/RHViajes2/recursos/images/user2.jpg" class="pull-left"
+								alt="Nadia Ali" /> <span class="contacts-title">Nadia
+									Ali</span>
+								<p>Mauris vel eros ut nunc rhoncus cursus sed</p>
+							</a> <a href="#" class="list-group-item">
+								<div class="list-group-status status-offline"></div> <img
+								src="/RHViajes2/recursos/images/user2.jpg" class="pull-left"
+								alt="Darth Vader" /> <span class="contacts-title">Darth
+									Vader</span>
+								<p>I want my money back!</p>
+							</a>
+						</div>
+						<div class="panel-footer text-center">
+							<a href="pages-messages.html">Show all messages</a>
+						</div>
+					</div></li>
+				<!-- END MESSAGES -->
+				<!-- TASKS -->
+				<li class="xn-icon-button pull-right"><a href="#"><span
+						class="fa fa-tasks"></span></a>
+					<div class="informer informer-warning">3</div>
+					<div
+						class="panel panel-primary animated zoomIn xn-drop-left xn-panel-dragging">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<span class="fa fa-tasks"></span> Tasks
+							</h3>
+							<div class="pull-right">
+								<span class="label label-warning">3 active</span>
+							</div>
+						</div>
+						<div class="panel-body list-group scroll" style="height: 200px;">
+							<a class="list-group-item" href="#"> <strong>Phasellus
+									augue arcu, elementum</strong>
+								<div class="progress progress-small progress-striped active">
+									<div class="progress-bar progress-bar-danger"
+										role="progressbar" aria-valuenow="50" aria-valuemin="0"
+										aria-valuemax="100" style="width: 50%;">50%</div>
+								</div> <small class="text-muted">John Doe, 25 Sep 2014 / 50%</small>
+							</a> <a class="list-group-item" href="#"> <strong>Aenean
+									ac cursus</strong>
+								<div class="progress progress-small progress-striped active">
+									<div class="progress-bar progress-bar-warning"
+										role="progressbar" aria-valuenow="80" aria-valuemin="0"
+										aria-valuemax="100" style="width: 80%;">80%</div>
+								</div> <small class="text-muted">Dmitry Ivaniuk, 24 Sep 2014 /
+									80%</small>
+							</a> <a class="list-group-item" href="#"> <strong>Lorem
+									ipsum dolor</strong>
+								<div class="progress progress-small progress-striped active">
+									<div class="progress-bar progress-bar-success"
+										role="progressbar" aria-valuenow="95" aria-valuemin="0"
+										aria-valuemax="100" style="width: 95%;">95%</div>
+								</div> <small class="text-muted">John Doe, 23 Sep 2014 / 95%</small>
+							</a> <a class="list-group-item" href="#"> <strong>Cras
+									suscipit ac quam at tincidunt.</strong>
+								<div class="progress progress-small">
+									<div class="progress-bar" role="progressbar"
+										aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+										style="width: 100%;">100%</div>
+								</div> <small class="text-muted">John Doe, 21 Sep 2014 /</small><small
+								class="text-success"> Done</small>
+							</a>
+						</div>
+						<div class="panel-footer text-center">
+							<a href="pages-tasks.html">Show all tasks</a>
+						</div>
+					</div></li>
+				<!-- END TASKS -->
+			</ul>
+			<!-- END X-NAVIGATION VERTICAL -->
 
-			<div id="servicios" class="tabcontent">
-				<span class="campoFormulario">Datos Servicio</span>
-				<hr>
-				<table
-					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px; border-collapse: collapse;">
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario">Tipo
-								Servicio</span></td>
-						<td style="width: 35%"><select class="dataFormulario"
-							ng-model="detalleServicio.idTipoServicio"
-							ng-change="consultarConfiguracionServicio()">
-								<option ng-repeat="item in listaMaestroServicio"
-									ng-value="item.codigoEntero">{{item.nombre}}</option>
-						</select></td>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraProveedor">Empresa
-								Proveedor</span></td>
-						<td style="width: 35%"><select class="dataFormulario"
-							ng-show="configuracionServicio.muestraProveedor"
-							ng-model="detalleServicio.idProveedor"
-							ng-change="seleccionarProveedor()">
-								<option value="">-Seleccione-</option>
-								<option ng-repeat="item in listaProveedores"
-									ng-value="item.codigoEntero">{{item.nombreProveedor}}</option>
-						</select></td>
-					</tr>
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraRuta"><a href="#"
-								onclick="modalShow()">Ruta</a></span></td>
-						<td colspan="3" style="width: 85%"><span
-							class="dataFormulario"
-							ng-show="configuracionServicio.muestraRuta">{{detalleServicio.ruta.descripcion}}</span></td>
-					</tr>
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraPasajeros"><a
-								href="#" onclick="modalShowPasajeros()">Pasajeros</a></span></td>
-						<td colspan="3" style="width: 85%"><span
-							class="dataFormulario"
-							ng-show="configuracionServicio.muestraPasajeros">{{detalleServicio.descpasajeros}}</span></td>
-					</tr>
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraHotel">Hotel</span></td>
-						<td style="width: 35%"><select class="dataFormulario"
-							ng-model="detalleServicio.idHotel"
-							ng-show="configuracionServicio.muestraHotel"><option
-									value="">-Seleccione-</option>
-								<option ng-repeat="item in listaHoteles"
-									ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraOperadora">Operador</span></td>
-						<td style="width: 35%"><select class="dataFormulario"
-							ng-model="detalleServicio.idOperador"
-							ng-show="configuracionServicio.muestraOperadora"><option
-									value="">-Seleccione-</option>
-								<option ng-repeat="item in listaOperadores"
-									ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
-					</tr>
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraDescServicio">Descripci髇
-								Servicio</span></td>
-						<td colspan="3"><textarea class="dataFormulario" rows="10"
-								cols="80" style="height: 50px; width: 600px;"
-								ng-model="detalleServicio.descripcionServicio"
-								ng-show="configuracionServicio.muestraDescServicio"></textarea></td>
-					</tr>
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraCantidad">Cantidad</span> <span
-							class="campoFormulario"
-							ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre">Servicios
-								Padre</span></td>
-						<td style="width: 35%"><input
-							style="width: 50px; text-align: right;" class="dataFormulario"
-							type="number" ng-model="detalleServicio.cantidad"
-							ng-show="configuracionServicio.muestraCantidad"> <select
-							class="dataFormulario"
-							ng-show="!detalleServicio.tipoServicio.servicioPadre && muestraServicioPadre"
-							ng-model="detalleServicio.codigoServicioPadre">
-								<option ng-repeat="item in listaServiciosPadre"
-									ng-value="item.codigo">{{item.descripcion}}</option>
-						</select></td>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraPrecioBase">Precio
-								Base</span></td>
-						<td style="width: 35%"><input
-							ng-model="detalleServicio.precioBaseInicial"
-							style="width: 100px; text-align: right;" class="dataFormulario"
-							type="number" ng-show="configuracionServicio.muestraPrecioBase"><select
-							ng-model="detalleServicio.idmoneda"
-							ng-show="configuracionServicio.muestraPrecioBase"
-							class="dataFormulario"><option
-									ng-repeat="item in listaMonedas" ng-value="item.codigoEntero">{{item.nombre}}</option></select>
-							<input type="checkbox" ng-model="detalleServicio.conIgv"
-							ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv"><span
-							class="campoFormulario"
-							ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con
-								IGV</span></td>
-					</tr>
-					<tr>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraFechaServicio">Fecha
-								Servicio</span></td>
-						<td style="width: 35%"><input class="dataFormulario" ng-show="configuracionServicio.muestraFechaServicio" type="datetime-local" ng-model="detalleServicio.fechaServicio"></td>
-						<td style="width: 15%"><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraFechaRegreso">Fecha
-								Regreso</span></td>
-						<td style="width: 35%"><input class="dataFormulario" type="datetime-local" ng-show="configuracionServicio.muestraFechaRegreso" ng-model="detalleServicio.fechaRegreso"></td>
-					</tr>
-					<tr>
-						<td><span class="campoFormulario" ng-show="muestraAplicaIgv">Aplica
-								IGV</span></td>
-						<td><input type="checkbox" ng-show="muestraAplicaIgv"
-							ng-model="detalleServicio.aplicaIgv"></td>
-						<td><span class="campoFormulario"
-							ng-show="configuracionServicio.muestraTarifaNegociada">Tarifa
-								Negociada</span></td>
-						<td><input type="checkbox"
-							ng-show="configuracionServicio.muestraTarifaNegociada"></td>
-					</tr>
-					<tr ng-show="muestraComision">
-						<td colspan="4"><span class="campoFormulario">Datos
-								Comisi髇 Servicio</span>
-							<hr></td>
-					</tr>
-					<tr ng-show="muestraComision">
-						<td><span class="campoFormulario">Tipo Valor Comisi髇</span></td>
-						<td><select class="dataFormulario"
-							ng-model="detalleServicio.tipoComision"><option value="">-Seleccione-</option>
-								<option value="1">Porcentaje (%)</option>
-								<option value="2">Monto Fijo</option></select></td>
-						<td><span class="campoFormulario">Valor Comisi髇</span></td>
-						<td><input class="dataFormulario" type="number"
-							ng-model="detalleServicio.valorComision"
-							style="width: 50px; text-align: right;"></td>
-					</tr>
-					<tr ng-show="muestraComision">
-						<td><span class="campoFormulario">Aplicar IGV</span></td>
-						<td><input type="checkbox"
-							ng-model="detalleServicio.aplicaIgvComision"></td>
-						<td><span class="campoFormulario"></span></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td colspan="4" align="center"><a href="#"
-							ng-show="detalleServicio.idTipoServicio != null"
-							class="botonSistema" ng-click="agregarServicio()">Agregar</a></td>
-					</tr>
-					<tr ng-show="listaDetalleServicio.length > 0 ">
-						<td colspan="4"><br> <br> <span
-							class="campoFormulario">Servicios Agregados</span>
-							<hr>
-							<table style="width: 90%;" align="center">
-								<thead>
-									<tr>
-										<th class="cabeceraTabla">Unid.</th>
-										<th class="cabeceraTabla">Fecha Servicio</th>
-										<th class="cabeceraTabla">Servicio - Descripci髇</th>
-										<th class="cabeceraTabla">Proveedor</th>
-										<th class="cabeceraTabla">Precio Unitario</th>
-										<th class="cabeceraTabla">Total</th>
-										<th class="cabeceraTabla">Opci髇</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr ng-repeat="item in listaDetalleServicio">
-										<td class="dataTabla">{{item.cantidad}}</td>
-										<td class="dataTabla">{{item.fechaServicio | date :
-											'dd/MM/yyyy'}}</td>
-										<td class="dataTablaCadena">{{item.descripcionServicio}}</td>
-										<td class="dataTabla">{{item.servicioProveedor.proveedor.nombre}}</td>
-										<td class="dataTablaNumero">{{item.precioUnitario |
-											number : 2}}</td>
-										<td class="dataTablaNumero">{{item.totalServicio | number
-											: 2}}</td>
-										<td class="dataTabla"><a href="#"
-											ng-click="eliminarServicio(item.id)"><img
-												src="../../../resources/images/tacho.gif"
-												alt="Eliminar Servicio" /></a> <a href="#"
-											ng-click="consultaServicio(item.id)"><img
-												src="../../../resources/images/editar.png"
-												alt="Editar Servicio" /></a></td>
-									</tr>
-								</tbody>
-							</table></td>
-					</tr>
-				</table>
-				<hr>
-				<table
-					style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-					<tr>
-						<td><span class="campoFormulario">Total Comisi髇</span></td>
-						<td align="right"><span class="dataFormulario">{{servicioVenta.totalComision
-								| number:2}}</span></td>
-					</tr>
-					<tr>
-						<td><span class="campoFormulario">Total Fee</span></td>
-						<td align="right"><span class="dataFormulario">{{servicioVenta.totalFee
-								| number:2}}</span></td>
-					</tr>
-					<tr>
-						<td><span class="campoFormulario">Total Servicios</span></td>
-						<td align="right"><span class="dataFormulario">{{servicioVenta.totalServicios
-								| number:2}}</span></td>
-					</tr>
-				</table>
+			<!-- START BREADCRUMB -->
+			<ul class="breadcrumb">
+				<li><a href="#">Home</a></li>
+				<li><a href="#">Tables</a></li>
+				<li class="active">Basic</li>
+			</ul>
+			<!-- END BREADCRUMB -->
+			<!-- PAGE CONTENT WRAPPER -->
+			<div class="page-content-wrap" ng-controller="formctrl">
+				<div class="row">
+					<div class="col-md-12">
+						<form class="form-horizontal">
+							<div class="panel panel-default tabs">
+								<ul class="nav nav-tabs" role="tablist">
+									<li class="active"><a href="#tab-first" role="tab"
+										data-toggle="tab">Informaci贸n Venta</a></li>
+									<li><a href="#tab-second" role="tab" data-toggle="tab">Servicios</a></li>
+								</ul>
+								<div class="panel-body tab-content">
+									<div class="tab-pane active" id="tab-first">
+										<div class="form-group">
+											<label class="col-md-2 col-xs-12 control-label">Cliente</label>
+											<div class="col-md-4 col-xs-12">
+												<table>
+													<tr>
+														<td style="width: 90%"><input type="text"
+															style="width: 90%;" class="form-control"
+															ng-disabled="true"
+															ng-model="servicioVenta.cliente.nombreCompleto"></td>
+														<td style="width: 10%"><button data-toggle="modal"
+																type="button" data-target="#modalClientes"
+																class="btn btn-primary" ng-click="buscarCliente(1)">
+																<i class="fa fa-search" aria-hidden="true"></i>
+															</button></td>
+													</tr>
+												</table>
+											</div>
+											<label class="col-md-2 col-xs-12 control-label">Agente
+												de Viajes</label>
+											<div class="col-md-4 col-xs-12">
+												<select class="form-control"
+													ng-model="servicioVenta.codigoVendedor"><option
+														value="">-Seleccione el agente-</option>
+													<option ng-repeat="item in listaVendedores"
+														ng-value="item.codigoEntero">{{item.nombres}}
+														{{item.apellidoPaterno}}</option></select>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-2 col-xs-12 control-label">Fecha
+												Servicio</label>
+											<div class="col-md-4 col-xs-12">
+												<input type="date" class="form-control"
+													ng-model="servicioVenta.fechaServicio">
+											</div>
+											<label class="col-md-2 col-xs-12 control-label">Moneda
+												Facturaci贸n</label>
+											<div class="col-md-4 col-xs-12">
+												<select class="form-control"
+													ng-model="servicioVenta.monedaFacturacion"><option
+														value="">-Seleccione-</option>
+													<option ng-repeat="item in listaMonedas"
+														ng-value="item.codigoEntero">{{item.nombre}}</option></select>
+											</div>
+										</div>
+										<div class="modal" id="modalClientes" tabindex="-1"
+											role="dialog" aria-labelledby="largeModalHead"
+											aria-hidden="true">
+											<div class="modal-dialog modal-lg">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal">
+															<span aria-hidden="true">&times;</span><span
+																class="sr-only">Close</span>
+														</button>
+														<h4 class="modal-title" id="largeModalHead">Buscar
+															Cliente</h4>
+													</div>
+													<div class="modal-body">
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Tipo
+																		Documento</label>
+																	<div class="col-md-4 col-xs-12">
+																		<select class="form-control"
+																			ng-model="busquedaCliente.tipoDocumento">
+																			<option value="">-Seleccione-</option>
+																			<option ng-repeat="item in listaTipoDocumento"
+																				ng-value="item.codigoEntero">{{item.nombre}}</option>
+																		</select>
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">N煤mero
+																		Documento</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control"
+																			ng-model="busquedaCliente.numeroDocumento">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Cliente</label>
+																	<div class="col-md-10 col-xs-12">
+																		<input type="text" class="form-control"
+																			ng-model="busquedaCliente.nomCliente">
+																	</div>
+																</div>
+																<div class="form-group" align="center">
+																	<button type="button" class="btn btn-primary"
+																		ng-click="buscarCliente(1)">
+																		<i class="fa fa-search" aria-hidden="true"></i>Buscar
+																	</button>
+																</div>
+																<table class="table">
+																	<thead>
+																		<tr>
+																			<th>Documento</th>
+																			<th>Cliente</th>
+																			<th>Opcion</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr ng-repeat="item in listaClientes">
+																			<td>{{item.documentoIdentidad.tipoDocumento.nombre}}-{{item.documentoIdentidad.numeroDocumento}}</td>
+																			<td>{{item.nombres}}</td>
+																			<td><a href="#"
+																				ng-click="seleccionarCliente(item.codigoEntero)"><i
+																					class="fa fa-hand-o-left" aria-hidden="true"></i>
+																					Este</a></td>
+																		</tr>
+																	</tbody>
+																	<tfoot>
+																		<tr>
+																			<td colspan="3" align="center">
+																				<ul uib-pagination total-items="totalItems"
+																					ng-model="currentPage" max-size="maxSize"
+																					class="pagination-sm" boundary-links="true"
+																					num-pages="numPages" ng-change="pageChanged()"></ul>
+																			</td>
+																		</tr>
+																	</tfoot>
+																</table>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" id="idbtnCerrarModal"
+															class="btn btn-default" data-dismiss="modal">Close</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="tab-pane" id="tab-second">
+										<div class="form-group">
+											<label class="col-md-2 col-xs-12 control-label">Tipo
+												Servicio</label>
+											<div class="col-md-4 col-xs-12">
+												<select class="form-control"
+													ng-model="detalleServicio.idTipoServicio"
+													ng-change="consultarConfiguracionServicio()">
+													<option value="">-Seleccione-</option>
+													<option ng-repeat="item in listaMaestroServicio"
+														ng-value="item.codigoEntero">{{item.nombre}}</option>
+												</select>
+											</div>
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraProveedor">Empresa
+												Proveedora</label>
+											<div class="col-md-4 col-xs-12">
+												<select class="form-control"
+													ng-show="configuracionServicio.muestraProveedor"
+													ng-model="detalleServicio.idProveedor"
+													ng-change="seleccionarProveedor()">
+													<option value="">-Seleccione-</option>
+													<option ng-repeat="item in listaProveedores"
+														ng-value="item.codigoEntero">{{item.nombreProveedor}}</option>
+												</select>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="configuracionServicio.muestraRuta">
+											<a href="#" onclick="modalShow()" data-toggle="modal"
+												data-target="#modalRuta"><label
+												class="col-md-2 col-xs-12 control-label">Ruta</label></a>
+											<div class="col-md-10 col-xs-12">{{descripcionRuta}}</div>
+										</div>
+										<div class="modal" id="modalRuta" tabindex="-1" role="dialog"
+											aria-labelledby="largeModalHead" aria-hidden="true">
+											<div class="modal-dialog modal-lg">
+												<div class="modal-content" style="width: 1100px;">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal">
+															<span aria-hidden="true">&times;</span><span
+																class="sr-only">Close</span>
+														</button>
+														<h4 class="modal-title" id="largeModalHead">Agregar
+															Ruta</h4>
+													</div>
+													<div class="modal-body">
+														<div class="row">
+															<div class="col-md-12">
+																<table class="table">
+																	<thead>
+																		<tr ng-show="mostrarError">
+																			<td colspan="5">{{error}}</td>
+																		</tr>
+																		<tr>
+																			<td><a href="#" ng-click="agregarTramo()">Agregar
+																					Tramo</a></td>
+																			<td><a href="#" ng-click="agregarTramoRegreso()">Agregar
+																					Tramo Regreso</a></td>
+																			<td colspan="3"></td>
+																		</tr>
+																		<tr>
+																			<th>Origen</th>
+																			<th>Fecha Salida</th>
+																			<th>Destino</th>
+																			<th>Fecha Llegada</th>
+																			<th>Aerolinea</th>
+																			<th>Eliminar</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr ng-repeat="item in listaTramos">
+																			<td><select ng-model="item.origen.id"
+																				class="form-control">
+																					<option value="">-Seleccione-</option>
+																					<option ng-repeat="op in listaDestinos"
+																						ng-value="op.codigoEntero">({{op.codigoIATA}}){{op.descripcion}}</option>
+																			</select></td>
+																			<td><input class="form-control"
+																				ng-model="item.fechaSalida" type="datetime-local"></td>
+																			<td><select class="form-control"
+																				ng-model="item.destino.id">
+																					<option value="">-Seleccione-</option>
+																					<option ng-repeat="op in listaDestinos"
+																						ng-value="op.codigoEntero">({{op.codigoIATA}}){{op.descripcion}}</option>
+																			</select></td>
+																			<td><input class="form-control"
+																				ng-model="item.fechaLlegada" type="datetime-local"></td>
+																			<td><select class="form-control" ng-id="idselaerolinea"
+																				ng-model="item.codigoAerolinea">
+																					<option value="">-Seleccione-</option>
+																					<option ng-repeat="op in listaAerolineas"
+																						ng-value="op.codigoEntero">{{op.nombreComercial}}</option>
+																			</select></td>
+																			<td align="center"><a href="#"
+																				ng-click="eliminarTramo(item.id)"><i
+																					class="fa fa-trash-o" aria-hidden="true"></i></a></select></td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" id="idbtnAceptarModal"
+															ng-click="aceptarRuta()" class="btn btn-default">Aceptar</button>
+														<button type="button" id="idbtnCerrarModalRuta"
+															class="btn btn-default" data-dismiss="modal">Close</button>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="configuracionServicio.muestraPasajeros">
+											<a href="#" onclick="modalShowPasajeros()"
+												data-toggle="modal" data-target="#modalPasajeros"> <label
+												class="col-md-2 col-xs-12 control-label">Pasajeros</label></a>
+											<div class="col-md-10 col-xs-12">{{descripcionPasajeros}}</div>
+										</div>
+										<div class="modal" id="modalPasajeros" tabindex="-1"
+											role="dialog" aria-labelledby="largeModalHead"
+											aria-hidden="true">
+											<div class="modal-dialog modal-lg">
+												<div class="modal-content" style="width: 1100px;">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" id="idbtnclosemodalpasajeros">
+															<span aria-hidden="true">&times;</span><span
+																class="sr-only">Close</span>
+														</button>
+														<h4 class="modal-title" id="largeModalHead2">Agregar
+															Pasajeros</h4>
+													</div>
+													<div class="modal-body">
+														<div class="row">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Tipo
+																		Documento</label>
+																	<div class="col-md-4 col-xs-12">
+																		<select class="form-control" id="idseltipodocumento"
+																			ng-model="pasajero.tipoDocumento">
+																			<option value="">-Seleccione-</option>
+																			<option ng-repeat="item in listaTipoDocumento"
+																				ng-value="item.codigoEntero">{{item.nombre}}</option>
+																		</select>
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">N煤mero
+																		Documento</label>
+																	<div class="col-md-3 col-xs-12">
+																		<input type="text" class="form-control" id="idnumdoc"
+																			ng-model="pasajero.numeroDocumento"
+																			style="text-transform: uppercase;">
+																	</div>
+																	<div class="col-md-1 col-xs-12">
+																		<button class="btn" ng-click="consultarPaxsSistema()">
+																			<span class="fa fa-search"></span>
+																		</button>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Nombres</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control" id="idnombres"
+																			ng-model="pasajero.nombres"
+																			style="text-transform: uppercase;">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">Nacionalidad</label>
+																	<div class="col-md-4 col-xs-12">
+																		<select class="form-control"
+																			style="text-transform: uppercase;"
+																			id="idnacionalidad" ng-model="pasajero.nacionalidad">
+																			<option value="">-Seleccione-</option>
+																			<option ng-repeat="item in listaNacionalidad"
+																				ng-value="item.codigoEntero">{{item.nombre}}</option>
+																		</select>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Apellido
+																		Paterno</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control"
+																			id="idapepaterno" ng-model="pasajero.apePaterno"
+																			style="text-transform: uppercase;">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">Apellido
+																		Materno</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control"
+																			id="idapematerno" ng-model="pasajero.apeMaterno"
+																			style="text-transform: uppercase;">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Tel茅fono
+																		1</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control" id="idtelef1"
+																			ng-model="pasajero.telefono1">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">Tel茅fono
+																		2</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control" id="idtelef2"
+																			ng-model="pasajero.telefono2">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Correo
+																		Electronico</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control" id="idcorreo"
+																			ng-model="pasajero.correoElectronico"
+																			style="text-transform: uppercase;">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">Relaci贸n</label>
+																	<div class="col-md-4 col-xs-12">
+																		<select class="form-control" id="idrelacion"
+																			ng-model="pasajero.codigoRelacion">
+																			<option value="">-Seleccione-</option>
+																			<option ng-repeat="item in listaRelaciones"
+																				ng-value="item.codigoEntero">{{item.nombre}}</option>
+																		</select>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">N煤mero
+																		Pasajero Frecuente</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control"
+																			style="text-transform: uppercase;"
+																			ng-model="pasajero.numPasajeroFrecuente">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">Aerolinea</label>
+																	<div class="col-md-4 col-xs-12">
+																		<select class="form-control"
+																			ng-model="pasajero.aerolinea"><option
+																				value="">-Seleccione-</option>
+																			<option ng-repeat="item in listaAerolineas"
+																				ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">Fecha
+																		Vcto Pasaporte</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="date" class="form-control"
+																			ng-model="pasajero.fechaVctoPasaporte">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">Fecha
+																		Nacimiento</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="date" class="form-control"
+																			ng-model="pasajero.fechaNacimiento">
+																	</div>
+																</div>
+																<div class="form-group">
+																	<label class="col-md-2 col-xs-12 control-label">C贸digo
+																		Reserva</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control"
+																			ng-model="pasajero.codigoReserva"
+																			style="text-transform: uppercase;">
+																	</div>
+																	<label class="col-md-2 col-xs-12 control-label">N煤mero
+																		Boleto</label>
+																	<div class="col-md-4 col-xs-12">
+																		<input type="text" class="form-control"
+																			ng-model="pasajero.numBoleto"
+																			style="text-transform: uppercase;">
+																	</div>
+																</div>
+																<div class="form-group" align="center">
+																	<button type="button" ng-click="agregarPasajero()"
+																		class="btn">Agregar</button>
+																</div>
+															</div>
+														</div>
+														<br>
+														<div class="row">
+															<div class="col-md-12">
+																<table class="table">
+																	<thead>
+																		<tr>
+																			<th>Nombres</th>
+																			<th>Apellido Paterno</th>
+																			<th>Apellido Materno</th>
+																			<th>Correo Electronico</th>
+																			<th>Tel茅fono 1</th>
+																			<th>Tel茅fono 2</th>
+																			<th>Relaci贸n</th>
+																			<th>Opciones</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr ng-repeat="item in listaPasajeros">
+																			<td>{{item.nombres}}</td>
+																			<td>{{item.apePaterno}}</td>
+																			<td>{{item.apeMaterno}}</td>
+																			<td>{{item.correoElectronico}}</td>
+																			<td>{{item.telefono1}}</td>
+																			<td>{{item.telefono2}}</td>
+																			<td>{{item.relacion}}</td>
+																			<td><a href="#"
+																				ng-click="eliminarPasajero(item.id)"><i
+																					class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+																				<a href="#" ng-click="consultaLocalPaxs(item.id)"><i
+																					class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer" align="center">
+														<button type="button" id="idbtnCerrarModal2"
+															class="btn btn-default"
+															ng-click="aceptarPasajeros()">Aceptar</button>
+															
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="configuracionServicio.muestraOperadora && configuracionServicio.muestraHotel">
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraHotel">Hotel</label>
+											<div class="col-md-4 col-xs-12"
+												ng-show="configuracionServicio.muestraHotel">
+												<select class="form-control"
+													ng-model="detalleServicio.idHotel"
+													ng-show="configuracionServicio.muestraHotel"><option
+														value="">-Seleccione-</option>
+													<option ng-repeat="item in listaHoteles"
+														ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select>
+											</div>
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraOperadora">Operador</label>
+											<div class="col-md-4 col-xs-12"
+												ng-show="configuracionServicio.muestraOperadora">
+												<select class="form-control"
+													ng-model="detalleServicio.idOperador"
+													ng-show="configuracionServicio.muestraOperadora"><option
+														value="">-Seleccione-</option>
+													<option ng-repeat="item in listaOperadores"
+														ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="configuracionServicio.muestraDescServicio">
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraDescServicio">Descripcion</label>
+											<div class="col-md-10 col-xs-12"
+												ng-show="configuracionServicio.muestraDescServicio">
+												<textarea class="form-control" rows="10" cols="80"
+													style="height: 50px; width: 600px;"
+													ng-model="detalleServicio.descripcionServicio"
+													ng-show="configuracionServicio.muestraDescServicio"></textarea>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="configuracionServicio.muestraCantidad && configuracionServicio.muestraCantidad">
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraCantidad">Cantidad</label>
+											<div class="col-md-4 col-xs-12">
+												<input style="width: 50px; text-align: right;"
+													class="form-control" type="number"
+													ng-model="detalleServicio.cantidad"
+													ng-show="configuracionServicio.muestraCantidad">
+											</div>
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraCantidad">Precio
+												Base</label>
+											<div class="col-md-4 col-xs-12">
+												<div class="col-md-4 col-xs-12">
+													<input ng-model="detalleServicio.precioBaseInicial"
+														style="width: 100px; text-align: right;"
+														class="form-control" type="number"
+														ng-show="configuracionServicio.muestraPrecioBase">
+												</div>
+												<div class="col-md-4 col-xs-12">
+													<select ng-model="detalleServicio.idmoneda"
+														ng-show="configuracionServicio.muestraPrecioBase"
+														class="form-control"><option
+															ng-repeat="item in listaMonedas"
+															ng-value="item.codigoEntero">{{item.nombre}}</option></select>
+												</div>
+												<div class="col-md-4 col-xs-12">
+													<input type="checkbox" ng-model="detalleServicio.conIgv"
+														ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv"><span
+														ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con
+														IGV</span>
+												</div>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="muestraComision && configuracionServicio.muestraPrecioBase">
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="muestraComision">Aplicar IGV</label>
+											<div class="col-md-4 col-xs-12">
+												<input ng-model="detalleServicio.aplicaIgv"
+													style="width: 100px; text-align: right;" type="checkbox"
+													ng-show="muestraComision">
+											</div>
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="configuracionServicio.muestraPrecioBase">Tarifa
+												Negociada</label>
+											<div class="col-md-4 col-xs-12">
+												<input ng-model="detalleServicio.precioBaseInicial"
+													style="width: 100px; text-align: right;" type="checkbox"
+													ng-show="configuracionServicio.muestraPrecioBase">
+											</div>
+										</div>
+										<div class="form-group" ng-show="muestraComision">
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="muestraComision">Tipo Valor Comisi贸n</label>
+											<div class="col-md-4 col-xs-12">
+												<select class="form-control"
+													ng-model="detalleServicio.tipoComision"><option
+														value="">-Seleccione-</option>
+													<option value="1">Porcentaje (%)</option>
+													<option value="2">Monto Fijo</option></select>
+											</div>
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="muestraComision">Valor Comisi贸n</label>
+											<div class="col-md-4 col-xs-12">
+												<input class="form-control" type="number"
+													ng-model="detalleServicio.valorComision"
+													style="width: 50px; text-align: right;">
+											</div>
+										</div>
+										<div class="form-group" ng-show="muestraComision">
+											<label class="col-md-2 col-xs-12 control-label"
+												ng-show="muestraComision">Aplicar IGV</label>
+											<div class="col-md-4 col-xs-12">
+												<input type="checkbox"
+													ng-model="detalleServicio.aplicaIgvComision">
+											</div>
+										</div>
+										<div class="form-group" align="center"
+											ng-show="detalleServicio.idTipoServicio != null">
+											<button class="btn btn-primary" ng-click="agregarServicio()" ng-show="nuevoServicio">Agregar</button>
+											<button class="btn btn-primary" ng-click="actualizarServicio()" ng-show="editaServicio">Actualizar</button>
+											<button class="btn btn-primary" ng-click="limpiar()">Limpiar</button>
+										</div>
+										<div class="form-group">
+											<table style="width: 90%;" align="center" class="table">
+												<thead>
+													<tr>
+														<th class="cabeceraTabla">Unid.</th>
+														<th class="cabeceraTabla">Fecha Servicio</th>
+														<th class="cabeceraTabla">Servicio - Descripci贸n</th>
+														<th class="cabeceraTabla">Proveedor</th>
+														<th class="cabeceraTabla">Precio Unitario</th>
+														<th class="cabeceraTabla">Total</th>
+														<th class="cabeceraTabla">Opci贸n</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr ng-repeat="item in listaDetalleServicio">
+														<td class="dataTabla">{{item.cantidad}}</td>
+														<td class="dataTabla">{{item.fechaServicio | date :
+															'dd/MM/yyyy'}}</td>
+														<td class="dataTablaCadena">{{item.descripcionServicio}}</td>
+														<td class="dataTabla">{{item.servicioProveedor.proveedor.nombre}}</td>
+														<td class="dataTablaNumero">{{item.precioUnitario |
+															number : 2}}</td>
+														<td class="dataTablaNumero">{{item.totalServicio |
+															number : 2}}</td>
+														<td class="dataTabla"><a href="#"
+															ng-click="eliminarServicio(item.codigoEntero)"><i class="fa fa-trash-o" aria-hidden="true"></i></a> <a href="#"
+															ng-click="consultaServicio(item.codigoEntero)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<div class="form-group">
+											<table style="width: 90%;" align="center">
+												<tr>
+													<td><strong>Total
+															Comisi贸n</strong></td>
+													<td align="right"><strong>{{simboloMonedaFacturacion}} {{servicioVenta.totalComision
+															| number:2}}</strong></td>
+												</tr>
+												<tr>
+													<td><strong >Total Fee</strong></td>
+													<td align="right"><strong>{{simboloMonedaFacturacion}} {{servicioVenta.totalFee
+															| number:2}}</strong></td>
+												</tr>
+												<tr>
+													<td><strong >Total
+															Servicios</strong></td>
+													<td align="right"><strong>{{simboloMonedaFacturacion}} {{servicioVenta.totalServicios
+															| number:2}}</strong></td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!-- END PAGE CONTENT WRAPPER -->
+				</div>
 			</div>
+			<!-- END PAGE CONTENT -->
 		</div>
-		<div align="center">
-			<br> <a href="#" class="botonSistema" ng-click="grabarVenta()">Grabar</a>
-		</div>
+		<!-- END PAGE CONTAINER -->
 	</div>
 
-	<!-- The Modal -->
-	<div id="modalRuta" class="modal" ng-controller="formmodalrutactrl">
-		<!-- Modal content -->
-		<div class="modal-content">
-			<div class="error" ng-show="mostrarError">
-				<span>{{error}}</span>
+	<!-- MESSAGE BOX-->
+	<div class="message-box animated fadeIn" data-sound="alert"
+		id="mb-remove-row">
+		<div class="mb-container">
+			<div class="mb-middle">
+				<div class="mb-title">
+					<span class="fa fa-times"></span> Remove <strong>Data</strong> ?
+				</div>
+				<div class="mb-content">
+					<p>Are you sure you want to remove this row?</p>
+					<p>Press Yes if you sure.</p>
+				</div>
+				<div class="mb-footer">
+					<div class="pull-right">
+						<button class="btn btn-success btn-lg mb-control-yes">Yes</button>
+						<button class="btn btn-default btn-lg mb-control-close">No</button>
+					</div>
+				</div>
 			</div>
-			<span class="campoFormulario">Detalle Ruta Servicio</span>
-			<hr>
-			<table
-				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-				<thead>
-					<tr>
-						<td colspan="7"><a href="#" class="botonSistema"
-							ng-click="agregarTramo()">Agregar</a> <a href="#"
-							class="botonSistema" ng-click="agregarTramoRegreso()">Agregar
-								Tramo Regreso</a></td>
-					</tr>
-					<tr>
-						<td class="cabeceraTabla">Origen</td>
-						<td class="cabeceraTabla">Fecha Salida</td>
-						<td class="cabeceraTabla">Destino</td>
-						<td class="cabeceraTabla">Fecha Llegada</td>
-						<td class="cabeceraTabla">Precio Tramo</td>
-						<td class="cabeceraTabla">Aerolinea</td>
-						<td></td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="tramo in listaTramos">
-						<td><select ng-model='tramo.origen.id' class="dataFormulario">
-								<option>-Seleccione-</option>
-								<option ng-repeat="item in listaDestinos"
-									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})
-								</option>
-						</select></td>
-						<td><input type="datetime-local" class="dataFormulario"
-							ng-model="tramo.fechaSalida"></td>
-						<td><select ng-model='tramo.destino.id'
-							class="dataFormulario">
-								<option ng-repeat="item in listaDestinos"
-									ng-value="item.codigoEntero">{{item.descripcion}}({{item.codigoIATA}})</option>
-						</select></td>
-						<td><input type="datetime-local" class="dataFormulario"
-							ng-model="tramo.fechaLlegada"></td>
-						<td><input type="number" class="dataFormulario"
-							ng-model="tramo.precioTramo" value="0" size="20"></td>
-						<td><select class="dataFormulario"
-							ng-model="tramo.codigoAerolinea"><option>-Seleccione-</option>
-								<option ng-repeat="item in listaAerolineas"
-									ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
-						<td><button ng-click="eliminarTramo(tramo.id)">-</button></td>
-					</tr>
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="7" align="center"><a href="#"
-							class="botonSistema" ng-click="aceptarRuta()">Aceptar</a> <a
-							href="#" class="botonSistema" ng-click="modalclose()">Cerrar</a>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
-		</div>
-
-	</div>
-
-	<!-- The Modal -->
-	<div id="modalPasajeros" class="modal">
-
-		<!-- Modal content -->
-		<div class="modal-content" style="height: 400px;"
-			ng-controller="formmodalpasajeros">
-			<div class="error" ng-show="mostrarError">
-				<span>{{error}}</span>
-			</div>
-			<span class="campoFormulario">Detalle Pasajeros</span>
-			<hr>
-			<table
-				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-				<tr>
-					<td><span class="campoFormulario">Tipo Documento</span></td>
-					<td><select class="dataFormulario"
-						ng-model="pasajero.tipoDocumento"><option>-Seleccione-</option>
-							<option ng-repeat="item in listaTipoDocumento"
-								ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
-					<td><span class="campoFormulario">N鷐ero Documento</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.numeroDocumento"><a href="#"
-						class="botonSistema" ng-click="consultarPaxsSistema()">Buscar</a></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">Nombres</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.nombres"></td>
-					<td><span class="campoFormulario">Nacionalidad</span></td>
-					<td><select class="dataFormulario"
-						ng-model="pasajero.nacionalidad"><option>-Seleccione-</option>
-							<option ng-repeat="item in listaNacionalidad"
-								ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">Apellido Paterno</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.apePaterno"></td>
-					<td><span class="campoFormulario">Apellido Materno</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.apeMaterno"></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">Tel閒ono 1</span></td>
-					<td><input type="tel" class="dataFormulario"
-						ng-model="pasajero.telefono1"></td>
-					<td><span class="campoFormulario">Tel閒ono 2</span></td>
-					<td><input type="tel" class="dataFormulario"
-						ng-model="pasajero.telefono2"></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">Correo Electr髇ico</span></td>
-					<td><input type="email" class="dataFormulario"
-						ng-model="pasajero.correoElectronico"></td>
-					<td><span class="campoFormulario">Relaci髇</span></td>
-					<td><select class="dataFormulario"
-						ng-model="pasajero.codigoRelacion"><option>-Seleccione-</option>
-							<option ng-repeat="item in listaRelaciones"
-								ng-value="item.codigoEntero">{{item.nombre}}</option></select></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">N鷐ero pasajero
-							frecuente</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.numPasajeroFrecuente"></td>
-					<td><span class="campoFormulario">Aerolinea</span></td>
-					<td><select class="dataFormulario"
-						ng-model="pasajero.aerolinea"><option>-Seleccione-</option>
-							<option ng-repeat="item in listaAerolineas"
-								ng-value="item.codigoEntero">{{item.nombreComercial}}</option></select></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">Fecha Vcto Pasaporte</span></td>
-					<td><input type="date" class="dataFormulario"
-						ng-model="pasajero.fechaVctoPasaporte"></td>
-					<td><span class="campoFormulario">Fecha Nacimiento</span></td>
-					<td><input type="date" class="dataFormulario"
-						ng-model="pasajero.fechaNacimiento"></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">C骴igo Reserva</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.codigoReserva"></td>
-					<td><span class="campoFormulario">N鷐ero Boleto</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="pasajero.numBoleto"></td>
-				</tr>
-			</table>
-			<table
-				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-				<tr>
-					<td align="center"><a href="#" class="botonSistema"
-						ng-click="agregarPasajero()" ng-show="nuevo">Agregar</a> <a
-						href="#" class="botonSistema" ng-click="actualizarPaxs()"
-						ng-show="editar">Actualizar</a></td>
-				</tr>
-			</table>
-			<span class="campoFormulario" ng-show="listaPasajeros.length != 0">Pasajeros
-				Agregados</span>
-			<hr ng-show="listaPasajeros.length != 0">
-			<table ng-show="listaPasajeros.length != 0"
-				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-				<thead>
-					<tr>
-						<td class="cabeceraTabla">Nombres</td>
-						<td class="cabeceraTabla">Apellido Paterno</td>
-						<td class="cabeceraTabla">Apellido Materno</td>
-						<td class="cabeceraTabla">Correo Electr髇ico</td>
-						<td class="cabeceraTabla">Telefono 1</td>
-						<td class="cabeceraTabla">Telefono 2</td>
-						<td class="cabeceraTabla">Relaci髇</td>
-						<td class="cabeceraTabla"></td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="item in listaPasajeros">
-						<td class="dataTabla">{{item.nombres}}</td>
-						<td class="dataTabla">{{item.apePaterno}}</td>
-						<td class="dataTabla">{{item.apeMaterno}}</td>
-						<td class="dataTabla">{{item.correoElectronico}}</td>
-						<td class="dataTabla">{{item.telefono1}}</td>
-						<td class="dataTabla">{{item.telefono2}}</td>
-						<td class="dataTabla">{{item.relacion}}</td>
-						<td class="dataTabla"><a href="#"
-							ng-click="eliminarPasajero(item.id)"><img
-								src="../../../resources/images/tacho.gif"
-								alt="Eliminar Pasajero" /></a> <a href="#"
-							ng-click="consultaLocalPaxs(item.id)"><img
-								src="../../../resources/images/editar.png" alt="Editar Pasajero" /></a>
-						</td>
-					</tr>
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="8" align="center"><a href="#"
-							class="botonSistema" ng-click="aceptarPasajeros()">Aceptar</a></td>
-					</tr>
-				</tfoot>
-			</table>
 		</div>
 	</div>
-	<div id="modalcliente" class="modal">
-		<div class="modal-content-cliente" style="height: 200px;"
-			ng-controller="formmodalbusquedacliente">
-			<div class="error" ng-show="mostrarError">
-				<span>{{error}}</span>
+	<!-- END MESSAGE BOX-->
+
+	<!-- MESSAGE BOX-->
+	<div class="message-box animated fadeIn" data-sound="alert"
+		id="mb-signout">
+		<div class="mb-container">
+			<div class="mb-middle">
+				<div class="mb-title">
+					<span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?
+				</div>
+				<div class="mb-content">
+					<p>Are you sure you want to log out?</p>
+					<p>Press No if youwant to continue work. Press Yes to logout
+						current user.</p>
+				</div>
+				<div class="mb-footer">
+					<div class="pull-right">
+						<a href="pages-login.html" class="btn btn-success btn-lg">Yes</a>
+						<button class="btn btn-default btn-lg mb-control-close">No</button>
+					</div>
+				</div>
 			</div>
-			<span class="campoFormulario">Buscar Cliente</span>
-			<hr>
-			<table
-				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-				<tr>
-					<td><span class="campoFormulario">Tipo Documento</span></td>
-					<td><select class="dataFormulario"
-						ng-model="busquedaCliente.tipoDocumento"><option value="">-Seleccione-</option>
-							<option ng-repeat="item in listaTipoDocumento"
-								ng-value="item.codigoEntero">{{item.nombre}}</option>
-					</select></td>
-					<td><span class="campoFormulario">N鷐ero Documento</span></td>
-					<td><input type="text" class="dataFormulario"
-						ng-model="busquedaCliente.numeroDocumento"></td>
-				</tr>
-				<tr>
-					<td><span class="campoFormulario">Nombre</span></td>
-					<td colspan="3"><input type="text" class="dataFormulario"
-						ng-model="busquedaCliente.nombres"></td>
-				</tr>
-				<tr>
-					<td colspan="4" align="center">
-						<button type="button" ng-click="cerrar()" class="botonSistema">Cerrar</button>
-						<button type="button" ng-click="buscarCliente()"
-							class="botonSistema">Buscar</button>
-						<button type="button" ng-click="limpiarBusqueda()"
-							class="botonSistema">Limpiar</button>
-					</td>
-				</tr>
-			</table>
-			<table
-				style="margin: 0px; border-width: 0px; padding: 0px; width: 100%; border-spacing: 0px;">
-				<thead>
-					<tr>
-						<th class="cabeceraTabla">Documento Identidad</th>
-						<th class="cabeceraTabla">Nombre Cliente</th>
-						<th class="cabeceraTabla">Seleccionar</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="item in listaClientes">
-						<td class="dataTablaCadena">{{item.documentoIdentidad.tipoDocumento.nombre}}
-							- {{item.documentoIdentidad.numeroDocumento}}</td>
-						<td class="dataTablaCadena">{{item.nombres}}
-							{{item.apellidoPaterno}} {{item.apellidoMaterno}}</td>
-						<td class="dataTabla"><a href="#"
-							ng-click="seleccionarCliente(item.codigoEntero)">Este</a></td>
-					</tr>
-				</tbody>
-			</table>
 		</div>
 	</div>
+	<!-- END MESSAGE BOX-->
+
+	<!-- START SCRIPTS -->
+	<!-- START PLUGINS -->
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/jquery-ui.min.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/bootstrap.min.js"></script>
+	<!-- END PLUGINS -->
+
+	<!-- START THIS PAGE PLUGINS-->
+	<script type='text/javascript'
+		src='/RHViajes2/recursos/js/icheck.min.js'></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/jquery.mCustomScrollbar.min.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/moment.min.js">
+		
+	</script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/bootstrap-select.js">
+		
+	</script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/demo_tables.js"></script>
+	<!-- END THIS PAGE PLUGINS-->
+
+	<!-- START TEMPLATE -->
+
+	<script type="text/javascript" src="/RHViajes2/recursos/js/plugins.js"></script>
+	<script type="text/javascript" src="/RHViajes2/recursos/js/actions.js"></script>
+	<!-- END TEMPLATE -->
+	<!-- END SCRIPTS -->
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/angular.min.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/angular-animate.min.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/angular-sanitize.min.js"></script>
+	<script src="/RHViajes2/recursos/js/ui-bootstrap-tpls-2.1.1.js"
+		type="text/javascript"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/paginas/negocio/servicios/js/controladorform.js"></script>
 </body>
 </html>
