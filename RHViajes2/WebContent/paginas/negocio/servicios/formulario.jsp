@@ -383,7 +383,8 @@
 																			</select></td>
 																			<td><input class="form-control"
 																				ng-model="item.fechaLlegada" type="datetime-local"></td>
-																			<td><select class="form-control" ng-id="idselaerolinea"
+																			<td><select class="form-control"
+																				ng-id="idselaerolinea"
 																				ng-model="item.codigoAerolinea">
 																					<option value="">-Seleccione-</option>
 																					<option ng-repeat="op in listaAerolineas"
@@ -420,7 +421,8 @@
 											<div class="modal-dialog modal-lg">
 												<div class="modal-content" style="width: 1100px;">
 													<div class="modal-header">
-														<button type="button" class="close" data-dismiss="modal" id="idbtnclosemodalpasajeros">
+														<button type="button" class="close" data-dismiss="modal"
+															id="idbtnclosemodalpasajeros">
 															<span aria-hidden="true">&times;</span><span
 																class="sr-only">Close</span>
 														</button>
@@ -611,9 +613,8 @@
 													</div>
 													<div class="modal-footer" align="center">
 														<button type="button" id="idbtnCerrarModal2"
-															class="btn btn-default"
-															ng-click="aceptarPasajeros()">Aceptar</button>
-															
+															class="btn btn-default" ng-click="aceptarPasajeros()">Aceptar</button>
+
 													</div>
 												</div>
 											</div>
@@ -656,7 +657,7 @@
 											</div>
 										</div>
 										<div class="form-group"
-											ng-show="configuracionServicio.muestraCantidad && configuracionServicio.muestraCantidad">
+											ng-show="configuracionServicio.muestraCantidad || configuracionServicio.muestraPrecioBase">
 											<label class="col-md-2 col-xs-12 control-label"
 												ng-show="configuracionServicio.muestraCantidad">Cantidad</label>
 											<div class="col-md-4 col-xs-12">
@@ -666,7 +667,7 @@
 													ng-show="configuracionServicio.muestraCantidad">
 											</div>
 											<label class="col-md-2 col-xs-12 control-label"
-												ng-show="configuracionServicio.muestraCantidad">Precio
+												ng-show="configuracionServicio.muestraPrecioBase">Precio
 												Base</label>
 											<div class="col-md-4 col-xs-12">
 												<div class="col-md-4 col-xs-12">
@@ -688,6 +689,19 @@
 														ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con
 														IGV</span>
 												</div>
+											</div>
+										</div>
+										<div class="form-group"
+											ng-show="muestraServicioPadre && !detalleServicio.tipoServicio.servicioPadre">
+											<label class="col-md-2 col-xs-12 control-label">Servicio
+												Padre</label>
+											<div class="col-md-4 col-xs-12">
+												<select class="form-control"
+													ng-model="detalleServicio.servicioPadre.codigo">
+													<option value="">-Seleccione-</option>
+													<option ng-repeat="item in listaServiciosPadre"
+														ng-value="item.codigo">{{item.descripcion}}</option>
+												</select>
 											</div>
 										</div>
 										<div class="form-group"
@@ -723,7 +737,7 @@
 											<div class="col-md-4 col-xs-12">
 												<input class="form-control" type="number"
 													ng-model="detalleServicio.valorComision"
-													style="width: 50px; text-align: right;">
+													style="width: 80px; text-align: right;">
 											</div>
 										</div>
 										<div class="form-group" ng-show="muestraComision">
@@ -736,9 +750,12 @@
 										</div>
 										<div class="form-group" align="center"
 											ng-show="detalleServicio.idTipoServicio != null">
-											<button class="btn btn-primary" ng-click="agregarServicio()" ng-show="nuevoServicio">Agregar</button>
-											<button class="btn btn-primary" ng-click="actualizarServicio()" ng-show="editaServicio">Actualizar</button>
+											<button class="btn btn-primary" ng-click="agregarServicio()"
+												ng-show="nuevoServicio">Agregar</button>
+											<button class="btn btn-primary"
+												ng-click="actualizarServicio()" ng-show="editaServicio">Actualizar</button>
 											<button class="btn btn-primary" ng-click="limpiar()">Limpiar</button>
+											<button class="btn btn-primary" ng-click="cancelar()">Cancelar</button>
 										</div>
 										<div class="form-group">
 											<table style="width: 90%;" align="center" class="table">
@@ -765,8 +782,10 @@
 														<td class="dataTablaNumero">{{item.totalServicio |
 															number : 2}}</td>
 														<td class="dataTabla"><a href="#"
-															ng-click="eliminarServicio(item.codigoEntero)"><i class="fa fa-trash-o" aria-hidden="true"></i></a> <a href="#"
-															ng-click="consultaServicio(item.codigoEntero)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+															ng-click="eliminarServicio(item.codigoEntero)"><i
+																class="fa fa-trash-o" aria-hidden="true"></i></a> <a
+															href="#" ng-click="consultaServicio(item.codigoEntero)"><i
+																class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
 													</tr>
 												</tbody>
 											</table>
@@ -774,23 +793,89 @@
 										<div class="form-group">
 											<table style="width: 90%;" align="center">
 												<tr>
-													<td><strong>Total
-															Comisión</strong></td>
-													<td align="right"><strong>{{simboloMonedaFacturacion}} {{servicioVenta.totalComision
-															| number:2}}</strong></td>
+													<td><strong>Total Comisión</strong></td>
+													<td align="right"><strong>{{simboloMonedaFacturacion}}
+															{{servicioVenta.totalComision | number:2}}</strong></td>
 												</tr>
 												<tr>
-													<td><strong >Total Fee</strong></td>
-													<td align="right"><strong>{{simboloMonedaFacturacion}} {{servicioVenta.totalFee
-															| number:2}}</strong></td>
+													<td><strong>Total Fee</strong></td>
+													<td align="right"><strong>{{simboloMonedaFacturacion}}
+															{{servicioVenta.totalFee | number:2}}</strong></td>
 												</tr>
 												<tr>
-													<td><strong >Total
-															Servicios</strong></td>
-													<td align="right"><strong>{{simboloMonedaFacturacion}} {{servicioVenta.totalServicios
-															| number:2}}</strong></td>
+													<td><strong>Total Servicios</strong></td>
+													<td align="right"><strong>{{simboloMonedaFacturacion}}
+															{{servicioVenta.totalServicios | number:2}}</strong></td>
 												</tr>
 											</table>
+										</div>
+									</div>
+								</div>
+								<div class="panel-footer">
+									<button class="btn btn-primary pull-right" data-toggle="modal"
+										data-target="#modal_confirmacion">
+										Grabar<span class="fa fa-floppy-o fa-right"></span>
+									</button>
+									<button class="btn btn-primary pull-right">
+										Cancelar<span class="fa fa-times"></span>
+									</button>
+								</div>
+								<button class="btn btn-success mb-control"
+									data-box="#message-box-success" id="idbtnExito" type="button"
+									style="display: none;">BotonExito</button>
+								<button type="button" style="display: none;">BotonError</button>
+							</div>
+							<div class="modal" id="modal_confirmacion" tabindex="-1"
+								role="dialog" aria-labelledby="defModalHead" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal"
+												id="btnCerrarModalConfirmacion">
+												<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+											</button>
+											<h4 class="modal-title" id="defModalHead">Confirmación</h4>
+										</div>
+										<div class="modal-body">¿Estas seguro de grabar?</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-default"
+												ng-click="grabarVenta()">Si</button>
+											<button type="button" class="btn btn-default"
+												data-dismiss="modal">No</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="message-box message-box-success animated fadeIn"
+								id="message-box-success">
+								<div class="mb-container">
+									<div class="mb-middle">
+										<div class="mb-title">
+											<span class="fa fa-check"></span> Exito
+										</div>
+										<div class="mb-content">
+											<p>Se grabo venta satisfactoriamente</p>
+										</div>
+										<div class="mb-footer">
+											<button ng-click="aceptarMensajeExito()"
+												class="btn btn-default btn-lg pull-right mb-control-close">Aceptar</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="message-box message-box-danger animated fadeIn"
+								data-sound="fail" id="message-box-sound-2">
+								<div class="mb-container">
+									<div class="mb-middle">
+										<div class="mb-title">
+											<span class="fa fa-times"></span> Error!
+										</div>
+										<div class="mb-content">
+											<p>{{mensajeError}}</p>
+										</div>
+										<div class="mb-footer">
+											<button
+												class="btn btn-default btn-lg pull-right mb-control-close">Aceptar</button>
 										</div>
 									</div>
 								</div>

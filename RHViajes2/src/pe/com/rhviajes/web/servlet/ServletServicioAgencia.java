@@ -16,6 +16,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
@@ -110,11 +111,19 @@ public class ServletServicioAgencia extends BaseServlet {
 			}
 			else if ("consultarConfiguacion".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer idTipoServicio = Double.valueOf(mapeo.get("idTipoServicio").toString()).intValue();
-				retorno.put("objeto", soporteRemote.consultarConfiguracionServicio(idTipoServicio,this.obtenerIdEmpresa(request)));
-				retorno.put("objeto2",consultaNegocioSessionRemote.consultarMaestroServicio(idTipoServicio, this.obtenerIdEmpresa(request)));
-				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
-				retorno.put("exito", true);
+				if (mapeo.get("idTipoServicio") != null && StringUtils.isNotBlank(mapeo.get("idTipoServicio").toString())){
+					Integer idTipoServicio = Double.valueOf(mapeo.get("idTipoServicio").toString()).intValue();
+					retorno.put("objeto", soporteRemote.consultarConfiguracionServicio(idTipoServicio,this.obtenerIdEmpresa(request)));
+					retorno.put("objeto2",consultaNegocioSessionRemote.consultarMaestroServicio(idTipoServicio, this.obtenerIdEmpresa(request)));
+					retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+					retorno.put("exito", true);
+				}
+				else{
+					retorno.put("objeto", null);
+					retorno.put("objeto2",null);
+					retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+					retorno.put("exito", true);
+				}
 			}
 			else if("proveedoresXServicio".equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
