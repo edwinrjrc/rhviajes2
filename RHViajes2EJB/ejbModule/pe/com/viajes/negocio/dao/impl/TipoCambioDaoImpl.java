@@ -243,7 +243,7 @@ public class TipoCambioDaoImpl implements TipoCambioDao {
 		String sql = "";
 
 		try {
-			sql = "{ ? = call negocio.fn_consultartipocambiomonto(?,?,?,?) }";
+			sql = "{ ? = call negocio.fn_consultartipocambiomonto(?,?,?) }";
 			conn = UtilConexion.obtenerConexion();
 			cs = conn.prepareCall(sql);
 			cs.registerOutParameter(1, Types.DECIMAL);

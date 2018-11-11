@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -237,11 +238,19 @@ public class ServletServicioAgencia extends BaseServlet {
 								pasajero.getNacionalidad().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("nacionalidad")));
 								pasajero.setApellidoPaterno(UtilWeb.obtenerCadenaMapeo(map.get("apePaterno")));
 								pasajero.setApellidoMaterno(UtilWeb.obtenerCadenaMapeo(map.get("apeMaterno")));
+								pasajero.setTelefono1(UtilWeb.obtenerCadenaMapeo(map.get("telefono1")));
+								pasajero.setTelefono2(UtilWeb.obtenerCadenaMapeo(map.get("telefono2")));
 								pasajero.setCorreoElectronico(UtilWeb.obtenerCadenaMapeo(map.get("correoElectronico")));
 								pasajero.setFechaVctoPasaporte(UtilWeb.obtenerFechaMapeo(map.get("fechaVctoPasaporte")));
 								pasajero.setFechaNacimiento(UtilWeb.obtenerFechaMapeo(map.get("fechaNacimiento")));
 								pasajero.getRelacion().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("codigoRelacion")));
 								pasajero.getRelacion().setNombre(UtilWeb.obtenerCadenaMapeo(map.get("relacion")));
+								pasajero.setNumeroPasajeroFrecuente(UtilWeb.obtenerCadenaMapeo(map.get("numPasajeroFrecuente")));
+								pasajero.getAerolinea().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("aerolinea")));
+								pasajero.setCodigoReserva(UtilWeb.obtenerCadenaMapeo(map.get("codigoReserva")));
+								pasajero.setNumeroBoleto(UtilWeb.obtenerCadenaMapeo(map.get("numBoleto")));
+								pasajero.getNacionalidad().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("nacionalidad")));
+								pasajero.getPais().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("nacionalidad")));
 								pasajero.setEmpresa(this.obtenerEmpresa(request));
 								pasajero.setUsuarioCreacion(this.obtenerUsuario(request));
 								pasajero.setUsuarioModificacion(this.obtenerUsuario(request));
@@ -307,6 +316,7 @@ public class ServletServicioAgencia extends BaseServlet {
 						detalle.setPrecioUnitarioAnterior(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("precioBaseInicial")));
 						detalle.setPrecioUnitario(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("precioUnitario")));
 						detalle.setTotal(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("totalServicio")));
+						detalle.setTipoCambio(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("tipoCambio")));
 						detalle.setAplicaIGV(UtilWeb.obtenerBooleanMapeo(detalleMap.get("aplicaIgv")));
 						detalle.getServicioProveedor().getComision().getTipoComision().setCodigoEntero(UtilWeb.obtenerIntMapeo(detalleMap.get("tipoComision")));
 						detalle.getServicioProveedor().getComision().setValorComision(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("valorComision")));
@@ -321,8 +331,8 @@ public class ServletServicioAgencia extends BaseServlet {
 						}
 						Map<String, Object> mapHotel = (Map<String, Object>) detalleMap.get("hotel");
 						if (mapHotel != null){
-							detalle.getHotel().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapOperador.get("codigoEntero")));
-							detalle.getHotel().setNombre(UtilWeb.obtenerCadenaMapeo(mapOperador.get("nombres")));
+							detalle.getHotel().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapHotel.get("codigoEntero")));
+							detalle.getHotel().setNombre(UtilWeb.obtenerCadenaMapeo(mapHotel.get("nombres")));
 						}
 						detalle.setMontoComision(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("totalComision")));
 						detalle.getServicioProveedor().getComision().setValorIGVComision(UtilWeb.obtenerBigDecimalMapeo(detalleMap.get("totalIgvComision")));
@@ -333,7 +343,17 @@ public class ServletServicioAgencia extends BaseServlet {
 						detalle.setUsuarioModificacion(this.obtenerUsuario(request));
 						detalle.setIpCreacion(this.obtenerIp(request));
 						detalle.setIpModificacion(this.obtenerIp(request));
-						listaDetalle = utilNegocioSessionRemote.agregarServicioVenta(servicio.getMoneda().getCodigoEntero(), listaDetalle, detalle);
+						detalle.setDescripcionServicio(UtilWeb.obtenerCadenaMapeo(detalleMap.get("descripcionServicio")));
+						Map<String, Object> mapServicioPadre = (Map<String, Object>) detalleMap.get("servicioPadre");
+						if (mapServicioPadre != null){
+							detalle.getServicioPadre().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapServicioPadre.get("codigo")));
+						}
+						if (detalle.getTipoServicio().isServicioPadre()){
+							listaDetalle = utilNegocioSessionRemote.agregarServicioVenta(servicio.getMoneda().getCodigoEntero(), listaDetalle, detalle);
+						}
+						else{
+							listaDetalle.add(detalle);
+						}
 						servicio.setListaDetalleServicio(listaDetalle);
 					}
 				}
@@ -352,6 +372,22 @@ public class ServletServicioAgencia extends BaseServlet {
 				retorno.put("mensaje", "Registro Satisfactorio");
 				retorno.put("exito", true);
 			}
+			else if ("consultarServicio".equals(accion)){
+				int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+				int idEmpresa = this.obtenerIdEmpresa(request);
+				ServicioAgencia servicioVenta = consultaNegocioSessionRemote.consultarServicioVenta(idServicio, idEmpresa);
+				HttpSession session = this.obtenerSession(request);
+				session.setAttribute("servicioVenta", servicioVenta);
+				retorno.put("mensaje", "Consulta Satisfactoria");
+				retorno.put("exito", true);
+			}
+			else if ("verServicio".equals(accion)){
+				HttpSession session = this.obtenerSession(request);
+				retorno.put("objeto", session.getAttribute("servicioVenta"));
+				retorno.put("mensaje", "Consulta Satisfactoria");
+				retorno.put("exito", true);
+			}
+				
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
 			retorno.put("mensaje", e.getMessage());
@@ -361,6 +397,8 @@ public class ServletServicioAgencia extends BaseServlet {
 			retorno.put("mensaje", e.getMessage());
 			retorno.put("exito", false);
 		}
-		respuesta.println(gson.toJson(retorno));
+		String buffer = gson.toJson(retorno);
+		System.out.println(buffer);
+		respuesta.println(buffer);
 	}
 }

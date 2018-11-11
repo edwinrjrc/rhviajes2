@@ -2,14 +2,13 @@ package pe.com.rhviajes.web.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,16 +18,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pe.com.rhviajes.web.util.UtilWeb;
+import pe.com.viajes.bean.negocio.Cliente;
+import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
-import pe.com.viajes.negocio.exception.ConversionStringDateException;
-import pe.com.viajes.negocio.exception.ConvertirStringAIntegerException;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
 
 /**
- * Servlet implementation class ServletConsultas
+ * Servlet implementation class ServletCliente
  */
-@WebServlet("/servlets/ServletConsultas")
-public class ServletConsultas extends BaseServlet{
+@WebServlet("/servlets/ServletCliente")
+public class ServletCliente extends BaseServlet {
 	private static Logger log = Logger.getLogger(ServletServicioAgencia.class);
 	private static final long serialVersionUID = 1L;
 	
@@ -36,9 +35,9 @@ public class ServletConsultas extends BaseServlet{
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
        
     /**
-     * @see HttpServlet#HttpServlet()
+     * @see BaseServlet#BaseServlet()
      */
-    public ServletConsultas() {
+    public ServletCliente() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -61,54 +60,45 @@ public class ServletConsultas extends BaseServlet{
 		String accion = request.getParameter("accion");
 		Map<String,Object> retorno = new HashMap<String, Object>();
 		try {
-			if("consultaTipoCambio".equals(accion)){
+			if (ACCION_LISTAR.equals(accion)){
+				Cliente cliente = new Cliente();
+				cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
+				retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente2(cliente));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
+				retorno.put("exito", true);
+			}
+			else if (ACCION_BUSCAR.equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				if (request.getParameter("formulario") != null && mapeo.get("monedaOrigen") != null && mapeo.get("monedaDestino") != null){
-					Integer idMonedaOrigen = UtilWeb.convertirStringAInteger(mapeo.get("monedaOrigen").toString());
-					Integer idMonedaDestino = UtilWeb.convertirStringAInteger(mapeo.get("monedaDestino").toString());
-					Date fecha = null;
-					if (mapeo.get("fecha") != null){
-						fecha = UtilWeb.convertirStringADate(mapeo.get("fecha").toString());
-					}
-					else{
-						fecha = new Date();
-					}
-					Integer idEmpresa = obtenerIdEmpresa(request);
-					retorno.put("objeto", consultaNegocioSessionRemote.consultarTipoCambio(idMonedaOrigen, idMonedaDestino,fecha,idEmpresa));
-					retorno.put("mensaje", "Consulta exitosa");
-					retorno.put("exito", true);
+				Cliente cliente = new Cliente();
+				if (mapeo.get("tipoDocumento") != null){
+					cliente.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("tipoDocumento")));
 				}
-			}
-			else if("consultaTipoServicio".equals(accion)){
-				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer tipoServicio = UtilWeb.convertirStringAInteger(mapeo.get("tipoServicio").toString());
-				Integer idEmpresa = obtenerIdEmpresa(request);
-				retorno.put("objeto", consultaNegocioSessionRemote.consultarTipoServicio(tipoServicio , idEmpresa));
-				retorno.put("mensaje", "Consulta exitosa");
+				if (mapeo.get("numeroDocumento") != null){
+					cliente.getDocumentoIdentidad().setNumeroDocumento(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroDocumento")));
+				}
+				if (mapeo.get("nombreCliente") != null){
+					cliente.setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
+				}
+				cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
+				retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente2(cliente));
+				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
-			else if("consultarProveedor".equals(accion)){
-				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Integer idProveedor = UtilWeb.convertirStringAInteger(mapeo.get("idProveedor").toString());
-				Integer idEmpresa = obtenerIdEmpresa(request);
-				retorno.put("objeto", consultaNegocioSessionRemote.consultarProveedor(idProveedor , idEmpresa));
-				retorno.put("mensaje", "Consulta exitosa");
-				retorno.put("exito", true);
-			}
-		} catch (ConvertirStringAIntegerException e) {
-			log.error(e.getMessage(), e);
-			retorno.put("mensaje", e.getMessage());
-			retorno.put("exito", false);
-		} catch (ConversionStringDateException e) {
-			log.error(e.getMessage(), e);
-			retorno.put("mensaje", e.getMessage());
-			retorno.put("exito", false);
 		} catch (ErrorConsultaDataException e) {
 			log.error(e.getMessage(), e);
 			retorno.put("mensaje", e.getMessage());
 			retorno.put("exito", false);
+		} catch (SQLException e) {
+			log.error(e.getMessage(), e);
+			retorno.put("mensaje", e.getMessage());
+			retorno.put("exito", false);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			retorno.put("mensaje", e.getMessage());
+			retorno.put("exito", false);
 		}
-		respuesta.println(gson.toJson(retorno));
+		String buffer = gson.toJson(retorno);
+		respuesta.println(buffer);
 	}
 
 }

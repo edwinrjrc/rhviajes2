@@ -27,6 +27,8 @@
 	<li class="xn-openable"><a href="#"><span
 			class="fa fa-files-o"></span> <span class="xn-text">Negocio</span></a>
 		<ul>
+			<li><a href="/RHViajes2/paginas/negocio/cliente/adm.jsp"><span class="fa fa-user"></span>
+					Administrar Clientes</a></li>
 			<li><a href="/RHViajes2/paginas/negocio/servicios/adm.jsp"><span class="fa fa-image"></span>
 					Registrar Venta Servicio</a></li>
 		</ul></li>

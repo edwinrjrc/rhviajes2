@@ -195,24 +195,18 @@ public class UtilNegocioSession implements UtilNegocioSessionRemote,
 			List<DetalleServicioAgencia> listaServiciosVenta,
 			DetalleServicioAgencia detalleServicio)
 			throws ErrorRegistroDataException, SQLException, Exception {
-
 		Connection conn = null;
-
 		try {
 			conn = UtilConexion.obtenerConexion();
-
 			MaestroServicioDao maestroServicioDao = new MaestroServicioDaoImpl();
 			DestinoDao destinoDao = new DestinoDaoImpl();
 			ProveedorDao proveedorDao = new ProveedorDaoImpl();
-			ComunDao comunDao = new ComunDaoImpl();
 			TipoCambioDao tipoCambioDao = new TipoCambioDaoImpl(detalleServicio.getEmpresa().getCodigoEntero());
 			MaestroDao maestroDao = new MaestroDaoImpl();
-
 			TipoCambio tipoCambio = tipoCambioDao.consultarTipoCambio(
 					detalleServicio.getMoneda().getCodigoEntero(),
 					idMonedaServicio, conn);
 			detalleServicio.setTipoCambio(tipoCambio.getMontoCambio());
-			
 			Maestro hijoMaestro = new Maestro();
 			hijoMaestro.setCodigoMaestro(UtilEjb.obtenerEnteroPropertieMaestro("maestroMonedas", "aplicacionDatosEjb"));
 			hijoMaestro.setCodigoEntero(idMonedaServicio);

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="es" ng-app="serviciosapp">
+<html lang="es" ng-app="clientesapp">
 <head>
 <!-- META SECTION -->
 <title>RHViajes 2</title>
@@ -151,24 +151,15 @@
 			</ul>
 			<!-- END BREADCRUMB -->
 			<!-- PAGE CONTENT WRAPPER -->
-			<div class="page-content-wrap" ng-controller="serviciosventaCtrl">
+			<div class="page-content-wrap" ng-controller="admclientectrl">
 				<div class="row">
 					<div class="col-md-12">
 						<form class="form-horizontal">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<h5 class="panel-title">Administrar Venta Servicio</h5>
+									<h5 class="panel-title">Administrar Clientes</h5>
 								</div>
 								<div class="panel-body">
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Id
-											Venta</label>
-										<div class="col-md-2 col-xs-12">
-											<input type="number" class="form-control"
-												ng-model="formularioBusqueda.idVenta" />
-										</div>
-										<div class="col-md-8">&nbsp;</div>
-									</div>
 									<div class="form-group">
 										<label class="col-md-2 col-xs-12 control-label">Cliente</label>
 										<div class="col-md-8 col-xs-12">
@@ -196,27 +187,10 @@
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Fecha
-											Desde</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="date" name="fechadesde"
-												ng-model="formularioBusqueda.fechaDesde"
-												class="form-control">
-										</div>
-										<label class="col-md-2 col-xs-12 control-label">Fecha
-											Hasta</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="date" name="fechahasta"
-												ng-model="formularioBusqueda.fechaHasta"
-												class="form-control">
-										</div>
-									</div>
-									<div class="form-group">
 										<div class="col-md-10 col-xs-12" align="center">
 											<button class="btn btn-primary" ng-click="limpiarBusqueda()">Limpiar</button>
-											<button class="btn btn-primary" ng-click="buscarVentas()">Buscar</button>
-											<button class="btn btn-primary"
-												ng-click="nuevoRegistroVenta()">Nuevo</button>
+											<button class="btn btn-primary" ng-click="buscarClientes()">Buscar</button>
+											<button class="btn btn-primary" ng-click="nuevoRegistroCliente()">Nuevo</button>
 										</div>
 									</div>
 								</div>
@@ -224,31 +198,23 @@
 									<table class="table">
 										<thead>
 											<tr>
-												<th style="width: 5%; text-align: center;">Id</th>
-												<th style="width: 30%; text-align: left;">Cliente</th>
-												<th style="width: 10%; text-align: center;">Fecha
-													Compra</th>
-												<th style="width: 10%; text-align: center;">Monto
-													Compra</h>
-												<th style="width: 10%; text-align: center;">Estado Pago</th>
-												<th style="width: 10%; text-align: center;">Estado
-													Servicio</th>
-												<th style="width: 5%; text-align: center;">Opciones</th>
+												<th style="width: 5%; text-align: center;"></th>
+												<th style="width: 10%; text-align: center;">Documento</th>
+												<th style="width: 30%; text-align: center;">Nombre</th>
+												<th style="width: 40%; text-align: center;">Dirección</h>
+												<th style="width: 10%; text-align: center;">Teléfono</th>
+												<th style="width: 5%; text-align: center;"></th>
 											</tr>
 										</thead>
 										<tbody>
-											<tr ng-repeat="detalle in listaFiltrada">
-												<td style="width: 5%; text-align: center;">{{detalle.codigoEntero}}</td>
-												<td style="width: 30%; text-align: left;">{{detalle.cliente.nombres}}</td>
-												<td style="width: 10%; text-align: center;">{{detalle.fechaServicio
-													| date: 'dd/MM/yyyy'}}</td>
-												<td style="width: 10%; text-align: right;">{{detalle.moneda.abreviatura}}
-													{{detalle.montoTotalServicios | number : 2}}</td>
-												<td style="width: 10%; text-align: center;">{{detalle.estadoPago.nombre}}</td>
-												<td style="width: 10%; text-align: center;">{{detalle.estadoServicio.nombre}}</td>
-												<td style="width: 5%; text-align: center;"><a href="#"
-													ng-click="verServicio(detalle.codigoEntero)"><i
-														class="fa fa-eye"></i></a></td>
+											<tr ng-repeat="item in listaFiltrada">
+												<td style="width: 5%; text-align: center;"></td>
+												<td style="width: 10%; text-align: left;">{{item.documentoIdentidad.tipoDocumento.nombre}} - {{item.documentoIdentidad.numeroDocumento}}</td>
+												<td style="width: 30%; text-align: left;">{{item.nombres}} {{item.apellidoPaterno}} {{item.apellidoMaterno}}</td>
+												<td style="width: 40%; text-align: left;">{{item.direccion.direccion}}</td>
+												<td style="width: 10%; text-align: center;">{{item.telefonoMovil.numeroTelefono}}</td>
+												<td style="width: 5%; text-align: center;"></td>
+												
 											</tr>
 										</tbody>
 										<tfoot>
@@ -369,6 +335,6 @@
 		
 	</script>
 	<script type="text/javascript"
-		src="/RHViajes2/paginas/negocio/servicios/js/controlador.js"></script>
+		src="/RHViajes2/paginas/negocio/cliente/js/controlador.js"></script>
 </body>
 </html>

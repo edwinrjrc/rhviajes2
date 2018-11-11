@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="es" ng-app="serviciosapp">
+<html lang="es" ng-app="clientesapp">
 <head>
 <!-- META SECTION -->
 <title>RHViajes 2</title>
@@ -22,7 +22,7 @@
 			<jsp:include page="/recursos/include/menu.jsp"></jsp:include>
 		</div>
 		<!-- PAGE CONTENT -->
-		<div class="page-content">
+		<div class="page-content" ng-controller="admclientectrl">
 			<!-- START X-NAVIGATION VERTICAL -->
 			<ul class="x-navigation x-navigation-horizontal x-navigation-panel">
 				<!-- TOGGLE NAVIGATION -->
@@ -151,119 +151,160 @@
 			</ul>
 			<!-- END BREADCRUMB -->
 			<!-- PAGE CONTENT WRAPPER -->
-			<div class="page-content-wrap" ng-controller="serviciosventaCtrl">
+			<div class="page-content-wrap">
 				<div class="row">
 					<div class="col-md-12">
 						<form class="form-horizontal">
 							<div class="panel panel-default">
 								<div class="panel-heading">
-									<h5 class="panel-title">Administrar Venta Servicio</h5>
+									<h5 class="panel-title">Administrar Clientes</h5>
 								</div>
 								<div class="panel-body">
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Id
-											Venta</label>
-										<div class="col-md-2 col-xs-12">
-											<input type="number" class="form-control"
-												ng-model="formularioBusqueda.idVenta" />
-										</div>
-										<div class="col-md-8">&nbsp;</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Cliente</label>
-										<div class="col-md-8 col-xs-12">
-											<input type="text" class="form-control"
-												ng-model="formularioBusqueda.nombreCliente">
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Tipo
-											Documento</label>
-										<div class="col-md-3 col-xs-12">
-											<select class="form-control"
-												ng-model="formularioBusqueda.tipoDocumento">
-												<option value="">-Seleccione-</option>
-												<option ng-repeat="item in listaTipoDocumento"
-													ng-value="item.codigoEntero">{{item.nombre}}</option>
-											</select>
-										</div>
-										<label class="col-md-2 col-xs-12 control-label">Número
-											Documento</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="text" class="form-control"
-												name="numeroDocumento"
-												ng-model="formularioBusqueda.numeroDocumento">
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Fecha
-											Desde</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="date" name="fechadesde"
-												ng-model="formularioBusqueda.fechaDesde"
-												class="form-control">
-										</div>
-										<label class="col-md-2 col-xs-12 control-label">Fecha
-											Hasta</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="date" name="fechahasta"
-												ng-model="formularioBusqueda.fechaHasta"
-												class="form-control">
-										</div>
-									</div>
-									<div class="form-group">
-										<div class="col-md-10 col-xs-12" align="center">
-											<button class="btn btn-primary" ng-click="limpiarBusqueda()">Limpiar</button>
-											<button class="btn btn-primary" ng-click="buscarVentas()">Buscar</button>
-											<button class="btn btn-primary"
-												ng-click="nuevoRegistroVenta()">Nuevo</button>
+									<div class="panel panel-default tabs">
+										<ul class="nav nav-tabs" role="tablist">
+											<li class="active"><a href="#tab-basica" role="tab"
+												data-toggle="tab">Información Basica</a></li>
+											<li><a href="#tab-direcciones" role="tab"
+												data-toggle="tab">Direcciones</a></li>
+											<li><a href="#tab-contactos" role="tab"
+												data-toggle="tab">Contactos</a></li>
+											<li><a href="#tab-adjuntos" role="tab" data-toggle="tab">Archivos
+													Adjuntos</a></li>
+										</ul>
+										<div class="panel-body tab-content">
+											<div class="tab-pane active" id="tab-basica">
+												<div class="row">
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Tipo
+															Documento</label>
+														<div class="col-md-4 col-xs-12">
+															<select class="form-control"
+																ng-model="detalleServicio.idTipoServicio"
+																ng-change="consultarConfiguracionServicio()">
+																<option value="">-Seleccione-</option>
+																<option ng-repeat="item in listaTipoDocumento"
+																	ng-value="item.codigoEntero">{{item.nombre}}</option>
+															</select>
+														</div>
+														<label class="col-md-2 col-xs-12 control-label">Número
+															Documento</label>
+														<div class="col-md-4 col-xs-12">
+															<input class="form-control">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Nombres</label>
+														<div class="col-md-10 col-xs-12">
+															<input class="form-control">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Razón
+															Social</label>
+														<div class="col-md-10 col-xs-12">
+															<input class="form-control">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Apellido
+															Paterno</label>
+														<div class="col-md-4 col-xs-12">
+															<input class="form-control">
+														</div>
+														<label class="col-md-2 col-xs-12 control-label">Apellido
+															Materno</label>
+														<div class="col-md-4 col-xs-12">
+															<input class="form-control">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Estado
+															Civil</label>
+														<div class="col-md-4 col-xs-12">
+															<select class="form-control">
+																<option value="">-Seleccione-</option>
+																<option ng-repeat="item in listaEstadoCivil"
+																	ng-value="item.codigoEntero">{{item.nombre}}</option>
+															</select>
+														</div>
+														<label class="col-md-2 col-xs-12 control-label">Genero</label>
+														<div class="col-md-4 col-xs-12">
+															<select class="form-control"
+																ng-model="detalleServicio.idTipoServicio"
+																ng-change="consultarConfiguracionServicio()">
+																<option value="">-Seleccione-</option>
+																<option value="M">Masculino</option>
+																<option value="F">Femenino</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Fecha
+															Nacimiento</label>
+														<div class="col-md-4 col-xs-12">
+															<input class="form-control" type="date">
+														</div>
+														<label class="col-md-2 col-xs-12 control-label">&nbsp;</label>
+														<div class="col-md-4 col-xs-12">&nbsp;</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-2 col-xs-12 control-label">Número
+															Pasaporte</label>
+														<div class="col-md-4 col-xs-12">
+															<input class="form-control" type="text">
+														</div>
+														<label class="col-md-2 col-xs-12 control-label">Fecha
+															Vcto Pasaporte</label>
+														<div class="col-md-4 col-xs-12">
+															<input class="form-control" type="date">
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="tab-pane active" id="tab-direcciones">
+												<div class="row">
+													<div class="col-md-12">
+														<table class="table">
+															<thead>
+																<tr>
+																	<td colspan="5">
+																		<button class="btn btn-primary">Agregar</button>
+																	</td>
+																</tr>
+																<tr>
+																	<td>Id</td>
+																	<td>Direccion</td>
+																	<td>Ubigeo</td>
+																	<td>Es Principal</td>
+																	<td></td>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+											<div class="tab-pane active" id="tab-contactos"></div>
+											<div class="tab-pane active" id="tab-adjuntos"></div>
 										</div>
 									</div>
 								</div>
-								<div class="panel-body">
-									<table class="table">
-										<thead>
-											<tr>
-												<th style="width: 5%; text-align: center;">Id</th>
-												<th style="width: 30%; text-align: left;">Cliente</th>
-												<th style="width: 10%; text-align: center;">Fecha
-													Compra</th>
-												<th style="width: 10%; text-align: center;">Monto
-													Compra</h>
-												<th style="width: 10%; text-align: center;">Estado Pago</th>
-												<th style="width: 10%; text-align: center;">Estado
-													Servicio</th>
-												<th style="width: 5%; text-align: center;">Opciones</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr ng-repeat="detalle in listaFiltrada">
-												<td style="width: 5%; text-align: center;">{{detalle.codigoEntero}}</td>
-												<td style="width: 30%; text-align: left;">{{detalle.cliente.nombres}}</td>
-												<td style="width: 10%; text-align: center;">{{detalle.fechaServicio
-													| date: 'dd/MM/yyyy'}}</td>
-												<td style="width: 10%; text-align: right;">{{detalle.moneda.abreviatura}}
-													{{detalle.montoTotalServicios | number : 2}}</td>
-												<td style="width: 10%; text-align: center;">{{detalle.estadoPago.nombre}}</td>
-												<td style="width: 10%; text-align: center;">{{detalle.estadoServicio.nombre}}</td>
-												<td style="width: 5%; text-align: center;"><a href="#"
-													ng-click="verServicio(detalle.codigoEntero)"><i
-														class="fa fa-eye"></i></a></td>
-											</tr>
-										</tbody>
-										<tfoot>
-											<tr>
-												<td colspan="7" align="center">
-													<ul uib-pagination total-items="totalItems"
-														ng-model="currentPage" max-size="maxSize"
-														class="pagination-sm" boundary-links="true"
-														ng-change="pageChanged()" items-per-page="itemsXpagina"
-														first-text="Inicio" last-text="Fin" next-text="Siguiente"
-														previous-text="anterior"></ul>
-												</td>
-											</tr>
-										</tfoot>
-									</table>
+								<div class="panel-footer">
+									<div class="row">
+										<div class="col-md-12 col-xs-12">
+											<button class="btn btn-primary" type="button">
+												<span class="fa fa-save"></span>Grabar
+											</button>
+										</div>
+									</div>
 								</div>
 							</div>
 						</form>
@@ -369,6 +410,6 @@
 		
 	</script>
 	<script type="text/javascript"
-		src="/RHViajes2/paginas/negocio/servicios/js/controlador.js"></script>
+		src="/RHViajes2/paginas/negocio/cliente/js/controlador.js"></script>
 </body>
 </html>

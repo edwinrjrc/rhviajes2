@@ -34,6 +34,8 @@ public class Direccion extends BaseNegocio {
 	private String manzana;
 	private String lote;
 	
+	private String telefonoPrincipal;
+	
 	private boolean nacional;
 
 	private boolean principal;
@@ -315,6 +317,20 @@ public class Direccion extends BaseNegocio {
 	 */
 	public void setNacional(boolean nacional) {
 		this.nacional = nacional;
+	}
+
+	/**
+	 * @return the telefonoPrincipal
+	 */
+	public String getTelefonoPrincipal() {
+		return telefonoPrincipal;
+	}
+
+	/**
+	 * @param telefonoPrincipal the telefonoPrincipal to set
+	 */
+	public void setTelefonoPrincipal(String telefonoPrincipal) {
+		this.telefonoPrincipal = telefonoPrincipal;
 	}
 
 }

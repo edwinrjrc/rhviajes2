@@ -17,7 +17,6 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.paginas = 0;
 	$scope.listaTipoDocumento = [];
 	$scope.maxSize = 5;
-	$scope.numPages = 5;
 	
 	$scope.nuevoRegistroVenta = function (){
 		location.href="formulario.jsp";
@@ -40,8 +39,6 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 							 $scope.mostrarMensajeError = true;
 							 $scope.listaVentas = response.data.objeto;
 							 $scope.totalItems = $scope.listaVentas.length;
-							 $scope.paginas = parseInt($scope.listaVentas.length/$scope.itemsXpagina);
-							 $scope.paginas = $scope.paginas + 1;
 							 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
 						 }
 					 }
@@ -67,13 +64,11 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 								 $scope.mensaje = response.data.mensaje;
 								 $scope.listaVentas = response.data.objeto;
 								 $scope.totalItems = $scope.listaVentas.length;
-								 $scope.paginas = parseInt($scope.totalItems /$scope.itemsXpagina);
-								 $scope.paginas = $scope.paginas + 1;
 								 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaVentas);
+								 console.log($scope.listaFiltrada);
 							 }
 						 }
 					 }
-					 
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
@@ -154,6 +149,23 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.setPage = function (pageNo) {
 		$scope.currentPage = pageNo;
 	};
+	
+	$scope.verServicio = function(codigoServicio){
+		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarServicio', idServicio:codigoServicio}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 location.href="verservicio.jsp";
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	}
 	
 	console.log("Consulta");
 	$scope.listarTipoDocumento();

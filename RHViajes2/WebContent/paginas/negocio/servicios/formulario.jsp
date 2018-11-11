@@ -410,7 +410,7 @@
 										</div>
 										<div class="form-group"
 											ng-show="configuracionServicio.muestraPasajeros">
-											<a href="#" onclick="modalShowPasajeros()"
+											<a href="#" ng-click="mostrarModalPasajeros()"
 												data-toggle="modal" data-target="#modalPasajeros"> <label
 												class="col-md-2 col-xs-12 control-label">Pasajeros</label></a>
 											<div class="col-md-10 col-xs-12">{{descripcionPasajeros}}</div>
@@ -601,9 +601,9 @@
 																			<td>{{item.telefono2}}</td>
 																			<td>{{item.relacion}}</td>
 																			<td><a href="#"
-																				ng-click="eliminarPasajero(item.id)"><i
+																				ng-click="consultaLocalPaxs(item.id)"><i
 																					class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-																				<a href="#" ng-click="consultaLocalPaxs(item.id)"><i
+																				<a href="#" ng-click="eliminarPasajero(item.id)"><i
 																					class="fa fa-trash-o" aria-hidden="true"></i></a></td>
 																		</tr>
 																	</tbody>
@@ -620,7 +620,7 @@
 											</div>
 										</div>
 										<div class="form-group"
-											ng-show="configuracionServicio.muestraOperadora && configuracionServicio.muestraHotel">
+											ng-show="configuracionServicio.muestraHotel">
 											<label class="col-md-2 col-xs-12 control-label"
 												ng-show="configuracionServicio.muestraHotel">Hotel</label>
 											<div class="col-md-4 col-xs-12"
@@ -679,7 +679,7 @@
 												<div class="col-md-4 col-xs-12">
 													<select ng-model="detalleServicio.idmoneda"
 														ng-show="configuracionServicio.muestraPrecioBase"
-														class="form-control"><option
+														class="form-control" ng-change="consultarTipoCambio()"><option
 															ng-repeat="item in listaMonedas"
 															ng-value="item.codigoEntero">{{item.nombre}}</option></select>
 												</div>
@@ -689,6 +689,16 @@
 														ng-show="configuracionServicio.muestraPrecioBase && muestraAplicaIgv">Con
 														IGV</span>
 												</div>
+											</div>
+										</div>
+										<div class="form-group" ng-show="configuracionServicio.muestraFechaServicio || configuracionServicio.muestraFechaRegreso">
+											<label class="col-md-2 col-xs-12 control-label" ng-show="configuracionServicio.muestraFechaServicio">Fecha Servicio</label>
+											<div class="col-md-4 col-xs-12" ng-show="configuracionServicio.muestraFechaServicio">
+												<input type="date" class="form-control" ng-model="detalleServicio.fechaServicio">
+											</div>
+											<label class="col-md-2 col-xs-12 control-label" ng-show="configuracionServicio.muestraFechaRegreso">Fecha Regreso</label>
+											<div class="col-md-4 col-xs-12" ng-show="configuracionServicio.muestraFechaRegreso">
+												<input type="date" class="form-control" ng-model="detalleServicio.fechaRegreso">
 											</div>
 										</div>
 										<div class="form-group"
@@ -704,20 +714,19 @@
 												</select>
 											</div>
 										</div>
-										<div class="form-group"
-											ng-show="muestraComision && configuracionServicio.muestraPrecioBase">
+										<div class="form-group">
 											<label class="col-md-2 col-xs-12 control-label"
-												ng-show="muestraComision">Aplicar IGV</label>
-											<div class="col-md-4 col-xs-12">
+												ng-show="muestraAplicaIgv">Aplicar IGV</label>
+											<div class="col-md-4 col-xs-12" ng-show="muestraAplicaIgv">
 												<input ng-model="detalleServicio.aplicaIgv"
 													style="width: 100px; text-align: right;" type="checkbox"
-													ng-show="muestraComision">
+													ng-show="muestraAplicaIgv">
 											</div>
 											<label class="col-md-2 col-xs-12 control-label"
 												ng-show="configuracionServicio.muestraPrecioBase">Tarifa
 												Negociada</label>
 											<div class="col-md-4 col-xs-12">
-												<input ng-model="detalleServicio.precioBaseInicial"
+												<input ng-model="detalleServicio.tarifaNegociada"
 													style="width: 100px; text-align: right;" type="checkbox"
 													ng-show="configuracionServicio.muestraPrecioBase">
 											</div>
@@ -777,9 +786,9 @@
 															'dd/MM/yyyy'}}</td>
 														<td class="dataTablaCadena">{{item.descripcionServicio}}</td>
 														<td class="dataTabla">{{item.servicioProveedor.proveedor.nombre}}</td>
-														<td class="dataTablaNumero">{{item.precioUnitario |
+														<td class="dataTablaNumero">{{item.monedaFacturacion.simboloMoneda}} {{item.precioUnitario |
 															number : 2}}</td>
-														<td class="dataTablaNumero">{{item.totalServicio |
+														<td class="dataTablaNumero">{{item.monedaFacturacion.simboloMoneda}} {{item.totalServicio |
 															number : 2}}</td>
 														<td class="dataTabla"><a href="#"
 															ng-click="eliminarServicio(item.codigoEntero)"><i
@@ -816,7 +825,7 @@
 										data-target="#modal_confirmacion">
 										Grabar<span class="fa fa-floppy-o fa-right"></span>
 									</button>
-									<button class="btn btn-primary pull-right">
+									<button class="btn btn-primary pull-right" onclick="location.href='/RHViajes2/paginas/negocio/servicios/adm.jsp'">
 										Cancelar<span class="fa fa-times"></span>
 									</button>
 								</div>

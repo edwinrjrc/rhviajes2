@@ -378,4 +378,24 @@ public class UtilEjb extends UtilApp {
 		}
 		return pasajeros;
 	}
+	
+	public static DetalleServicioAgencia clonarDetalleServicioAgencia(DetalleServicioAgencia detalleServicio){
+		DetalleServicioAgencia clonada = new DetalleServicioAgencia();
+		clonada.setAerolinea(detalleServicio.getAerolinea());
+		clonada.setAgrupado(detalleServicio.isAgrupado());
+		clonada.setAplicaIGV(detalleServicio.isAplicaIGV());
+		clonada.setCantidad(detalleServicio.getCantidad());
+		clonada.setCantidadAgrupados(detalleServicio.getCantidadAgrupados());
+		clonada.setCodigoCadena(detalleServicio.getCodigoCadena());
+		clonada.setCodigoEntero(detalleServicio.getCodigoEntero());
+		clonada.setCodigoEnteroAgrupados(detalleServicio.getCodigoEnteroAgrupados());
+		clonada.setCodigoReserva(detalleServicio.getCodigoReserva());
+		clonada.setComprobanteAsociado(detalleServicio.getComprobanteAsociado());
+		clonada.setConfiguracionTipoServicio(detalleServicio.getConfiguracionTipoServicio());
+		clonada.setConIGV(detalleServicio.isConIGV());
+		clonada.setConsolidador(detalleServicio.getConsolidador());
+		clonada.setDescripcionServicio(detalleServicio.getDescripcionServicio());
+		clonada.setDias(detalleServicio.getDias());
+		return clonada;
+	}
 }

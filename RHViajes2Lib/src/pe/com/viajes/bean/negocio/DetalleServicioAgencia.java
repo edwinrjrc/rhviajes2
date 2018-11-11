@@ -311,9 +311,6 @@ public class DetalleServicioAgencia extends BaseNegocio {
 	 * @return the serviciosHijos
 	 */
 	public List<DetalleServicioAgencia> getServiciosHijos() {
-		if (serviciosHijos == null) {
-			serviciosHijos = new ArrayList<DetalleServicioAgencia>();
-		}
 		return serviciosHijos;
 	}
 
@@ -839,4 +836,8 @@ public class DetalleServicioAgencia extends BaseNegocio {
 		this.pasajeros = pasajeros;
 	}
 
+	public DetalleServicioAgencia clonar(){
+		DetalleServicioAgencia bean = new DetalleServicioAgencia();
+		return bean;
+	}
 }

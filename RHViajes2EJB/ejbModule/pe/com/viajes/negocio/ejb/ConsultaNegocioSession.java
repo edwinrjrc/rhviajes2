@@ -308,15 +308,12 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 
 			List<DetalleServicioAgencia> listaHijos = null;
 			DetalleServicioAgencia detalleServicioAgencia = null;
+			DetalleServicioAgencia detalleServicioAgencia2 = null;
 			List<DetalleServicioAgencia> listaServiciosPadreNueva = new ArrayList<DetalleServicioAgencia>();
 			for (int i = 0; i < listaServiciosPadre.size(); i++) {
-				detalleServicioAgencia = (DetalleServicioAgencia) listaServiciosPadre
-						.get(i);
-				detalleServicioAgencia
-						.setDescripcionServicio(detalleServicioAgencia
-								.getDescripcionServicio());
+				detalleServicioAgencia = (DetalleServicioAgencia) listaServiciosPadre.get(i);
+				detalleServicioAgencia2 = UtilEjb.clonarDetalleServicioAgencia(detalleServicioAgencia);
 				listaHijos = new ArrayList<DetalleServicioAgencia>();
-				listaHijos.add(detalleServicioAgencia);
 				listaHijos
 						.addAll(servicioNovaViajesDao
 								.consultaServicioDetalleHijo(servicioAgencia
@@ -325,13 +322,10 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 												.getCodigoEntero(), conn));
 				detalleServicioAgencia.setServiciosHijos(listaHijos);
 				listaHijos = null;
-				
 				detalleServicioAgencia.setListaPasajeros(servicioNegocioDao.consultarPasajeros(detalleServicioAgencia.getCodigoEntero(),idEmpresa, conn));
-				
 				listaServiciosPadreNueva.add(detalleServicioAgencia);
 			}
 			servicioAgencia.setListaDetalleServicio(listaServiciosPadreNueva);
-
 			if (servicioAgencia.getFormaPago().getCodigoEntero() != null
 					&& servicioAgencia.getFormaPago().getCodigoEntero()
 							.intValue() == 2) {

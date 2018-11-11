@@ -557,6 +557,9 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 						UtilJdbc.obtenerCadena(rs, "apellidomaterno2"));
 				servicioAgencia2.setFechaServicio(UtilJdbc.obtenerFecha(rs,
 						"fechacompra"));
+				servicioAgencia2.getMoneda().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idmoneda"));
+				servicioAgencia2.getMoneda().setNombre(UtilJdbc.obtenerCadena(rs, "nombremoneda"));
+				servicioAgencia2.getMoneda().setAbreviatura(UtilJdbc.obtenerCadena(rs, "simboloMoneda"));
 				servicioAgencia2.setMontoTotalServicios(UtilJdbc
 						.obtenerBigDecimal(rs, "montototal"));
 				servicioAgencia2.setMontoTotalComision(UtilJdbc
@@ -879,6 +882,8 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 						rs, "preciobase"));
 				detalleServicio.setMontoComision(UtilJdbc.obtenerBigDecimal(rs,
 						"montototalcomision"));
+				detalleServicio.setTotal(UtilJdbc.obtenerBigDecimal(rs,
+						"montototal"));
 				detalleServicio
 						.getServicioProveedor()
 						.getProveedor()
@@ -899,7 +904,6 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 				detalleServicio.getTipoServicio().setVisible(
 						UtilJdbc.obtenerBoolean(rs, "visible"));
 				detalleServicio.getServicioPadre().setCodigoEntero(idServicio);
-
 				resultado.add(detalleServicio);
 			}
 		} catch (SQLException e) {
@@ -981,6 +985,8 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 						rs, "preciobase"));
 				detalleServicio.setMontoComision(UtilJdbc.obtenerBigDecimal(rs,
 						"montototalcomision"));
+				detalleServicio.setTotal(UtilJdbc.obtenerBigDecimal(rs,
+						"montototal"));
 				detalleServicio
 						.getServicioProveedor()
 						.getProveedor()
@@ -1203,6 +1209,9 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 						UtilJdbc.obtenerCadena(rs, "apellidomaterno2"));
 				servicioAgencia2.setFechaServicio(UtilJdbc.obtenerFecha(rs,
 						"fechacompra"));
+				servicioAgencia2.getMoneda().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idmoneda"));
+				servicioAgencia2.getMoneda().setNombre(UtilJdbc.obtenerCadena(rs, "nombremoneda"));
+				servicioAgencia2.getMoneda().setAbreviatura(UtilJdbc.obtenerCadena(rs, "simbolomoneda"));
 				servicioAgencia2.setMontoTotalServicios(UtilJdbc
 						.obtenerBigDecimal(rs, "montototal"));
 				servicioAgencia2.getEstadoPago().setCodigoEntero(
