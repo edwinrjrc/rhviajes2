@@ -203,7 +203,7 @@
 												<th style="width: 30%; text-align: center;">Nombre</th>
 												<th style="width: 40%; text-align: center;">Dirección</h>
 												<th style="width: 10%; text-align: center;">Teléfono</th>
-												<th style="width: 5%; text-align: center;"></th>
+												<th style="width: 5%; text-align: center;">Opcion</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -213,7 +213,7 @@
 												<td style="width: 30%; text-align: left;">{{item.nombres}} {{item.apellidoPaterno}} {{item.apellidoMaterno}}</td>
 												<td style="width: 40%; text-align: left;">{{item.direccion.direccion}}</td>
 												<td style="width: 10%; text-align: center;">{{item.telefonoMovil.numeroTelefono}}</td>
-												<td style="width: 5%; text-align: center;"></td>
+												<td style="width: 5%; text-align: center;"><a href="#"><span class="fa fa-edit"></span></a></td>
 												
 											</tr>
 										</tbody>
@@ -332,7 +332,12 @@
 		src="/RHViajes2/recursos/js/angular-sanitize.min.js"></script>
 	<script src="/RHViajes2/recursos/js/ui-bootstrap-tpls-2.1.1.js"
 		type="text/javascript">
-		
+	</script>
+	<script src="/RHViajes2/recursos/js/ng-file-upload-shim.min.js"
+		type="text/javascript">
+	</script>
+	<script src="/RHViajes2/recursos/js/ng-file-upload.min.js"
+		type="text/javascript">
 	</script>
 	<script type="text/javascript"
 		src="/RHViajes2/paginas/negocio/cliente/js/controlador.js"></script>

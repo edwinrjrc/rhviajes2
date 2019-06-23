@@ -480,6 +480,16 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		
 		if ($scope.detalleServicio.cantidad == 0 || $scope.detalleServicio.cantidad == undefined) {
 			$scope.detalleServicio.cantidad = 1;
+			if (!$scope.detalleServicio.tipoServicio.servicioPadre){
+				var detalle = {};
+				for (var i=0; i<$scope.listaDetalleServicio.length;i++){
+					detalle = $scope.listaDetalleServicio[i];
+					if (detalle.codigoEntero == $scope.detalleServicio.servicioPadre.codigo){
+						$scope.detalleServicio.cantidad = detalle.cantidad;
+						break;
+					}
+				}
+			}
 		}
 		if ($scope.detalleServicio.tipoServicio.esFee){
 			$scope.detalleServicio.cantidad = 1;
@@ -536,8 +546,8 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		}
 		if ($scope.detalleServicio.tipoServicio.servicioPadre){
 			var servicio = {};
-			servicio.codigo = $scope.listaServiciosPadre.length + 1;
-			servicio.descripcion = generaDescripcionCorta($scope.detalleServicio);
+			servicio.codigo = $scope.detalleServicio.codigoEntero;
+			servicio.descripcion = $scope.detalleServicio.codigoEntero+"-"+ generaDescripcionCorta($scope.detalleServicio);
 			if ($scope.nuevoServicio && !$scope.detalleServicio.tipoServicio.esFee){
 				$scope.listaServiciosPadre.push(servicio);
 			}
@@ -555,6 +565,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 			}
 			$scope.servicioVenta.totalServicios = $scope.servicioVenta.totalServicios + servicioA.totalServicio;
 		}
+		$scope.listaTramos = null;
 		$scope.descripcionPasajeros = null;
 		$scope.descripcionRuta = null;
 		$scope.detalleServicio = {};
@@ -750,6 +761,9 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	}
 	
 	$scope.agregarTramo = function(){
+		if ($scope.listaTramos == null){
+			$scope.listaTramos = [];
+		}
 		if ($scope.listaTramos.length == 0){
 			var tramo = {};
 			tramo.origen = {};

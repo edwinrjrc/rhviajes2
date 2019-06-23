@@ -85,4 +85,6 @@ public interface SoporteRemote {
 
 	Destino consultaDestinoIATA(String codigoIATA, Integer idEmpresa)
 			throws SQLException;
+	
+	List<BaseVO> listarPaises(Integer idEmpresa) throws SQLException;
 }

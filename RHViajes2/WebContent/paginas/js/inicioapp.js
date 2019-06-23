@@ -1,5 +1,4 @@
-
-var rhViajesInicioApp = angular.module('rhviajesinicio', ['menuapp','ngAnimate','ngSanitize','ui.bootstrap']);
+var rhViajesInicioApp = angular.module('rhviajesinicio', ['ngAnimate','ngSanitize','ui.bootstrap']);
 
 rhViajesInicioApp.controller('serviciosventaCtrl', ['$scope','$http', function($scope, $http){
 	$scope.servicioregistradoexito = false;

@@ -44,6 +44,13 @@ public class UtilWeb {
 		return 0;
 	}
 	
+	public static double parseDouble(String valor){
+		if (StringUtils.isNotBlank(valor)){
+			return Double.parseDouble(valor);
+		}
+		return (double) 0;
+	}
+	
 	public static Date convertirStringADate(String fecha) throws ConversionStringDateException{
 		try {
 			SimpleDateFormat sdf =  new SimpleDateFormat(PATTERN_GSON);

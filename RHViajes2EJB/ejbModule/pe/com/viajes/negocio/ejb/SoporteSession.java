@@ -139,6 +139,12 @@ public class SoporteSession implements SoporteRemote, SoporteLocal {
 		maestroDao = new MaestroDaoImpl();
 		return maestroDao.listarPaises(idcontinente, idEmpresa);
 	}
+	
+	@Override
+	public List<BaseVO> listarPaises(Integer idEmpresa) throws SQLException{
+		maestroDao = new MaestroDaoImpl();
+		return maestroDao.listarPaises(0, idEmpresa);
+	}
 
 	@Override
 	public boolean ingresarPais(Pais pais) throws SQLException, Exception {

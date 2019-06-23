@@ -770,6 +770,7 @@
 											<table style="width: 90%;" align="center" class="table">
 												<thead>
 													<tr>
+													    <th class="cabeceraTabla">Item</th>
 														<th class="cabeceraTabla">Unid.</th>
 														<th class="cabeceraTabla">Fecha Servicio</th>
 														<th class="cabeceraTabla">Servicio - Descripción</th>
@@ -781,6 +782,7 @@
 												</thead>
 												<tbody>
 													<tr ng-repeat="item in listaDetalleServicio">
+													    <td class="dataTabla">{{item.codigoEntero}}</td>
 														<td class="dataTabla">{{item.cantidad}}</td>
 														<td class="dataTabla">{{item.fechaServicio | date :
 															'dd/MM/yyyy'}}</td>

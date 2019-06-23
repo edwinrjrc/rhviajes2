@@ -85,4 +85,7 @@ public interface SoporteLocal {
 
 	Destino consultaDestinoIATA(String codigoIATA, Integer idEmpresa)
 			throws SQLException;
+
+	List<BaseVO> listarPaises(Integer idEmpresa) throws SQLException;
+	
 }

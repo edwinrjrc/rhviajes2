@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" ng-app="rhviajesinicio">
 <head>
 <!-- META SECTION -->
 <title>RHViajes 2</title>
@@ -71,7 +72,8 @@
 							</a> <a href="#" class="list-group-item">
 								<div class="list-group-status status-away"></div> <img
 								src="/RHViajes2/recursos/images/user2.jpg" class="pull-left"
-								alt="Nadia Ali" /> <span class="contacts-title">Nadia Ali</span>
+								alt="Nadia Ali" /> <span class="contacts-title">Nadia
+									Ali</span>
 								<p>Mauris vel eros ut nunc rhoncus cursus sed</p>
 							</a> <a href="#" class="list-group-item">
 								<div class="list-group-status status-offline"></div> <img
@@ -149,21 +151,39 @@
 			</ul>
 			<!-- END BREADCRUMB -->
 
-			<!-- PAGE TITLE -->
-			<div class="page-title">
-				<h2>
-					<span class="fa fa-arrow-circle-o-left"></span> Basic Tables
-				</h2>
-			</div>
-			<!-- END PAGE TITLE -->
-
 			<!-- PAGE CONTENT WRAPPER -->
-			<div class="page-content-wrap">
-				<h5>Bienvenido</h5>
-				<hr>
+			<div class="page-content-wrap" ng-controller="serviciosventaCtrl">
+				<div class="row">
+					<div class="col-md-12">
+						<h4>Bienvenido</h4>
+						<hr>
+					</div>
+					<div class="col-md-12" align="center">
+						<table class="table" style="width: 50%;">
+							<thead>
+								<tr>
+									<th>Origen</th>
+									<th>Fecha Salida</th>
+									<th>Destino</th>
+									<th>Fecha Llegada</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Origen</td>
+									<td>Fecha Salida</th>
+									<td>Destino</td>
+									<td>Fecha Llegada</td>
+								</tr>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table>
+					</div>
+				</div>
 
-				<!-- END PAGE CONTENT WRAPPER -->
 			</div>
+			<!-- END PAGE CONTENT WRAPPER -->
 		</div>
 		<!-- END PAGE CONTENT -->
 	</div>
@@ -241,6 +261,19 @@
 	<script type="text/javascript" src="/RHViajes2/recursos/js/plugins.js"></script>
 	<script type="text/javascript" src="/RHViajes2/recursos/js/actions.js"></script>
 	<!-- END TEMPLATE -->
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/angular.min.js"></script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/angular-animate.min.js">
+		
+	</script>
+	<script type="text/javascript"
+		src="/RHViajes2/recursos/js/angular-sanitize.min.js"></script>
+	<script src="/RHViajes2/recursos/js/ui-bootstrap-tpls-2.1.1.js"
+		type="text/javascript">
+		
+	</script>
+	<script type="text/javascript" src="/RHViajes2/paginas/js/inicioapp.js"></script>
 	<!-- END SCRIPTS -->
 </body>
 </html>
