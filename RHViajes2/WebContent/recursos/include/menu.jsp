@@ -31,6 +31,8 @@
 					Administrar Clientes</a></li>
 			<li><a href="/RHViajes2/paginas/negocio/servicios/adm.jsp"><span class="fa fa-image"></span>
 					Registrar Venta Servicio</a></li>
+			<li><a href="/RHViajes2/paginas/negocio/comprobantes/adm.jsp"><span class="fa fa-image"></span>
+					Consulta Comprobantes</a></li>
 		</ul></li>
 </ul>
 <!-- END X-NAVIGATION -->

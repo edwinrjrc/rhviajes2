@@ -39,7 +39,7 @@ public class UtilWeb {
 	
 	public static Integer parseInt(String valor){
 		if (StringUtils.isNotBlank(valor)){
-			return Integer.valueOf(valor);
+			return Double.valueOf(valor).intValue();
 		}
 		return 0;
 	}
@@ -107,7 +107,20 @@ public class UtilWeb {
 			cal.add(Calendar.HOUR, -5);
 			return cal.getTime();
 		} catch (ParseException e) {
-			return null;
+			try {
+				if (valor == null || StringUtils.isBlank(valor.toString())){
+					return null;
+				}
+				String fecha = valor.toString();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				sdf.setTimeZone(TimeZone.getDefault());
+				Calendar cal = Calendar.getInstance(Locale.getDefault());
+				cal.setTime(sdf.parse(fecha));
+				cal.add(Calendar.HOUR, -5);
+				return cal.getTime();
+			} catch (ParseException e1) {
+				return null;
+			}
 		}
 	}
 	public static boolean obtenerBooleanMapeo(Object valor){
@@ -121,5 +134,40 @@ public class UtilWeb {
 			return "";
 		}
 		return valor.toString();
+	}
+	
+	public static String completarCerosIzquierda(String cadena, int cantidad) {
+		return completarCaracter(cadena, "0", cantidad, "I");
+	}
+	
+	/**
+	 * Completa caracteres segun la cantidad y la direccion
+	 * 
+	 * @param cadena
+	 * @param caracter
+	 * @param cantidad
+	 * @param direccion
+	 * @return
+	 */
+	public static String completarCaracter(String cadena, String caracter,
+			int cantidad, String direccion) {
+		if ("D".equals(direccion)) {
+			String cadenaNueva = cadena;
+			int i = 0;
+			while ((cadena.length() + i) < cantidad) {
+				cadenaNueva = cadenaNueva + caracter;
+				i++;
+			}
+			return cadenaNueva;
+		} else if ("I".equals(direccion)) {
+			String cadenaNueva = cadena;
+			int i = 0;
+			while ((cadena.length() + i) < cantidad) {
+				cadenaNueva = caracter + cadenaNueva;
+				i++;
+			}
+			return cadenaNueva;
+		}
+		return cadena;
 	}
 }

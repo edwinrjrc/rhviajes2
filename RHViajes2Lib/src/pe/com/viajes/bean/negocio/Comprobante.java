@@ -22,6 +22,7 @@ public class Comprobante extends BaseNegocio {
 	private static final long serialVersionUID = -4234081010839284200L;
 
 	private BaseVO tipoComprobante;
+	private String numeroSerie;
 	private String numeroComprobante;
 	private Cliente titular;
 	private Proveedor proveedor;
@@ -309,6 +310,20 @@ public class Comprobante extends BaseNegocio {
 	 */
 	public void setSubTotal(BigDecimal subTotal) {
 		this.subTotal = subTotal;
+	}
+
+	/**
+	 * @return the numeroSerie
+	 */
+	public String getNumeroSerie() {
+		return numeroSerie;
+	}
+
+	/**
+	 * @param numeroSerie the numeroSerie to set
+	 */
+	public void setNumeroSerie(String numeroSerie) {
+		this.numeroSerie = numeroSerie;
 	}
 
 }

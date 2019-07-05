@@ -179,10 +179,16 @@ public class ComprobanteNovaViajesDaoImpl implements ComprobanteNovaViajesDao {
 						UtilJdbc.obtenerNumero(rs, "idtipocomprobante"));
 				comprobante.getTipoComprobante().setNombre(
 						UtilJdbc.obtenerCadena(rs, "nombre"));
+				comprobante.setNumeroSerie(UtilJdbc.obtenerCadena(rs,
+						"numserie"));
 				comprobante.setNumeroComprobante(UtilJdbc.obtenerCadena(rs,
 						"numerocomprobante"));
 				comprobante.getTitular().setCodigoEntero(
 						UtilJdbc.obtenerNumero(rs, "idtitular"));
+				comprobante.getTitular().getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idtipodocumento"));
+				comprobante.getTitular().getDocumentoIdentidad().getTipoDocumento().setNombre(UtilJdbc.obtenerCadena(rs, "nombretipodoc"));
+				comprobante.getTitular().getDocumentoIdentidad().getTipoDocumento().setAbreviatura(UtilJdbc.obtenerCadena(rs, "abretipodoc"));
+				comprobante.getTitular().getDocumentoIdentidad().setNumeroDocumento(UtilJdbc.obtenerCadena(rs, "numerodocumento"));
 				comprobante.getTitular().setNombres(
 						UtilJdbc.obtenerCadena(rs, "nombres"));
 				comprobante.getTitular().setApellidoPaterno(
