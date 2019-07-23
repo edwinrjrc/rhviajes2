@@ -432,7 +432,7 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 			throw new ResultadoCeroDaoException(e.getMensajeError(), e);
 		} catch (SQLException e) {
 			userTransaction.rollback();
-			throw new SQLException(e);
+			throw new ErrorRegistroDataException("Error en registro de cliente",e);
 		} finally {
 			if (conexion != null) {
 				conexion.close();

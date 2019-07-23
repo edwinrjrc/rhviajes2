@@ -390,30 +390,19 @@ public class SeguridadSession implements SeguridadRemote, SeguridadLocal {
 		Connection conn = null;
 		Usuario usuarioBean = null;
 		try {
-			userTransaction.begin();
 			
 			usuarioDao = new UsuarioDaoImpl(idEmpresa);
 			conn = UtilConexion.obtenerConexion();
 			usuarioBean = usuarioDao.consultarUsuario(usuario, conn);
-			
-			userTransaction.commit();
+			String nombreDominio = usuarioBean.getUsuario().split("@")[1];
+			usuarioBean.setNombreDominioEmpresa(nombreDominio);
 			
 			return usuarioBean;
-		} catch (NotSupportedException e) {
-			throw new ErrorConsultaDataException(e);
-		} catch (SystemException e) {
-			throw new ErrorConsultaDataException(e);
 		} catch (SQLException e) {
 			throw new ErrorConsultaDataException(e);
 		} catch (SecurityException e) {
 			throw new ErrorConsultaDataException(e);
 		} catch (IllegalStateException e) {
-			throw new ErrorConsultaDataException(e);
-		} catch (RollbackException e) {
-			throw new ErrorConsultaDataException(e);
-		} catch (HeuristicMixedException e) {
-			throw new ErrorConsultaDataException(e);
-		} catch (HeuristicRollbackException e) {
 			throw new ErrorConsultaDataException(e);
 		} finally{
 			if ( conn != null){

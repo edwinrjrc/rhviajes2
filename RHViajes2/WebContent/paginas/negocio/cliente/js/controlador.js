@@ -581,6 +581,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	  }
 	  
 	$scope.guardarCliente = function(){
+		document.getElementById('btnCerrarModalConfirmacion').click();
 		if (validarCliente()){
 			$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'guardar', cliente: $scope.cliente}}).then(
 					 function successCallback(response) {
@@ -588,7 +589,14 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 							 location.href="../../../";
 						 }
 						 else{
-							 
+							 if (response.data.exito){
+								 document.getElementById('idbtnExito').click();
+							 }
+							 else{
+								 $scope.mensajeError = response.data.mensaje;
+								 var boton = document.getElementById('idbtnError');
+								 boton.click();
+							 }
 						 }
 				  }, function errorCallback(response) {
 					     console.log('Error en la llamada');

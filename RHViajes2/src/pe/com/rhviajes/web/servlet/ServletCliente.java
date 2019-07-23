@@ -34,6 +34,7 @@ import pe.com.viajes.bean.negocio.Contacto;
 import pe.com.viajes.bean.negocio.Direccion;
 import pe.com.viajes.bean.negocio.Telefono;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
+import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
 
 /**
@@ -46,6 +47,8 @@ public class ServletCliente extends BaseServlet {
 
 	@EJB(lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/ConsultaNegocioSession!pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote")
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
+	@EJB(lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/NegocioSession!pe.com.viajes.negocio.ejb.NegocioSessionRemote")
+	private NegocioSessionRemote negocioSessionRemote;
 
 	private int MEMORY_THRESHOLD = 50 * 1024;
 	private int MAX_FILE_SIZE = 1024 * 1024 * 5;
@@ -89,20 +92,26 @@ public class ServletCliente extends BaseServlet {
 				retorno.put("exito", true);
 			} else if (ACCION_BUSCAR.equals(accion)) {
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
-				Cliente cliente = new Cliente();
-				if (mapeo.get("tipoDocumento") != null) {
-					cliente.getDocumentoIdentidad().getTipoDocumento()
-							.setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("tipoDocumento")));
+				Cliente cliente = null;
+				List<Cliente> lista = null;
+				if (mapeo != null) {
+					cliente = new Cliente();
+					if (mapeo.get("tipoDocumento") != null) {
+						cliente.getDocumentoIdentidad().getTipoDocumento()
+								.setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("tipoDocumento")));
+					}
+					if (mapeo.get("numeroDocumento") != null) {
+						cliente.getDocumentoIdentidad()
+								.setNumeroDocumento(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroDocumento")));
+					}
+					if (mapeo.get("nombreCliente") != null) {
+						cliente.setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
+					}
+					cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
+					lista = consultaNegocioSessionRemote.consultarCliente2(cliente);
 				}
-				if (mapeo.get("numeroDocumento") != null) {
-					cliente.getDocumentoIdentidad()
-							.setNumeroDocumento(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroDocumento")));
-				}
-				if (mapeo.get("nombreCliente") != null) {
-					cliente.setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
-				}
-				cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
-				retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente2(cliente));
+				
+				retorno.put("objeto", lista);
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			} else if ("cargaArchivo".equals(accion)) {
@@ -166,9 +175,6 @@ public class ServletCliente extends BaseServlet {
 				cliente.setApellidoPaterno(UtilWeb.obtenerCadenaMapeo(mapeo.get("apellidoPaterno")));
 				cliente.setApellidoMaterno(UtilWeb.obtenerCadenaMapeo(mapeo.get("apellidoMaterno")));
 				cliente.getEstadoCivil().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idEstadoCivil")));
-				val = Double.valueOf(UtilWeb.parseDouble(UtilWeb.obtenerCadenaMapeo(mapeo.get("idEstadoCivil"))));
-				cliente.getEstadoCivil().setCodigoEntero(val.intValue());
-				cliente.getGenero().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idGenero")));
 				cliente.getGenero().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idGenero")));
 				cliente.setFechaNacimiento(sdf.parse(UtilWeb.obtenerCadenaMapeo(mapeo.get("fechaNacimiento"))));
 				cliente.setNroPasaporte(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroPasaporte")));
@@ -192,14 +198,18 @@ public class ServletCliente extends BaseServlet {
 						direccion.getUbigeo().getProvincia().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idProvincia")));
 						direccion.getUbigeo().getDistrito().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idDistrito")));
 						direccion.getUbigeo().setNombre(UtilWeb.obtenerCadenaMapeo(map.get("ubigeo")));
-						val = Double.valueOf(UtilWeb.parseDouble(UtilWeb.obtenerCadenaMapeo(mapeo.get("idVia"))));
+						direccion.getPais().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("idPais")));
+						direccion.getPais().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idPais")));
+						val = Double.valueOf(UtilWeb.parseDouble(UtilWeb.obtenerCadenaMapeo(map.get("idVia"))));
 						direccion.getVia().setCodigoEntero(val.intValue());
-						direccion.getVia().setNombre(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreVia")));
-						direccion.setNumero(UtilWeb.obtenerCadenaMapeo(mapeo.get("numero")));
-						direccion.setInterior(UtilWeb.obtenerCadenaMapeo(mapeo.get("interior")));
-						direccion.setReferencia(UtilWeb.obtenerCadenaMapeo(mapeo.get("referencia")));
-						direccion.setObservaciones(UtilWeb.obtenerCadenaMapeo(mapeo.get("observaciones")));
-						direccion.setDireccion(UtilWeb.obtenerCadenaMapeo(mapeo.get("direccion")));
+						direccion.getVia().setNombre(UtilWeb.obtenerCadenaMapeo(map.get("nombreVia")));
+						direccion.setNumero(UtilWeb.obtenerCadenaMapeo(map.get("numero")));
+						direccion.setInterior(UtilWeb.obtenerCadenaMapeo(map.get("interior")));
+						direccion.setManzana(UtilWeb.obtenerCadenaMapeo(map.get("manzana")));
+						direccion.setLote(UtilWeb.obtenerCadenaMapeo(map.get("lote")));
+						direccion.setReferencia(UtilWeb.obtenerCadenaMapeo(map.get("referencia")));
+						direccion.setObservaciones(UtilWeb.obtenerCadenaMapeo(map.get("observaciones")));
+						direccion.setDireccion(UtilWeb.obtenerCadenaMapeo(map.get("direccion")));
 						
 						List<Map<String, Object>> listaTelefonos = (List<Map<String, Object>>) map.get("listaTelefonos");
 						if (listaTelefonos != null && !listaTelefonos.isEmpty()){
@@ -240,6 +250,9 @@ public class ServletCliente extends BaseServlet {
 						}
 					}
 				}
+				
+				retorno.put("mensaje", "Registrado Correctamente");
+				retorno.put("exito", negocioSessionRemote.registrarCliente(cliente));
 			}
 		} catch (ErrorConsultaDataException e) {
 			log.error(e.getMessage(), e);

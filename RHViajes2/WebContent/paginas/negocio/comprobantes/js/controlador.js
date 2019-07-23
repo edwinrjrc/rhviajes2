@@ -153,6 +153,25 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 	}
 	
 	$scope.generaComprobanteDigital = function(){
-		
+		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'comprobanteDigital',comprobante:$scope.detalle}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == "undefined"){
+						 location.href="../../../";
+					 }
+					 else{
+						 var datos = response.data.objeto.datos;
+						 var byteArray = new Uint8Array(datos);
+						 var a = window.document.createElement('a');
+						 a.href = window.URL.createObjectURL(new Blob([byteArray], { type: response.data.objeto.contentType }));
+						 a.download = response.data.objeto.nombreArchivo;
+						 // Append anchor to body.
+						 document.body.appendChild(a)
+						 a.click();
+						 // Remove anchor from body
+						 document.body.removeChild(a)
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
 	}
 });

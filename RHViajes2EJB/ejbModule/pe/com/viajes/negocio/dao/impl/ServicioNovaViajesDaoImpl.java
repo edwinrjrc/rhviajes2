@@ -3667,6 +3667,7 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 				pasajero.setNombres(UtilJdbc.obtenerCadena(rs, "nombres"));
 				pasajero.setApellidoPaterno(UtilJdbc.obtenerCadena(rs, "apellidopaterno"));
 				pasajero.setApellidoMaterno(UtilJdbc.obtenerCadena(rs, "apellidomaterno"));
+				pasajero.setNombreCompleto(pasajero.getNombres()+" "+pasajero.getApellidoPaterno()+" "+pasajero.getApellidoMaterno());
 				pasajero.setCodigoReserva(UtilJdbc.obtenerCadena(rs, "codigoreserva"));
 				pasajero.setNumeroBoleto(UtilJdbc.obtenerCadena(rs, "numeroboleto"));
 				listaPasajeros.add(pasajero);

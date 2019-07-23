@@ -205,8 +205,8 @@
 														<label class="col-md-2 col-xs-12 control-label">Nombre
 															Comercial</label>
 														<div class="col-md-10 col-xs-12">
-															<input class="form-control" type="text" id="nombrecomercial"
-																ng-model="cliente.nombreComercial">
+															<input class="form-control" type="text"
+																id="nombrecomercial" ng-model="cliente.nombreComercial">
 														</div>
 													</div>
 													<div class="form-group" ng-show="mostrarEmpresa">
@@ -221,14 +221,14 @@
 														<label class="col-md-2 col-xs-12 control-label">Apellido
 															Paterno</label>
 														<div class="col-md-4 col-xs-12">
-															<input class="form-control" type="text" id="apellidopaterno"
-																ng-model="cliente.apellidoPaterno">
+															<input class="form-control" type="text"
+																id="apellidopaterno" ng-model="cliente.apellidoPaterno">
 														</div>
 														<label class="col-md-2 col-xs-12 control-label">Apellido
 															Materno</label>
 														<div class="col-md-4 col-xs-12">
-															<input class="form-control" type="text" id="apellidomaterno"
-																ng-model="cliente.apellidoMaterno">
+															<input class="form-control" type="text"
+																id="apellidomaterno" ng-model="cliente.apellidoMaterno">
 														</div>
 													</div>
 													<div class="form-group" ng-show="mostrarPersona">
@@ -245,7 +245,8 @@
 														<label class="col-md-2 col-xs-12 control-label">Genero</label>
 														<div class="col-md-4 col-xs-12">
 															<select class="form-control" ng-model="cliente.idGenero"
-																ng-change="consultarConfiguracionServicio()" id="idgenero">
+																ng-change="consultarConfiguracionServicio()"
+																id="idgenero">
 																<option value="">-Seleccione-</option>
 																<option value="M">Masculino</option>
 																<option value="F">Femenino</option>
@@ -274,7 +275,8 @@
 															Vcto Pasaporte</label>
 														<div class="col-md-4 col-xs-12">
 															<input class="form-control" type="date"
-																ng-model="cliente.fechaVctoPasaporte" id="fechavctopasaporte">
+																ng-model="cliente.fechaVctoPasaporte"
+																id="fechavctopasaporte">
 														</div>
 													</div>
 												</div>
@@ -390,7 +392,7 @@
 																										ng-model="direccion.idPais">
 																										<option value="">-Seleccione-</option>
 																										<option ng-repeat="item in listaPaises"
-																											ng-value="item.codigoCadena">{{item.nombre}}</option>
+																											ng-value="item.codigoEntero">{{item.nombre}}</option>
 																									</select>
 																								</div>
 																								<label class="col-md-2 col-xs-12 control-label"></label>
@@ -753,8 +755,7 @@
 									<div class="row">
 										<div class="col-md-12 col-xs-12">
 											<button class="btn btn-primary" type="button"
-												data-toggle="modal"
-										data-target="#modal_confirmacion">
+												data-toggle="modal" data-target="#modal_confirmacion">
 												<span class="fa fa-save"></span>Grabar
 											</button>
 										</div>
@@ -778,6 +779,47 @@
 													ng-click="guardarCliente()">Si</button>
 												<button type="button" class="btn btn-default"
 													data-dismiss="modal">No</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<button class="btn btn-success mb-control"
+									data-box="#message-box-success" id="idbtnExito" type="button"
+									style="display: none;">BotonExito</button>
+								<button class="btn btn-danger mb-control" data-box="#message-box-danger" type="button"
+									style="display: none;" id="idbtnError">BotonError</button>
+								<button type="button"
+									style="display: none;" id="idbtnError">CierraModalConfir</button>
+								<div class="message-box message-box-success animated fadeIn"
+									id="message-box-success">
+									<div class="mb-container">
+										<div class="mb-middle">
+											<div class="mb-title">
+												<span class="fa fa-check"></span> Exito
+											</div>
+											<div class="mb-content">
+												<p>Se grabo venta satisfactoriamente</p>
+											</div>
+											<div class="mb-footer">
+												<button ng-click="aceptarMensajeExito()"
+													class="btn btn-default btn-lg pull-right mb-control-close">Aceptar</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="message-box message-box-danger animated fadeIn"
+									data-sound="fail" id="message-box-danger">
+									<div class="mb-container">
+										<div class="mb-middle">
+											<div class="mb-title">
+												<span class="fa fa-times"></span> Error!
+											</div>
+											<div class="mb-content">
+												<p>{{mensajeError}}</p>
+											</div>
+											<div class="mb-footer">
+												<button
+													class="btn btn-default btn-lg pull-right mb-control-close">Aceptar</button>
 											</div>
 										</div>
 									</div>

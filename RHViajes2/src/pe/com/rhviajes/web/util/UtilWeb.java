@@ -114,10 +114,7 @@ public class UtilWeb {
 				String fecha = valor.toString();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 				sdf.setTimeZone(TimeZone.getDefault());
-				Calendar cal = Calendar.getInstance(Locale.getDefault());
-				cal.setTime(sdf.parse(fecha));
-				cal.add(Calendar.HOUR, -5);
-				return cal.getTime();
+				return sdf.parse(fecha);
 			} catch (ParseException e1) {
 				return null;
 			}
