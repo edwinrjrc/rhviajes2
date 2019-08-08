@@ -216,11 +216,14 @@ public class ServletCliente extends BaseServlet {
 							Telefono telefono = null;
 							for (Map<String, Object> map2 : listaTelefonos) {
 								telefono = new Telefono();
-								telefono.setNumeroTelefono(UtilWeb.obtenerCadenaMapeo(map2.get("numTelefono")));
+								telefono.setNumeroTelefono(UtilWeb.obtenerCadenaMapeo(map2.get("numero")));
+								telefono.setUsuarioCreacion(this.obtenerUsuario(request));
+								telefono.setUsuarioModificacion(this.obtenerUsuario(request));
+								telefono.setIpCreacion(this.obtenerIp(request));
+								telefono.setIpModificacion(this.obtenerIp(request));
 								direccion.getTelefonos().add(telefono);
 							}
 						}
-						
 						cliente.getListaDirecciones().add(direccion);
 					}
 				}
@@ -244,7 +247,11 @@ public class ServletCliente extends BaseServlet {
 							Telefono telefono = null;
 							for (Map<String, Object> map2 : listaTelefonos) {
 								telefono = new Telefono();
-								telefono.setNumeroTelefono(UtilWeb.obtenerCadenaMapeo(map2.get("numTelefono")));
+								telefono.setNumeroTelefono(UtilWeb.obtenerCadenaMapeo(map2.get("numero")));
+								telefono.setUsuarioCreacion(this.obtenerUsuario(request));
+								telefono.setUsuarioModificacion(this.obtenerUsuario(request));
+								telefono.setIpCreacion(this.obtenerIp(request));
+								telefono.setIpModificacion(this.obtenerIp(request));
 								contacto.getListaTelefonos().add(telefono);
 							}
 						}

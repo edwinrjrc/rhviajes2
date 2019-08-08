@@ -39,7 +39,7 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 	var listarTipoComprobante = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:16}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -61,7 +61,7 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 	$scope.consultaComprobantes = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'consulta',formulario:$scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -109,7 +109,7 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 		$scope.detalle.titular.nombreCompleto = $scope.detalle.titular.nombres+" "+$scope.detalle.titular.apellidoPaterno+" "+$scope.detalle.titular.apellidoMaterno;
 		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'consultaDetalle',idComprobante:$scope.detalle.codigoEntero}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -132,7 +132,7 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 	$scope.generaComprobanteImpresion = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'comprobanteImpresion',comprobante:$scope.detalle}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -155,7 +155,7 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 	$scope.generaComprobanteDigital = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'comprobanteDigital',comprobante:$scope.detalle}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{

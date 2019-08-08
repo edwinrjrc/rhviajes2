@@ -258,97 +258,81 @@ public class ServletComprobante extends BaseServlet {
 	}
 
 	private byte[] imprimirPDFBoleta(Map<String, Object> map, OutputStream stream, InputStream streamJasper,
-			Comprobante comprobante) {
+			Comprobante comprobante) throws JRException, IOException {
 		List<JasperPrint> printList = new ArrayList<JasperPrint>();
-		try {
-			List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
-			DetalleServicioAgencia detalleServicio = null;
-			for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
-				if (detalleComprobante.isImpresion()) {
-					detalleServicio = new DetalleServicioAgencia();
-					detalleServicio.setDescripcionServicio(detalleComprobante.getConcepto());
-					detalleServicio.setCodigoEntero(detalleComprobante.getIdServicioDetalle());
-					listaDetalleFinal.add(detalleServicio);
-				}
+		List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
+		DetalleServicioAgencia detalleServicio = null;
+		for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
+			if (detalleComprobante.isImpresion()) {
+				detalleServicio = new DetalleServicioAgencia();
+				detalleServicio.setDescripcionServicio(detalleComprobante.getConcepto());
+				detalleServicio.setCodigoEntero(detalleComprobante.getIdServicioDetalle());
+				listaDetalleFinal.add(detalleServicio);
 			}
-
-			printList.add(
-					JasperFillManager.fillReport(streamJasper, map, new JRBeanCollectionDataSource(listaDetalleFinal)));
-
-			JRPdfExporter exporter = new JRPdfExporter();
-			exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
-			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
-			SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-			configuration.setCreatingBatchModeBookmarks(true);
-			exporter.exportReport();
-
-			ByteArrayOutputStream byteStream = (ByteArrayOutputStream) stream;
-			return byteStream.toByteArray();
-		} catch (JRException e) {
-			log.error(e.getMessage(), e);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
 		}
-		return null;
+		printList.add(JasperFillManager.fillReport(streamJasper, map, new JRBeanCollectionDataSource(listaDetalleFinal)));
+		JRPdfExporter exporter = new JRPdfExporter();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		exporter.exportReport();
+
+		ByteArrayOutputStream byteStream = (ByteArrayOutputStream) stream;
+		byteStream.flush();
+		byteStream.close();
+		return byteStream.toByteArray();
 	}
 
 	private byte[] imprimirPDFDocumentoCobranza(Map<String, Object> map, OutputStream stream, InputStream jasperStream,
-			Comprobante comprobante) {
-		try {
-			List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
-			DetalleServicioAgencia detalleServicio = null;
-			for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
-				if (detalleComprobante.isImpresion()) {
-					detalleServicio = new DetalleServicioAgencia();
-					detalleServicio.setDescripcionServicio(detalleComprobante.getConcepto());
-					detalleServicio.setCodigoEntero(detalleComprobante.getIdServicioDetalle());
-					listaDetalleFinal.add(detalleServicio);
-				}
+			Comprobante comprobante) throws JRException, IOException {
+		List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
+		DetalleServicioAgencia detalleServicio = null;
+		for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
+			if (detalleComprobante.isImpresion()) {
+				detalleServicio = new DetalleServicioAgencia();
+				detalleServicio.setDescripcionServicio(detalleComprobante.getConcepto());
+				detalleServicio.setCodigoEntero(detalleComprobante.getIdServicioDetalle());
+				listaDetalleFinal.add(detalleServicio);
 			}
-			List<JasperPrint> printList = new ArrayList<JasperPrint>();
-			printList.add(
-					JasperFillManager.fillReport(jasperStream, map, new JRBeanCollectionDataSource(listaDetalleFinal)));
-
-			JRPdfExporter exporter = new JRPdfExporter();
-			exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
-			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
-			SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-			configuration.setCreatingBatchModeBookmarks(true);
-			exporter.exportReport();
-
-			ByteArrayOutputStream byteStream = (ByteArrayOutputStream) stream;
-			return byteStream.toByteArray();
-		} catch (JRException e) {
-			log.error(e.getMessage(), e);
 		}
-		return null;
+		List<JasperPrint> printList = new ArrayList<JasperPrint>();
+		printList.add(
+				JasperFillManager.fillReport(jasperStream, map, new JRBeanCollectionDataSource(listaDetalleFinal)));
+
+		JRPdfExporter exporter = new JRPdfExporter();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		exporter.exportReport();
+
+		ByteArrayOutputStream byteStream = (ByteArrayOutputStream) stream;
+		byteStream.flush();
+		byteStream.close();
+		return byteStream.toByteArray();
 	}
 
 	private byte[] imprimirPDFFactura(Map<String, Object> map, OutputStream outputStream, InputStream jasperStream,
-			Comprobante comprobante) throws JRException {
+			Comprobante comprobante) throws JRException, ErrorConsultaDataException, IOException {
 		List<JasperPrint> printList = new ArrayList<JasperPrint>();
+		List<Pasajero> listaPasajeros = utilNegocioSessionRemote.consultarPasajerosServicio(
+				comprobante.getIdServicio(), comprobante.getEmpresa().getCodigoEntero());
+		printList.add(
+				JasperFillManager.fillReport(jasperStream, map, new JRBeanCollectionDataSource(listaPasajeros)));
 
-		try {
-			List<Pasajero> listaPasajeros = utilNegocioSessionRemote.consultarPasajerosServicio(
-					comprobante.getIdServicio(), comprobante.getEmpresa().getCodigoEntero());
-			printList.add(
-					JasperFillManager.fillReport(jasperStream, map, new JRBeanCollectionDataSource(listaPasajeros)));
+		JRPdfExporter exporter = new JRPdfExporter();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		// exporter.setConfiguration(configuration);
+		exporter.exportReport();
 
-			JRPdfExporter exporter = new JRPdfExporter();
-			exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
-			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-			SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-			configuration.setCreatingBatchModeBookmarks(true);
-			// exporter.setConfiguration(configuration);
-			exporter.exportReport();
-
-			ByteArrayOutputStream byteStream = (ByteArrayOutputStream) outputStream;
-			return byteStream.toByteArray();
-
-		} catch (ErrorConsultaDataException e) {
-			log.error(e.getMessage(), e);
-		}
-		return null;
+		ByteArrayOutputStream byteStream = (ByteArrayOutputStream) outputStream;
+		byteStream.flush();
+		byteStream.close();
+		return byteStream.toByteArray();
 	}
 
 	private Map<String, Object> enviarParametrosBoleta(String ruta, Comprobante comprobante)

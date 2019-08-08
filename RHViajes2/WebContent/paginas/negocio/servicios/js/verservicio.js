@@ -6,7 +6,7 @@ consultaservicioapp.controller('consultaservicioctrl', function($scope, $http){
 	var consultarServicio = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'verServicio'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{

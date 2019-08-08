@@ -77,7 +77,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarMaestroServicios = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarMaestroServicios'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -130,7 +130,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	var vendedores = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarVendedores'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -150,7 +150,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarTipoDocumento = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -201,7 +201,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 			  });
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarAplicaIgv',idservicio:$scope.detalleServicio.idTipoServicio}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -218,7 +218,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	listarEmpresasServicio = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'proveedoresXServicio',formulario:$scope.detalleServicio}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -235,7 +235,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	listarHoteles = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'proveedoresXTipo',formulario:{tipoServicio:6}}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -252,7 +252,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	listarOperadores = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'proveedoresXTipo',formulario:{tipoServicio:3}}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -270,7 +270,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	listarMonedas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:18}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -319,7 +319,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
     	$http({method: 'POST', url: '../../../servlets/ServletParametros', 
 			params:{accion:'consultarIGV'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -346,7 +346,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 			$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
 				params:{accion:'consultaTipoCambio',formulario:form}}).then(
 					 function successCallback(response) {
-						 if (response.data.exito == "undefined" || response.data.exito == undefined){
+						 if (response.data.exito == undefined || response.data.exito == undefined){
 							 location.href="../../../";
 						 }
 						 else{
@@ -373,7 +373,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
 			params:{accion:'consultaTipoServicio',formulario:form}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -439,7 +439,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 				$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
 					params:{accion:'consultarProveedor',formulario:form}}).then(
 						 function successCallback(response) {
-							 if (response.data.exito == "undefined"){
+							 if (response.data.exito == undefined){
 								 location.href="../../../";
 							 }
 							 else{
@@ -691,7 +691,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		document.getElementById('btnCerrarModalConfirmacion').click();
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'guardar',servicio:$scope.servicioVenta}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -723,7 +723,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		$scope.busquedaCliente.numpag = numpagina;
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'buscarCliente',formulario:$scope.busquedaCliente}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -837,23 +837,23 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		//$('#idselaerolinea').removeClass('error');
 		for (var i=0; i<$scope.listaTramos.length; i++){
 			var tramo = $scope.listaTramos[i];
-			if (tramo.origen == "" || tramo.origen == "undefined" || tramo.origen == null){
+			if (tramo.origen == "" || tramo.origen == undefined || tramo.origen == null){
 				$scope.error = "Ingrese el origen del tramo "+tramo.id;
 				return false;
 			}
-			else if (tramo.fechaSalida == "" || tramo.fechaSalida == "undefined" || tramo.fechaSalida == null){
+			else if (tramo.fechaSalida == "" || tramo.fechaSalida == undefined || tramo.fechaSalida == null){
 				$scope.error = "Ingrese la fecha salida del tramo "+tramo.id;
 				return false;
 			}
-			else if (tramo.destino == "" || tramo.destino == "undefined" || tramo.destino == null){
+			else if (tramo.destino == "" || tramo.destino == undefined || tramo.destino == null){
 				$scope.error = "Ingrese el destino del tramo "+tramo.id;
 				return false;
 			}
-			else if (tramo.fechaLlegada == "" || tramo.fechaLlegada == "undefined" || tramo.fechaLlegada == null){
+			else if (tramo.fechaLlegada == "" || tramo.fechaLlegada == undefined || tramo.fechaLlegada == null){
 				$scope.error = "Ingrese la fecha de llegada del tramo "+tramo.id;
 				return false;
 			}
-			else if (tramo.codigoAerolinea == "" || tramo.codigoAerolinea == "undefined" || tramo.codigoAerolinea == null){
+			else if (tramo.codigoAerolinea == "" || tramo.codigoAerolinea == undefined || tramo.codigoAerolinea == null){
 				$scope.error = "Seleccione la aerolinea del tramo "+tramo.id;
 				//$('#idselaerolinea').addClass('error');
 				return false;
@@ -875,7 +875,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarDestinos = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarDestinos',tipoMaestro:1}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -901,7 +901,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarAerolineas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarAerolineas'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -928,7 +928,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarTipoDocumento = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -950,7 +950,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarNacionalidad = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarNacionalidad'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -972,7 +972,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarAerolineas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarAerolineas'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -995,7 +995,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.listarRelaciones = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarCatalogoMaestro'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -1025,19 +1025,19 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 				}
 			}
 			var pasj = $scope.pasajero;
-			if (!(pasj.nombres == "" || pasj.nombres == "undefined" || pasj.nombres == null)){
+			if (!(pasj.nombres == "" || pasj.nombres == undefined || pasj.nombres == null)){
 				$scope.pasajero.nombres = $scope.pasajero.nombres.toUpperCase();
 			}
-			if (!(pasj.apePaterno == "" || pasj.apePaterno == "undefined" || pasj.apePaterno == null)){
+			if (!(pasj.apePaterno == "" || pasj.apePaterno == undefined || pasj.apePaterno == null)){
 				$scope.pasajero.apePaterno = $scope.pasajero.apePaterno.toUpperCase();
 			}
-			if (!(pasj.apeMaterno == "" || pasj.apeMaterno == "undefined" || pasj.apeMaterno == null)){
+			if (!(pasj.apeMaterno == "" || pasj.apeMaterno == undefined || pasj.apeMaterno == null)){
 				$scope.pasajero.apeMaterno = $scope.pasajero.apeMaterno.toUpperCase();
 			}
-			if (!(pasj.correoElectronico == "" || pasj.correoElectronico == "undefined" || pasj.correoElectronico == null)){
+			if (!(pasj.correoElectronico == "" || pasj.correoElectronico == undefined || pasj.correoElectronico == null)){
 				$scope.pasajero.correoElectronico = $scope.pasajero.correoElectronico.toUpperCase();
 			}
-			if (!(pasj.codigoReserva == "" || pasj.codigoReserva == "undefined" || pasj.codigoReserva == null)){
+			if (!(pasj.codigoReserva == "" || pasj.codigoReserva == undefined || pasj.codigoReserva == null)){
 				$scope.pasajero.codigoReserva = $scope.pasajero.codigoReserva.toUpperCase();
 			}
 			$scope.listaPasajeros.push($scope.pasajero);
@@ -1062,31 +1062,31 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		$('#idapematerno').removeClass('error');
 		$('#idtelef1').removeClass('error');
 		$('#idrelacion').removeClass('error');
-		if (pasj.tipoDocumento == "" || pasj.tipoDocumento == "undefined" || pasj.tipoDocumento == null){
+		if (pasj.tipoDocumento == "" || pasj.tipoDocumento == undefined || pasj.tipoDocumento == null){
 			$('#idseltipodocumento').addClass('error');
 			correcto = false;
 		}
-	    if (pasj.numeroDocumento == "" || pasj.numeroDocumento == "undefined" || pasj.numeroDocumento == null){
+	    if (pasj.numeroDocumento == "" || pasj.numeroDocumento == undefined || pasj.numeroDocumento == null){
 			$('#idnumdoc').addClass('error');
 			correcto = false;
 		}
-		if (pasj.nombres == "" || pasj.nombres == "undefined" || pasj.nombres == null){
+		if (pasj.nombres == "" || pasj.nombres == undefined || pasj.nombres == null){
 			$('#idnombres').addClass('error');
 			correcto = false;
 		}
-		if (pasj.apePaterno == "" || pasj.apePaterno == "undefined" || pasj.apePaterno == null){
+		if (pasj.apePaterno == "" || pasj.apePaterno == undefined || pasj.apePaterno == null){
 			$('#idapepaterno').addClass('error');
 			correcto = false;
 		}
-		if (pasj.apeMaterno == "" || pasj.apeMaterno == "undefined" || pasj.apeMaterno == null){
+		if (pasj.apeMaterno == "" || pasj.apeMaterno == undefined || pasj.apeMaterno == null){
 			$('#idapematerno').addClass('error');
 			correcto = false;
 		}
-		if (pasj.codigoRelacion == "" || pasj.codigoRelacion == "undefined" || pasj.codigoRelacion == null){
+		if (pasj.codigoRelacion == "" || pasj.codigoRelacion == undefined || pasj.codigoRelacion == null){
 			$('#idrelacion').addClass('error');
 			correcto = false;
 		}
-		if (pasj.nacionalidad == "" || pasj.nacionalidad == "undefined" || pasj.nacionalidad == null){
+		if (pasj.nacionalidad == "" || pasj.nacionalidad == undefined || pasj.nacionalidad == null){
 			$('#idnacionalidad').addClass('error');
 			correcto = false;
 		}
@@ -1149,7 +1149,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 	$scope.consultarPaxsSistema = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarPasajero', formulario: $scope.pasajero}}).then(
 				 function successCallback(response) {
-					 if (typeof response.data.exito == "undefined"){
+					 if (typeof response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -1164,12 +1164,12 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 							 }
 							 else{
 								 $scope.pasajero.nombres = paxs.nombres;
-								 if (typeof paxs.pais != "undefined"){
+								 if (typeof paxs.pais != undefined){
 									 $scope.pasajero.nacionalidad = paxs.pais.codigoEntero;
 								 }
 								 $scope.pasajero.apePaterno = paxs.apellidoPaterno;
 								 $scope.pasajero.apeMaterno = paxs.apellidoMaterno;
-								 if (typeof paxs.telefonoMovil != "undefined"){
+								 if (typeof paxs.telefonoMovil != undefined){
 									 $scope.pasajero.telefono1 = paxs.telefonoMovil.numeroTelefono;
 								 }
 								 $scope.pasajero.correoElectronico = paxs.correoElectronico;
@@ -1307,7 +1307,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 			$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
 				params:{accion:'consultaTipoCambio',formulario:form}}).then(
 					 function successCallback(response) {
-						 if (response.data.exito == "undefined" || response.data.exito == undefined){
+						 if (response.data.exito == undefined || response.data.exito == undefined){
 							 location.href="../../../";
 						 }
 						 else{
@@ -1325,7 +1325,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 		$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
 			params:{accion:'consultaTipoServicio',formulario:form}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -1380,7 +1380,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 				$http({method: 'POST', url: '../../../servlets/ServletConsultas', 
 					params:{accion:'consultarProveedor',formulario:form}}).then(
 						 function successCallback(response) {
-							 if (response.data.exito == "undefined"){
+							 if (response.data.exito == undefined){
 								 location.href="../../../";
 							 }
 							 else{

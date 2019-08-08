@@ -15,7 +15,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.listarTipoDocumento = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -37,7 +37,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.listarEstadoCivil = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:9}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -59,7 +59,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.listarClientes = function (){
 		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'listar'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -100,7 +100,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.buscarClientes = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'buscar', formulario: $scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -138,7 +138,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	listarTiposVia = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:2}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -160,7 +160,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	listarDepartamentos = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarDepartamentos'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -182,7 +182,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.listarProvincias = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarProvincias', idDepartamento: $scope.direccion.idDepartamento}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -203,7 +203,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.listarDistritos = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarDistritos', idDepartamento: $scope.direccion.idDepartamento, idProvincia: $scope.direccion.idProvincia}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -224,7 +224,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	listarPaises = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarPaises'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -246,7 +246,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	listarAreas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listarAreas'}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -268,7 +268,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	listarTipoAdjuntos = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:22}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -585,7 +585,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 		if (validarCliente()){
 			$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'guardar', cliente: $scope.cliente}}).then(
 					 function successCallback(response) {
-						 if (response.data.exito == "undefined"){
+						 if (response.data.exito == undefined){
 							 location.href="../../../";
 						 }
 						 else{
@@ -611,5 +611,9 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 			correcto = false;
 		}
 		return correcto;
+	}
+	
+	$scope.aceptarMensajeExito = function(){
+		location.href="/RHViajes2/paginas/negocio/cliente/adm.jsp";
 	}
 });

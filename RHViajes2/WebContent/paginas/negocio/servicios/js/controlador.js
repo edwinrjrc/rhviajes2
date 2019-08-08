@@ -26,7 +26,7 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 		$scope.listaFiltrada = [];
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'listar',formulario:$scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -52,7 +52,7 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.buscarVentas = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'buscar',formulario:$scope.formularioBusqueda}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -77,7 +77,7 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.listarTipoDocumento = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
@@ -153,7 +153,7 @@ serviciosapp.controller('serviciosventaCtrl',function($scope,$http,$document){
 	$scope.verServicio = function(codigoServicio){
 		$http({method: 'POST', url: '../../../servlets/ServletServicioAgencia', params:{accion:'consultarServicio', idServicio:codigoServicio}}).then(
 				 function successCallback(response) {
-					 if (response.data.exito == "undefined"){
+					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
