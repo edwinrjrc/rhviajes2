@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pe.com.rhviajes.web.util.UtilWeb;
-import pe.com.viajes.bean.util.UtilProperties;
 import pe.com.viajes.negocio.ejb.ParametroRemote;
 import pe.com.viajes.negocio.exception.ConvertirStringAIntegerException;
 

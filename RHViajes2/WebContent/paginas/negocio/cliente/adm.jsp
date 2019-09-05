@@ -212,7 +212,7 @@
 												<td style="width: 10%; text-align: left;">{{item.documentoIdentidad.tipoDocumento.nombre}} - {{item.documentoIdentidad.numeroDocumento}}</td>
 												<td style="width: 30%; text-align: left;">{{item.nombres}} {{item.apellidoPaterno}} {{item.apellidoMaterno}}</td>
 												<td style="width: 40%; text-align: left;">{{item.direccion.direccion}}</td>
-												<td style="width: 10%; text-align: center;">{{item.telefonoMovil.numeroTelefono}}</td>
+												<td style="width: 10%; text-align: center;">{{item.numTelefono}}</td>
 												<td style="width: 5%; text-align: center;"><a href="#"><span class="fa fa-edit"></span></a></td>
 												
 											</tr>

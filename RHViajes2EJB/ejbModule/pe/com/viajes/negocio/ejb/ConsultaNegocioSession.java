@@ -6,10 +6,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.base.CorreoElectronico;
@@ -89,6 +93,8 @@ import pe.com.viajes.negocio.util.UtilJdbc;
 @Stateless(name = "ConsultaNegocioSession")
 public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 		ConsultaNegocioSessionLocal {
+	
+	private static Logger log = Logger.getLogger(ConsultaNegocioSession.class);
 
 	@EJB
 	UtilNegocioSessionLocal utilNegocioSessionLocal;
@@ -308,11 +314,11 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 
 			List<DetalleServicioAgencia> listaHijos = null;
 			DetalleServicioAgencia detalleServicioAgencia = null;
-			DetalleServicioAgencia detalleServicioAgencia2 = null;
+			//DetalleServicioAgencia detalleServicioAgencia2 = null;
 			List<DetalleServicioAgencia> listaServiciosPadreNueva = new ArrayList<DetalleServicioAgencia>();
 			for (int i = 0; i < listaServiciosPadre.size(); i++) {
 				detalleServicioAgencia = (DetalleServicioAgencia) listaServiciosPadre.get(i);
-				detalleServicioAgencia2 = UtilEjb.clonarDetalleServicioAgencia(detalleServicioAgencia);
+				//detalleServicioAgencia2 = UtilEjb.clonarDetalleServicioAgencia(detalleServicioAgencia);
 				listaHijos = new ArrayList<DetalleServicioAgencia>();
 				listaHijos
 						.addAll(servicioNovaViajesDao
@@ -355,8 +361,10 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 	}
 
 	@Override
-	public List<Cliente> consultarCliente2(Cliente cliente)
+	public Map<String,Object> consultarCliente2(Cliente cliente)
 			throws SQLException, Exception {
+		log.debug("Inicio de consultarCliente2");
+		Map<String,Object> objetos = new HashMap<String,Object>();
 		ClienteDao clienteDao = new ClienteDaoImpl();
 		DireccionDao direccionDao = new DireccionDaoImpl();
 		TelefonoDao telefonoDao = new TelefonoDaoImpl(cliente.getEmpresa().getCodigoEntero());
@@ -364,11 +372,12 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 
 		Connection conn = null;
 
-		List<Cliente> listarCliente;
+		List<Cliente> listarCliente = null;
 		try {
 			conn = UtilConexion.obtenerConexion();
 			cliente.setTipoPersona(1);
-			listarCliente = clienteDao.listarClientes(cliente, conn);
+			listarCliente = clienteDao.listarClientes(cliente, cliente.getNumPagina(), cliente.getTamPagina(), conn);
+			int cantidadLista = clienteDao.listarClientesCantidad(cliente, conn);
 			int info = 0;
 			for (Cliente cliente2 : listarCliente) {
 				info = 1;
@@ -413,7 +422,8 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 					}
 				}
 			}
-
+			objetos.put("listaClientes", listarCliente);
+			objetos.put("listaClientesCantidad", cantidadLista);
 		} catch (SQLException e) {
 			throw new SQLException(e);
 		} catch (Exception e) {
@@ -423,8 +433,41 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 				conn.close();
 			}
 		}
+		
+		log.debug("Fin de consultarCliente2");
+		return objetos;
+	}
+	
+	@Override
+	public Map<String,Object> consultarCliente3(Cliente cliente)
+			throws SQLException, Exception {
+		log.debug("Inicio de consultarCliente2");
+		Map<String,Object> objetos = new HashMap<String,Object>();
+		ClienteDao clienteDao = new ClienteDaoImpl();
 
-		return listarCliente;
+		Connection conn = null;
+
+		List<Cliente> listarCliente = null;
+		try {
+			conn = UtilConexion.obtenerConexion();
+			cliente.setTipoPersona(1);
+			listarCliente = clienteDao.listarClientes3(cliente, cliente.getNumPagina(), cliente.getTamPagina(), conn);
+			int cantidadLista = clienteDao.listarClientesCantidad(cliente, conn);
+			
+			objetos.put("listaClientes", listarCliente);
+			objetos.put("listaClientesCantidad", cantidadLista);
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} catch (Exception e) {
+			throw new Exception(e);
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
+		
+		log.debug("Fin de consultarCliente2");
+		return objetos;
 	}
 
 	@Override
@@ -883,7 +926,7 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 	public Pasajero consultaClientePasajero(Pasajero pasajero) throws ErrorConsultaDataException{
 		try {
 			ClienteDao clienteDao = new ClienteDaoImpl();
-			List<Cliente> listaClientes = clienteDao.listarClientes(pasajero);
+			List<Cliente> listaClientes = clienteDao.listarClientes(pasajero, pasajero.getNumPagina(), pasajero.getTamPagina());
 			
 			if (listaClientes != null && !listaClientes.isEmpty()){
 				Cliente cliente = this.consultarCliente(listaClientes.get(0).getCodigoEntero().intValue(), pasajero.getEmpresa().getCodigoEntero().intValue());

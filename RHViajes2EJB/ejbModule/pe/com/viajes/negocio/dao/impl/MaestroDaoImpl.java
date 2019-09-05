@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.negocio.Maestro;
@@ -25,6 +26,8 @@ import pe.com.viajes.negocio.util.UtilJdbc;
  * 
  */
 public class MaestroDaoImpl implements MaestroDao {
+	
+	private static Logger log = Logger.getLogger(MaestroDaoImpl.class);
 
 	/*
 	 * (non-Javadoc)
@@ -320,6 +323,7 @@ public class MaestroDaoImpl implements MaestroDao {
 	@Override
 	public Maestro consultarHijoMaestro(Maestro hijoMaestro)
 			throws SQLException {
+		log.debug("Inicio consultarHijoMaestro");
 		Connection conn = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
@@ -371,7 +375,7 @@ public class MaestroDaoImpl implements MaestroDao {
 				}
 			}
 		}
-
+		log.debug("Fin consultarHijoMaestro");
 		return maestro;
 	}
 

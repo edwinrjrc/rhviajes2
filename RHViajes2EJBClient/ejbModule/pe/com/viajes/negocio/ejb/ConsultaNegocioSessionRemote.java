@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -57,7 +58,7 @@ public interface ConsultaNegocioSessionRemote {
 			ServicioAgenciaBusqueda servicioAgencia) throws SQLException,
 			Exception;
 
-	List<Cliente> consultarCliente2(Cliente cliente) throws SQLException,
+	Map<String,Object> consultarCliente2(Cliente cliente) throws SQLException,
 			Exception;
 
 	List<ServicioProveedor> proveedoresXServicio(BaseVO servicio)
@@ -211,4 +212,6 @@ public interface ConsultaNegocioSessionRemote {
 	boolean servicioAplicaIgv(int idServicio, int idEmpresa) throws ErrorConsultaDataException;
 
 	List<Cliente> buscarCliente(ClienteBusqueda cliente) throws ErrorConsultaDataException;
+
+	Map<String, Object> consultarCliente3(Cliente cliente) throws SQLException, Exception;
 }

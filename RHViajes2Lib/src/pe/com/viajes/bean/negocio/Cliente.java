@@ -20,6 +20,8 @@ public class Cliente extends Persona {
 
 	private String telefonoInvitadoNovios;
 	private Integer codigoSeleccionado;
+	
+	private String numTelefono;
 
 	private int infoCliente;
 
@@ -135,6 +137,20 @@ public class Cliente extends Persona {
 	 */
 	public void setListaAdjuntos(List<DocumentoAdicional> listaAdjuntos) {
 		this.listaAdjuntos = listaAdjuntos;
+	}
+
+	/**
+	 * @return the numTelefono
+	 */
+	public String getNumTelefono() {
+		return numTelefono;
+	}
+
+	/**
+	 * @param numTelefono the numTelefono to set
+	 */
+	public void setNumTelefono(String numTelefono) {
+		this.numTelefono = numTelefono;
 	}
 
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.negocio.Direccion;
@@ -25,6 +26,8 @@ import pe.com.viajes.negocio.util.UtilJdbc;
  *
  */
 public class DireccionDaoImpl implements DireccionDao {
+	
+	private static Logger log = Logger.getLogger(DireccionDaoImpl.class);
 
 	@Override
 	public int registrarDireccion(Direccion direccion, Connection conexion)
@@ -517,6 +520,7 @@ public class DireccionDaoImpl implements DireccionDao {
 	@Override
 	public List<Direccion> consultarDireccionPersona(int idPersona, int idEmpresa, 
 			Connection conn) throws SQLException {
+		log.debug("Inicio consultarDireccionPersona");
 		List<Direccion> resultado = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
@@ -595,7 +599,7 @@ public class DireccionDaoImpl implements DireccionDao {
 
 			}
 		}
-
+		log.debug("Fin consultarDireccionPersona");
 		return resultado;
 	}
 

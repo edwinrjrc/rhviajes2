@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.negocio.Direccion;
@@ -25,6 +26,8 @@ import pe.com.viajes.negocio.util.UtilJdbc;
  *
  */
 public class TelefonoDaoImpl implements TelefonoDao {
+	
+	private static Logger log = Logger.getLogger(TelefonoDaoImpl.class);
 	
 	private Integer idEmpresa = null;
 
@@ -368,6 +371,7 @@ public class TelefonoDaoImpl implements TelefonoDao {
 	@Override
 	public List<Telefono> consultarTelefonosDireccion(int idDireccion,
 			Connection conn) throws SQLException {
+		log.debug("Inicio consultarTelefonosDireccion");
 		CallableStatement cs = null;
 		String sql = "{ ? = call negocio.fn_telefonosxdireccion(?,?) }";
 		ResultSet rs = null;
@@ -407,7 +411,7 @@ public class TelefonoDaoImpl implements TelefonoDao {
 				throw new SQLException(e);
 			}
 		}
-
+		log.debug("Fin consultarTelefonosDireccion");
 		return resultado;
 	}
 
@@ -471,6 +475,7 @@ public class TelefonoDaoImpl implements TelefonoDao {
 	@Override
 	public List<Telefono> consultarTelefonosXPersona(int idPersona,
 			Connection conn) throws SQLException {
+		log.debug("Inicio consultarTelefonosXPersona");
 		CallableStatement cs = null;
 		String sql = "{ ? = call negocio.fn_telefonosxpersona(?,?) }";
 		ResultSet rs = null;
@@ -510,7 +515,8 @@ public class TelefonoDaoImpl implements TelefonoDao {
 
 			}
 		}
-
+		
+		log.debug("Fin consultarTelefonosXPersona");
 		return resultado;
 	}
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.CorreoElectronico;
 import pe.com.viajes.bean.base.Persona;
@@ -28,6 +29,8 @@ import pe.com.viajes.negocio.util.UtilJdbc;
  *
  */
 public class ContactoDaoImpl implements ContactoDao {
+	
+	private static Logger log = Logger.getLogger(ContactoDaoImpl.class);
 
 	/*
 	 * (non-Javadoc)
@@ -478,6 +481,7 @@ public class ContactoDaoImpl implements ContactoDao {
 	@Override
 	public List<Contacto> listarContactosXPersona(int idpersona, int idEmpresa, Connection conn)
 			throws SQLException {
+		log.debug("Inicio listarContactosXPersona");
 		List<Contacto> resultado = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
@@ -527,7 +531,7 @@ public class ContactoDaoImpl implements ContactoDao {
 				throw new SQLException(e);
 			}
 		}
-
+		log.debug("Fin listarContactosXPersona");
 		return resultado;
 	}
 	

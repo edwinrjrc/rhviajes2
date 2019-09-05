@@ -14,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.jasper.DetalleServicio;
@@ -46,6 +47,7 @@ import pe.com.viajes.negocio.dao.ServicioNegocioDao;
 import pe.com.viajes.negocio.dao.ServicioNovaViajesDao;
 import pe.com.viajes.negocio.dao.TipoCambioDao;
 import pe.com.viajes.negocio.dao.UbigeoDao;
+import pe.com.viajes.negocio.dao.impl.ClienteDaoImpl;
 import pe.com.viajes.negocio.dao.impl.ComunDaoImpl;
 import pe.com.viajes.negocio.dao.impl.DestinoDaoImpl;
 import pe.com.viajes.negocio.dao.impl.MaestroDaoImpl;
@@ -68,7 +70,9 @@ import pe.com.viajes.negocio.util.UtilJdbc;
 @Stateless(name = "UtilNegocioSession")
 public class UtilNegocioSession implements UtilNegocioSessionRemote,
 		UtilNegocioSessionLocal {
-
+	
+	private static Logger log = Logger.getLogger(UtilNegocioSession.class);
+	
 	@EJB
 	NegocioSessionLocal negocioSessionLocal;
 
@@ -1168,6 +1172,7 @@ public class UtilNegocioSession implements UtilNegocioSessionRemote,
 	@Override
 	public String obtenerDireccionCompleta(Direccion direccion)
 			throws SQLException, Exception {
+		log.debug("Inicio obtenerDireccionCompleta");
 		MaestroDao maestroDao = new MaestroDaoImpl();
 		Maestro hijoMaestro = new Maestro();
 		int valorMaestro = UtilEjb.obtenerEnteroPropertieMaestro("maestroVias",
@@ -1191,8 +1196,9 @@ public class UtilNegocioSession implements UtilNegocioSessionRemote,
 			direccionCompleta = direccionCompleta + " Int "
 					+ direccion.getInterior();
 		}
-
-		return UtilJdbc.convertirMayuscula(direccionCompleta);
+		String rpta = UtilJdbc.convertirMayuscula(direccionCompleta);
+		log.debug("Fin obtenerDireccionCompleta");
+		return rpta;
 	}
 
 	@Override

@@ -13,12 +13,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.negocio.ejb.SeguridadRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Servlet implementation class ServletRol

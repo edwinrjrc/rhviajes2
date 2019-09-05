@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.negocio.Cliente;
@@ -28,6 +29,8 @@ import pe.com.viajes.negocio.util.UtilJdbc;
  * 
  */
 public class ClienteDaoImpl implements ClienteDao {
+	
+	private static Logger log = Logger.getLogger(ClienteDaoImpl.class);
 
 	/*
 	 * (non-Javadoc)
@@ -540,12 +543,12 @@ public class ClienteDaoImpl implements ClienteDao {
 	}
 
 	@Override
-	public List<Cliente> listarClientes(Persona persona) throws SQLException {
+	public List<Cliente> listarClientes(Persona persona, int numPagina, int tamPagina) throws SQLException {
 		List<Cliente> resultado = null;
 		Connection conn = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
-		String sql = "{ ? = call negocio.fn_consultarpersonas2(?,?,?,?,?) }";
+		String sql = "{ ? = call negocio.fn_consultarpersonas2(?,?,?,?,?,?,?) }";
 
 		try {
 			conn = UtilConexion.obtenerConexion();
@@ -640,12 +643,14 @@ public class ClienteDaoImpl implements ClienteDao {
 	}
 
 	@Override
-	public List<Cliente> listarClientes(Persona persona, Connection conn)
+	public List<Cliente> listarClientes(Persona persona, int numPagina, int tamPagina, Connection conn)
 			throws SQLException {
+		log.debug("Inicio listarClientes");
+		
 		List<Cliente> resultado = null;
 		CallableStatement cs = null;
 		ResultSet rs = null;
-		String sql = "{ ? = call negocio.fn_consultarpersonas2(?,?,?,?,?) }";
+		String sql = "{ ? = call negocio.fn_consultarpersonas2(?,?,?,?,?,?,?) }";
 
 		try {
 			cs = conn.prepareCall(sql);
@@ -673,6 +678,8 @@ public class ClienteDaoImpl implements ClienteDao {
 			} else {
 				cs.setNull(i++, Types.VARCHAR);
 			}
+			cs.setInt(i++, tamPagina);
+			cs.setInt(i++, numPagina);
 			cs.execute();
 
 			rs = (ResultSet) cs.getObject(1);
@@ -724,7 +731,163 @@ public class ClienteDaoImpl implements ClienteDao {
 				throw new SQLException(e);
 			}
 		}
+		log.debug("Fin listarClientes");
+		return resultado;
+	}
+	
+	@Override
+	public List<Cliente> listarClientes3(Persona persona, int numPagina, int tamPagina, Connection conn)
+			throws SQLException {
+		log.debug("Inicio listarClientes");
+		
+		List<Cliente> resultado = null;
+		CallableStatement cs = null;
+		ResultSet rs = null;
+		String sql = "{ ? = call negocio.fn_consultarpersonas3(?,?,?,?,?,?,?) }";
 
+		try {
+			cs = conn.prepareCall(sql);
+			int i = 1;
+			cs.registerOutParameter(i++, Types.OTHER);
+			cs.setInt(i++, persona.getEmpresa().getCodigoEntero().intValue());
+			cs.setInt(i++, persona.getTipoPersona());
+			if (UtilJdbc.enteroNoNuloNoCero(persona.getDocumentoIdentidad()
+					.getTipoDocumento().getCodigoEntero())) {
+				cs.setInt(i++, persona.getDocumentoIdentidad()
+						.getTipoDocumento().getCodigoEntero().intValue());
+			} else {
+				cs.setNull(i++, Types.INTEGER);
+			}
+			if (StringUtils.isNotBlank(persona.getDocumentoIdentidad()
+					.getNumeroDocumento())) {
+				cs.setString(i++, persona.getDocumentoIdentidad()
+						.getNumeroDocumento());
+			} else {
+				cs.setNull(i++, Types.VARCHAR);
+			}
+			if (StringUtils.isNotBlank(persona.getNombres())) {
+				cs.setString(i++,
+						UtilJdbc.borrarEspacioMayusculas(persona.getNombres()));
+			} else {
+				cs.setNull(i++, Types.VARCHAR);
+			}
+			cs.setInt(i++, tamPagina);
+			cs.setInt(i++, numPagina);
+			log.debug("Inicio Ejecucion clientes");
+			cs.execute();
+			log.debug("Fin Ejecucion clientes");
+
+			rs = (ResultSet) cs.getObject(1);
+			resultado = new ArrayList<Cliente>();
+			Cliente cliente = null;
+			log.debug("Inicio recopilacion clientes");
+			while (rs.next()) {
+				cliente = new Cliente();
+				cliente.setCodigoEntero(UtilJdbc.obtenerNumero(rs, "id"));
+				cliente.getDocumentoIdentidad()
+						.getTipoDocumento()
+						.setCodigoEntero(
+								UtilJdbc.obtenerNumero(rs, "idtipodocumento"));
+				cliente.getDocumentoIdentidad()
+						.getTipoDocumento()
+						.setNombre(
+								UtilJdbc.obtenerCadena(rs,
+										"nombretipodocumento"));
+				cliente.getDocumentoIdentidad().setNumeroDocumento(
+						UtilJdbc.obtenerCadena(rs, "numerodocumento"));
+				cliente.setNombres(UtilJdbc.obtenerCadena(rs, "nombres"));
+				cliente.setApellidoPaterno(UtilJdbc.obtenerCadena(rs,
+						"apellidopaterno"));
+				cliente.setApellidoMaterno(UtilJdbc.obtenerCadena(rs,
+						"apellidomaterno"));
+				cliente.getGenero().setCodigoCadena(
+						UtilJdbc.obtenerCadena(rs, "idgenero"));
+				cliente.getGenero().setNombre(
+						UtilJdbc.obtenerCadena(rs, "genero"));
+				cliente.getEstadoCivil().setCodigoEntero(
+						UtilJdbc.obtenerNumero(rs, "idestadocivil"));
+				cliente.getEstadoCivil().setNombre(
+						UtilJdbc.obtenerCadena(rs, "nombre"));
+				cliente.setEmpresa(persona.getEmpresa());
+				cliente.getDireccion().setDireccion(UtilJdbc.obtenerCadena(rs, "direccion"));
+				cliente.setNumTelefono(UtilJdbc.obtenerCadena(rs, "telefono"));
+				resultado.add(cliente);
+			}
+			log.debug("Fin recopilacion clientes");
+
+		} catch (SQLException e) {
+			resultado = null;
+			throw new SQLException(e);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (cs != null) {
+					cs.close();
+				}
+			} catch (SQLException e) {
+				throw new SQLException(e);
+			}
+		}
+		log.debug("Fin listarClientes");
+		return resultado;
+	}
+	
+	@Override
+	public int listarClientesCantidad(Persona persona, Connection conn)
+			throws SQLException {
+		log.debug("Inicio listarClientesCantidad");
+		
+		int resultado = 0;
+		CallableStatement cs = null;
+		ResultSet rs = null;
+		String sql = "{ ? = call negocio.fn_consultarpersonas2_count(?,?,?,?,?) }";
+
+		try {
+			cs = conn.prepareCall(sql);
+			int i = 1;
+			cs.registerOutParameter(i++, Types.INTEGER);
+			cs.setInt(i++, persona.getEmpresa().getCodigoEntero().intValue());
+			cs.setInt(i++, persona.getTipoPersona());
+			if (UtilJdbc.enteroNoNuloNoCero(persona.getDocumentoIdentidad()
+					.getTipoDocumento().getCodigoEntero())) {
+				cs.setInt(i++, persona.getDocumentoIdentidad()
+						.getTipoDocumento().getCodigoEntero().intValue());
+			} else {
+				cs.setNull(i++, Types.INTEGER);
+			}
+			if (StringUtils.isNotBlank(persona.getDocumentoIdentidad()
+					.getNumeroDocumento())) {
+				cs.setString(i++, persona.getDocumentoIdentidad()
+						.getNumeroDocumento());
+			} else {
+				cs.setNull(i++, Types.VARCHAR);
+			}
+			if (StringUtils.isNotBlank(persona.getNombres())) {
+				cs.setString(i++,
+						UtilJdbc.borrarEspacioMayusculas(persona.getNombres()));
+			} else {
+				cs.setNull(i++, Types.VARCHAR);
+			}
+			cs.execute();
+			resultado = cs.getInt(1);
+		} catch (SQLException e) {
+			resultado = 0;
+			throw new SQLException(e);
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (cs != null) {
+					cs.close();
+				}
+			} catch (SQLException e) {
+				throw new SQLException(e);
+			}
+		}
+		log.debug("Fin listarClientesCantidad");
 		return resultado;
 	}
 

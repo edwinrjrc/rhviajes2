@@ -22,6 +22,9 @@ public class Base implements Serializable {
 	
 	private BaseVO empresa;
 	private int totalRegistros;
+	
+	private int tamPagina;
+	private int numPagina;
 
 	/**
 	 * 
@@ -107,6 +110,34 @@ public class Base implements Serializable {
 	 */
 	public void setTotalRegistros(int totalRegistros) {
 		this.totalRegistros = totalRegistros;
+	}
+
+	/**
+	 * @return the tamPagina
+	 */
+	public int getTamPagina() {
+		return tamPagina;
+	}
+
+	/**
+	 * @param tamPagina the tamPagina to set
+	 */
+	public void setTamPagina(int tamPagina) {
+		this.tamPagina = tamPagina;
+	}
+
+	/**
+	 * @return the numPagina
+	 */
+	public int getNumPagina() {
+		return numPagina;
+	}
+
+	/**
+	 * @param numPagina the numPagina to set
+	 */
+	public void setNumPagina(int numPagina) {
+		this.numPagina = numPagina;
 	}
 
 }

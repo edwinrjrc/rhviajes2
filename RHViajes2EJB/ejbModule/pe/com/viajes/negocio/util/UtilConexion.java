@@ -102,7 +102,7 @@ public class UtilConexion {
 		Properties prop = UtilProperties
 				.cargaArchivo("aplicacionConfiguracion.properties");
 
-		String jndiProperties = prop.getProperty("jndi_ds");
+		String jndiProperties = prop.getProperty("pe.com.rhviajes.jdbc.jndi_ds");
 
 		return jndiProperties;
 	}

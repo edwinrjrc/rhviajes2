@@ -11,7 +11,6 @@ import pe.com.viajes.bean.base.Persona;
 import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.ClienteBusqueda;
 import pe.com.viajes.bean.negocio.DocumentoAdicional;
-import pe.com.viajes.bean.negocio.Pasajero;
 
 /**
  * @author Edwin
@@ -29,9 +28,9 @@ public interface ClienteDao {
 
 	List<Cliente> buscarPersona(Persona persona) throws SQLException;
 
-	List<Cliente> listarClientes(Persona persona) throws SQLException;
+	List<Cliente> listarClientes(Persona persona, int numPagina, int tamPagina) throws SQLException;
 
-	List<Cliente> listarClientes(Persona persona, Connection conn)
+	public List<Cliente> listarClientes(Persona persona, int numPagina, int tamPagina, Connection conn)
 			throws SQLException;
 
 	List<Cliente> consultarClientesNovios(Cliente cliente) throws SQLException;
@@ -59,4 +58,8 @@ public interface ClienteDao {
 			throws SQLException;
 
 	List<Cliente> buscarPersona(ClienteBusqueda persona) throws SQLException;
+
+	int listarClientesCantidad(Persona persona, Connection conn) throws SQLException;
+
+	List<Cliente> listarClientes3(Persona persona, int numPagina, int tamPagina, Connection conn) throws SQLException;
 }

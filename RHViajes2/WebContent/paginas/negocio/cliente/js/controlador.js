@@ -56,27 +56,31 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	};
 	$scope.listarEstadoCivil();
 	
-	$scope.listarClientes = function (){
-		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'listar'}}).then(
+	var consultarClientes = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'listar',numPagina:($scope.currentPage)}}).then(
 				 function successCallback(response) {
 					 if (response.data.exito == undefined){
 						 location.href="../../../";
 					 }
 					 else{
 						 if (response.data.exito){
-							 console.log('Exito en la llamada');
 							 $scope.estadoConsulta = response.data.exito;
 							 if ($scope.estadoConsulta){
 								 $scope.mensaje = response.data.mensaje;
-								 $scope.listaClientes = response.data.objeto;
-								 $scope.totalItems = $scope.listaClientes.length;
-								 $scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
+								 //$scope.listaClientes = response.data.objeto.listaClientes;
+								 $scope.listaFiltrada = response.data.objeto.listaClientes;
+								 $scope.totalItems = response.data.objeto.listaClientesCantidad;
+								 //$scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
 							 }
 						 }
 					 }
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
+	}
+	
+	$scope.listarClientes = function (){
+		consultarClientes();
 	}
 	$scope.listarClientes();
 	
@@ -94,7 +98,8 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	};
 	
 	$scope.pageChanged = function() {
-		$scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
+		//$scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
+		consultarClientes();
 	};
 	
 	$scope.buscarClientes = function(){

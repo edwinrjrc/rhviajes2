@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -77,6 +78,7 @@ public class ServletCliente extends BaseServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		log.debug("Inicio doPost");
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
@@ -85,15 +87,17 @@ public class ServletCliente extends BaseServlet {
 		Map<String, Object> retorno = new HashMap<String, Object>();
 		try {
 			if (ACCION_LISTAR.equals(accion)) {
+				Properties parametrosSistema = (Properties) getServletContext().getAttribute("parametrosSistema");
 				Cliente cliente = new Cliente();
+				cliente.setNumPagina(UtilWeb.convertirStringAInteger(request.getParameter("numPagina")));
+				cliente.setTamPagina(UtilWeb.convertirStringAInteger(parametrosSistema.get("pe.com.rhviajes.web.tampagina").toString()));
 				cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
-				retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente2(cliente));
+				retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente3(cliente));
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			} else if (ACCION_BUSCAR.equals(accion)) {
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
 				Cliente cliente = null;
-				List<Cliente> lista = null;
 				if (mapeo != null) {
 					cliente = new Cliente();
 					if (mapeo.get("tipoDocumento") != null) {
@@ -108,10 +112,8 @@ public class ServletCliente extends BaseServlet {
 						cliente.setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
 					}
 					cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
-					lista = consultaNegocioSessionRemote.consultarCliente2(cliente);
+					retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente2(cliente));
 				}
-				
-				retorno.put("objeto", lista);
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			} else if ("cargaArchivo".equals(accion)) {
@@ -276,5 +278,6 @@ public class ServletCliente extends BaseServlet {
 		}
 		String buffer = gson.toJson(retorno);
 		respuesta.println(buffer);
+		log.debug("Fin doPost");
 	}
 }
