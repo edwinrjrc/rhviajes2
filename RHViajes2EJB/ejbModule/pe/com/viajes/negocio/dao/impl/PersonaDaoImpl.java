@@ -235,7 +235,12 @@ public class PersonaDaoImpl implements PersonaDao {
 			} else {
 				cs.setNull(i++, Types.DATE);
 			}
-			cs.setInt(i++, persona.getNacionalidad().getCodigoEntero().intValue());
+			if (persona.getNacionalidad().getCodigoEntero() != null && persona.getNacionalidad().getCodigoEntero().intValue() != 0) {
+				cs.setInt(i++, persona.getNacionalidad().getCodigoEntero().intValue());
+			}
+			else {
+				cs.setNull(i++, Types.INTEGER);
+			}
 
 			cs.execute();
 			resultado = cs.getInt(1);

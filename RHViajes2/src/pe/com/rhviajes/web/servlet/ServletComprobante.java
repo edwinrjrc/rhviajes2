@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -72,6 +71,7 @@ public class ServletComprobante extends BaseServlet {
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
 	@EJB(lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/UtilNegocioSession!pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote")
 	private UtilNegocioSessionRemote utilNegocioSessionRemote;
+	
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -101,7 +101,7 @@ public class ServletComprobante extends BaseServlet {
 		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
 		String accion = request.getParameter("accion");
 		Map<String, Object> retorno = new HashMap<String, Object>();
-
+		Connection conn = null;
 		try {
 			Comprobante comprobante = null;
 			if ("consulta".equals(accion)) {
@@ -154,8 +154,8 @@ public class ServletComprobante extends BaseServlet {
 					String nombreArchivo = "bol_" + comprobante.getNumeroSerie() + "-"
 							+ comprobante.getNumeroComprobante();
 					nombreArchivo = nombreArchivo + ".pdf";
-					byte[] datos = imprimirPDFBoleta(enviarParametrosBoleta(ruta, comprobante),
-							new ByteArrayOutputStream(), new FileInputStream(new File(plantilla)), comprobante);
+					conn = obtenerConnection();
+					byte[] datos = imprimirPDFBoleta(enviarParametrosBoleta(ruta, comprobante, conn), new FileInputStream(new File(plantilla)), comprobante);
 
 					Map<String, Object> mapDatos = new HashMap<String, Object>();
 					mapDatos.put("nombreArchivo", nombreArchivo);
@@ -177,8 +177,8 @@ public class ServletComprobante extends BaseServlet {
 					String nombreArchivo = "dc_" + comprobante.getNumeroSerie() + "-"
 							+ comprobante.getNumeroComprobante();
 					nombreArchivo = nombreArchivo + ".pdf";
-					byte[] datos = imprimirPDFDocumentoCobranza(enviarParametrosDocumentoCobranza(ruta, comprobante),
-							new ByteArrayOutputStream(), streamJasper, comprobante);
+					conn = obtenerConnection();
+					byte[] datos = imprimirPDFDocumentoCobranza(enviarParametrosDocumentoCobranza(ruta, comprobante, conn), streamJasper, comprobante);
 
 					Map<String, Object> mapDatos = new HashMap<String, Object>();
 					mapDatos.put("nombreArchivo", nombreArchivo);
@@ -200,8 +200,7 @@ public class ServletComprobante extends BaseServlet {
 					String nombreArchivo = "fc_" + comprobante.getNumeroSerie() + "-"
 							+ comprobante.getNumeroComprobante();
 					nombreArchivo = nombreArchivo + ".pdf";
-					byte[] datos = imprimirPDFFactura(this.enviarParametrosFactura(comprobante),
-							new ByteArrayOutputStream(), streamJasper, comprobante);
+					byte[] datos = imprimirPDFFactura(this.enviarParametrosFactura(comprobante), streamJasper, comprobante);
 					Map<String, Object> mapDatos = new HashMap<String, Object>();
 					mapDatos.put("nombreArchivo", nombreArchivo);
 					mapDatos.put("contentType", "application/pdf");
@@ -228,10 +227,8 @@ public class ServletComprobante extends BaseServlet {
 					String plantilla = ruta + File.separator + "dc-digital.jasper";
 					File archivo = new File(plantilla);
 					InputStream streamJasper = new FileInputStream(archivo);
-
-					byte[] datos = imprimirPDFDocumentoCobranza(
-							this.enviarParametrosDocumentoCobranza(ruta, comprobante), new ByteArrayOutputStream(),
-							streamJasper, comprobante);
+					conn = obtenerConnection();
+					byte[] datos = imprimirPDFDocumentoCobranza(this.enviarParametrosDocumentoCobranza(ruta, comprobante, conn), streamJasper, comprobante);
 					String nombreArchivo = "dc_" + comprobante.getNumeroSerie() + "-"
 							+ comprobante.getNumeroComprobante();
 					nombreArchivo = nombreArchivo + ".pdf";
@@ -253,12 +250,23 @@ public class ServletComprobante extends BaseServlet {
 			log.error(e.getMessage(), e);
 			retorno.put("mensaje", e.getMessage());
 			retorno.put("exito", false);
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				log.error(e.getMessage(), e);
+				retorno.put("mensaje", e.getMessage());
+				retorno.put("exito", false);
+			}
 		}
 		respuesta.println(gson.toJson(retorno));
 	}
 
-	private byte[] imprimirPDFBoleta(Map<String, Object> map, OutputStream stream, InputStream streamJasper,
+	private byte[] imprimirPDFBoleta(Map<String, Object> map, InputStream streamJasper,
 			Comprobante comprobante) throws JRException, IOException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		List<JasperPrint> printList = new ArrayList<JasperPrint>();
 		List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
 		DetalleServicioAgencia detalleServicio = null;
@@ -277,17 +285,17 @@ public class ServletComprobante extends BaseServlet {
 		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
 		configuration.setCreatingBatchModeBookmarks(true);
 		exporter.exportReport();
-
-		ByteArrayOutputStream byteStream = (ByteArrayOutputStream) stream;
-		byteStream.flush();
-		byteStream.close();
-		return byteStream.toByteArray();
+		streamJasper.close();
+		stream.flush();
+		stream.close();
+		return stream.toByteArray();
 	}
 
-	private byte[] imprimirPDFDocumentoCobranza(Map<String, Object> map, OutputStream stream, InputStream jasperStream,
+	private byte[] imprimirPDFDocumentoCobranza(Map<String, Object> map, InputStream jasperStream,
 			Comprobante comprobante) throws JRException, IOException {
 		List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
 		DetalleServicioAgencia detalleServicio = null;
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
 			if (detalleComprobante.isImpresion()) {
 				detalleServicio = new DetalleServicioAgencia();
@@ -306,16 +314,16 @@ public class ServletComprobante extends BaseServlet {
 		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
 		configuration.setCreatingBatchModeBookmarks(true);
 		exporter.exportReport();
-
-		ByteArrayOutputStream byteStream = (ByteArrayOutputStream) stream;
-		byteStream.flush();
-		byteStream.close();
-		return byteStream.toByteArray();
+		jasperStream.close();
+		stream.flush();
+		stream.close();
+		return stream.toByteArray();
 	}
 
-	private byte[] imprimirPDFFactura(Map<String, Object> map, OutputStream outputStream, InputStream jasperStream,
+	private byte[] imprimirPDFFactura(Map<String, Object> map, InputStream jasperStream,
 			Comprobante comprobante) throws JRException, ErrorConsultaDataException, IOException {
 		List<JasperPrint> printList = new ArrayList<JasperPrint>();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		List<Pasajero> listaPasajeros = utilNegocioSessionRemote.consultarPasajerosServicio(
 				comprobante.getIdServicio(), comprobante.getEmpresa().getCodigoEntero());
 		printList.add(
@@ -328,14 +336,13 @@ public class ServletComprobante extends BaseServlet {
 		configuration.setCreatingBatchModeBookmarks(true);
 		// exporter.setConfiguration(configuration);
 		exporter.exportReport();
-
-		ByteArrayOutputStream byteStream = (ByteArrayOutputStream) outputStream;
-		byteStream.flush();
-		byteStream.close();
-		return byteStream.toByteArray();
+		jasperStream.close();
+		outputStream.flush();
+		outputStream.close();
+		return outputStream.toByteArray();
 	}
 
-	private Map<String, Object> enviarParametrosBoleta(String ruta, Comprobante comprobante)
+	private Map<String, Object> enviarParametrosBoleta(String ruta, Comprobante comprobante, Connection conn)
 			throws SQLException, Exception {
 		Map<String, Object> mapeo = new HashMap<String, Object>();
 		Cliente cliente = null;
@@ -371,7 +378,7 @@ public class ServletComprobante extends BaseServlet {
 		mapeo.put("p_idempresa", comprobante.getEmpresa().getCodigoEntero());
 		mapeo.put("p_idservicio", comprobante.getIdServicio());
 		mapeo.put("SUBREPORT_DIR", ruta + File.separator);
-		mapeo.put("REPORT_CONNECTION", obtenerConnection());
+		mapeo.put("REPORT_CONNECTION", conn);
 
 		String rutaImagen = ruta + File.separator + "logocomprobante.jpg";
 		File imagen = new File(rutaImagen);
@@ -381,7 +388,7 @@ public class ServletComprobante extends BaseServlet {
 		return mapeo;
 	}
 
-	private Map<String, Object> enviarParametrosDocumentoCobranza(String ruta, Comprobante comprobante)
+	private Map<String, Object> enviarParametrosDocumentoCobranza(String ruta, Comprobante comprobante, Connection conn)
 			throws SQLException, Exception {
 		Map<String, Object> mapeo = new HashMap<String, Object>();
 
@@ -409,7 +416,7 @@ public class ServletComprobante extends BaseServlet {
 		mapeo.put("p_idempresa", comprobante.getEmpresa().getCodigoEntero());
 		mapeo.put("p_idservicio", comprobante.getIdServicio());
 		mapeo.put("SUBREPORT_DIR", ruta + File.separator);
-		mapeo.put("REPORT_CONNECTION", obtenerConnection());
+		mapeo.put("REPORT_CONNECTION", conn);
 		String rutaImagen = ruta + File.separator + "logocomprobante.jpg";
 		File imagen = new File(rutaImagen);
 		BufferedImage image = ImageIO.read(imagen);

@@ -387,6 +387,7 @@ public class ServletServicioAgencia extends BaseServlet {
 				retorno.put("objeto", session.getAttribute("servicioVenta"));
 				retorno.put("mensaje", "Consulta Satisfactoria");
 				retorno.put("exito", true);
+				session.removeAttribute("servicioVenta");
 			}
 				
 		} catch (SQLException e) {

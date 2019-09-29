@@ -260,9 +260,27 @@ public class ClienteDaoImpl implements ClienteDao {
 			cs = conexion.prepareCall(sql);
 			int i = 1;
 			cs.registerOutParameter(i++, Types.BOOLEAN);
-			cs.setInt(i++, cliente.getEmpresa().getCodigoEntero().intValue());
-			cs.setInt(i++, cliente.getCodigoEntero());
-			cs.setInt(i++, cliente.getRubro().getCodigoEntero());
+			if (cliente.getEmpresa().getCodigoEntero() != null && cliente.getEmpresa().getCodigoEntero().intValue() != 0) {
+				cs.setInt(i++, cliente.getEmpresa().getCodigoEntero().intValue());
+			}
+			else {
+				cs.setNull(i++, Types.INTEGER);
+			}
+			
+			if (cliente.getCodigoEntero() != null && cliente.getCodigoEntero() != 0) {
+				cs.setInt(i++, cliente.getCodigoEntero());
+			}
+			else {
+				cs.setNull(i++, Types.INTEGER);
+			}
+			
+			if (cliente.getRubro().getCodigoEntero() != null && cliente.getRubro().getCodigoEntero().intValue() != 0) {
+				cs.setInt(i++, cliente.getRubro().getCodigoEntero());
+			}
+			else {
+				cs.setNull(i++, Types.INTEGER);
+			}
+			
 			cs.setInt(i++, cliente.getUsuarioModificacion().getCodigoEntero().intValue());
 			cs.setString(i++, cliente.getIpModificacion());
 

@@ -213,7 +213,7 @@
 												<td style="width: 30%; text-align: left;">{{item.nombres}} {{item.apellidoPaterno}} {{item.apellidoMaterno}}</td>
 												<td style="width: 40%; text-align: left;">{{item.direccion.direccion}}</td>
 												<td style="width: 10%; text-align: center;">{{item.numTelefono}}</td>
-												<td style="width: 5%; text-align: center;"><a href="#"><span class="fa fa-edit"></span></a></td>
+												<td style="width: 5%; text-align: center;"><a href="#" ng-click="editarCliente(item.codigoEntero)"><span class="fa fa-edit"></span></a></td>
 												
 											</tr>
 										</tbody>

@@ -512,6 +512,7 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 							telefono.setIpCreacion(cliente.getIpCreacion());
 							telefono.setUsuarioModificacion(cliente.getUsuarioModificacion());
 							telefono.setIpModificacion(cliente.getIpModificacion());
+							telefono.getEmpresaOperadora().setCodigoEntero(1);
 							int idTelefono = telefonoDao.registrarTelefono(telefono, conexion);
 							if (idTelefono == 0) {
 								throw new ResultadoCeroDaoException(

@@ -1,4 +1,4 @@
-var clientesapp = angular.module('clientesapp',['ngAnimate', 'ngSanitize','ui.bootstrap','ngFileUpload']);
+var clientesapp = angular.module('formclientesapp',['ngAnimate', 'ngSanitize','ui.bootstrap','ngFileUpload']);
 
 clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout,$compile, Upload){
 	$scope.listaClientes = [];
@@ -11,6 +11,83 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.cliente = {};
 	$scope.listaTelefonos = [];
 	$scope.listaDirecciones = [];
+	$scope.idElimaArchivo = null;
+	$scope.editaDireccion = false;
+	$scope.editaContacto = false;
+	$scope.idDireccion = {};
+	$scope.idContacto = {};
+	$scope.fechaHoy = new Date();
+	
+	var consultarInfoCliente = function(){
+		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'consultarInfoCliente'}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == undefined){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.objeto == undefined && !response.data.exito){
+							 location.href="../../../";
+						 }
+						 if (response.data.exito && response.data.objeto != undefined){
+							 $scope.cliente = response.data.objeto;
+							 $scope.cliente.numeroDocumento = $scope.cliente.documentoIdentidad.numeroDocumento;
+							 $scope.cliente.tipoDocumento = $scope.cliente.documentoIdentidad.tipoDocumento.codigoEntero;
+							 $scope.cliente.nombreComercial = $scope.cliente.razonSocial;
+							 $scope.cliente.idEstadoCivil = $scope.cliente.estadoCivil.codigoEntero;
+							 $scope.cliente.idGenero = $scope.cliente.genero.codigoCadena;
+							 $scope.cliente.numeroPasaporte = $scope.cliente.nroPasaporte;
+							 $scope.cliente.fechaNacimiento = new Date($scope.cliente.fechaNacimiento);
+							 $scope.cliente.fechaVctoPasaporte = new Date($scope.cliente.fechaVctoPasaporte);
+							 $scope.cliente.idPais = $scope.cliente.nacionalidad.codigoEntero;
+							 var listaDirecciones = $scope.cliente.listaDirecciones;
+							 
+							 for (var i=0; i<listaDirecciones.length; i++){
+								 var direc = listaDirecciones[i];
+								 
+								 direc.idVia = direc.via.codigoEntero;
+								 direc.idDepartamento = direc.ubigeo.departamento.codigoCadena;
+								 direc.idProvincia = direc.ubigeo.provincia.codigoCadena;
+								 direc.idDistrito = direc.ubigeo.distrito.codigoCadena;
+								 direc.idPais = direc.pais.codigoEntero;
+								 direc.ubigeo = direc.ubigeo.departamento.nombre+"-"+direc.ubigeo.provincia.nombre+"-"+direc.ubigeo.distrito.nombre;
+								 direc.id = i+ 1;
+								 direc.esPrincipal = direc.principal;
+								 direc.listaTelefonos = direc.telefonos;
+								 for (var i=0; i<direc.listaTelefonos.length; i++){
+									 direc.listaTelefonos[i].numero = direc.listaTelefonos[i].numeroTelefono;
+								 }
+								 $scope.listaDirecciones.push(direc);
+							 }
+							 $scope.listaContactos = $scope.cliente.listaContactos;	
+							 for (var i=0; i<$scope.listaContactos.length; i++){
+								 $scope.listaContactos[i].id = i + 1;
+								 $scope.listaContactos[i].area = $scope.listaContactos[i].area.codigoEntero;
+								 for (var j=0; j<$scope.listaContactos[i].listaTelefonos.length; j++){
+									 $scope.listaContactos[i].listaTelefonos[j].numero = $scope.listaContactos[i].listaTelefonos[j].numeroTelefono;
+								 }
+							 }
+							 
+							 $scope.listaAdjuntos = [];
+							 for (var i=0; i<$scope.cliente.listaAdjuntos.length; i++){
+								 var adjunto = {};
+								 adjunto.id = i+1;
+								 adjunto.tipoAdjunto = {};
+								 adjunto.tipoAdjunto.nombre = $scope.cliente.listaAdjuntos[i].documento.nombre;
+								 adjunto.descripcion= $scope.cliente.listaAdjuntos[i].descripcionArchivo;
+								 adjunto.archivo = $scope.cliente.listaAdjuntos[i].archivo;
+								 adjunto.codigoEntero = $scope.cliente.listaAdjuntos[i].codigoEntero;
+								 $scope.listaAdjuntos.push(adjunto);
+							 }
+							 
+							 //$scope.cliente.fechaVctoPasaporte = $scope.cliente
+							 $scope.consultarConfiguracionServicio();
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	}
+	consultarInfoCliente();
 	
 	$scope.listarTipoDocumento = function(){
 		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:1}}).then(
@@ -55,80 +132,6 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 			  });
 	};
 	$scope.listarEstadoCivil();
-	
-	var consultarClientes = function(){
-		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'listar',numPagina:($scope.currentPage)}}).then(
-				 function successCallback(response) {
-					 if (response.data.exito == undefined){
-						 location.href="../../../";
-					 }
-					 else{
-						 if (response.data.exito){
-							 $scope.estadoConsulta = response.data.exito;
-							 if ($scope.estadoConsulta){
-								 $scope.mensaje = response.data.mensaje;
-								 //$scope.listaClientes = response.data.objeto.listaClientes;
-								 $scope.listaFiltrada = response.data.objeto.listaClientes;
-								 $scope.totalItems = response.data.objeto.listaClientesCantidad;
-								 //$scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
-							 }
-						 }
-					 }
-			  }, function errorCallback(response) {
-				     console.log('Error en la llamada');
-			  });
-	}
-	
-	$scope.listarClientes = function (){
-		consultarClientes();
-	}
-	$scope.listarClientes();
-	
-	var filtrar = function(listaFiltrar, paginaActual, listaTotal){
-		listaFiltrar = [];
-	    var limiteInferior = (paginaActual-1)*$scope.itemsXpagina;
-	    var limiteSuperior = (paginaActual*$scope.itemsXpagina)-1;
-	    
-	    for(i = 0 ; i < listaTotal.length; i++){
-	    	if(i>=limiteInferior && i<=limiteSuperior){
-	    		listaFiltrar[listaFiltrar.length] = listaTotal[i];
-	    	}
-	    }
-	    return listaFiltrar;
-	};
-	
-	$scope.pageChanged = function() {
-		//$scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
-		consultarClientes();
-	};
-	
-	$scope.buscarClientes = function(){
-		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'buscar', formulario: $scope.formularioBusqueda, numPagina:($scope.currentPage)}}).then(
-				 function successCallback(response) {
-					 if (response.data.exito == undefined){
-						 location.href="../../../";
-					 }
-					 else{
-						 if (response.data.exito){
-							 console.log('Exito en la llamada');
-							 $scope.estadoConsulta = response.data.exito;
-							 if ($scope.estadoConsulta){
-								 $scope.mensaje = response.data.mensaje;
-								 //$scope.listaClientes = response.data.objeto.listaClientes;
-								 $scope.listaFiltrada = response.data.objeto.listaClientes;
-								 $scope.totalItems = response.data.objeto.listaClientesCantidad;
-								 //$scope.listaFiltrada = filtrar($scope.listaFiltrada, $scope.currentPage, $scope.listaClientes);
-							 }
-						 }
-					 }
-			  }, function errorCallback(response) {
-				     console.log('Error en la llamada');
-			  });
-	}
-	
-	$scope.nuevoRegistroCliente = function (){
-		location.href="nuevocliente.jsp";
-	};
 	
 	$scope.consultarConfiguracionServicio = function(){
 		if ($scope.cliente.tipoDocumento == "3"){
@@ -292,6 +295,19 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	};
 	listarTipoAdjuntos();
 	
+	var limpiaDireccion = function(){
+		$scope.direccion = {};
+		$scope.direccion.idPais = null;
+		$scope.direccion.idDepartamento = null;
+		$scope.direccion.idProvincia = null;
+		$scope.direccion.idDistrito = null;
+		$scope.listaTelefonos = [];
+	}
+	
+	$scope.nuevaDireccion = function(){
+		$scope.editaDireccion = false;
+		limpiaDireccion();
+	}
 	
 	$scope.agregarTelefono = function(){
 		var telefono = {};
@@ -306,11 +322,23 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 		if ($scope.listaDirecciones == null){
 			$scope.listaDirecciones = [];
 		}
-		$scope.direccion.id = $scope.listaDirecciones.length + 1;
 		$scope.direccion.direccion = generaDescripcionDireccion();
 		$scope.direccion.ubigeo = generarDescripcionUbigeo();
 		$scope.direccion.listaTelefonos = $scope.listaTelefonos;
-		$scope.listaDirecciones.push($scope.direccion);
+		
+		if ($scope.editaDireccion){
+			for (var i=0; i<$scope.listaDirecciones.length; i++){
+				if ($scope.listaDirecciones[i].id == $scope.idDireccion){
+					//$scope.listaDirecciones[i].idVia = $scope.idDireccion.idVia;
+					$scope.listaDirecciones[i] = $scope.direccion;
+				}
+			}
+		}
+		else{
+			$scope.direccion.id = $scope.listaDirecciones.length + 1;
+			$scope.listaDirecciones.push($scope.direccion);
+		}
+		
 		$scope.cliente.listaDirecciones = $scope.listaDirecciones;
 		document.getElementById('idbtnCerrarModal').click();
 	}
@@ -395,16 +423,23 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	}
 	
 	$scope.editar = function(id){
+		document.getElementById('idbtnModalDireccion').click();
 		limpiaDireccion();
 		for (var i=0; i<$scope.listaDirecciones.length; i++){
 			if (id == $scope.listaDirecciones[i].id	){
 				$scope.direccion = $scope.listaDirecciones[i];
+				//$scope.listaTelefonos = $scope.listaDirecciones[i].listaTelefonos;
 				break;
 			}
 		}
 		$scope.listaTelefonos = $scope.direccion.listaTelefonos;
-		
-		document.getElementById('idbtnAddDireccion').click();
+		for (var i=0; i<$scope.listaTelefonos.length; i++){
+			$scope.listaTelefonos[i].numero = $scope.listaTelefonos[i].numeroTelefono;
+		}
+		$scope.editaDireccion = true;
+		$scope.idDireccion = id;
+		$scope.listarProvincias();
+		$scope.listarDistritos();
 	}
 	
 	$scope.agregarContacto = function(){
@@ -413,7 +448,16 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 		}
 		$scope.contacto.id = $scope.listaContactos.length +1 ;
 		$scope.contacto.listaTelefonos = $scope.listaTeleContacto;
-		$scope.listaContactos.push($scope.contacto);
+		if ($scope.editaContacto){
+			for (var i=0; i<$scope.listaContactos.length; i++){
+				if ($scope.listaContactos[i].id == $scope.idContacto){
+					$scope.listaContactos[i] = $scope.contacto;
+				}
+			}
+		}
+		else{
+			$scope.listaContactos.push($scope.contacto);
+		}
 		$scope.cliente.listaContactos = $scope.listaContactos;
 		document.getElementById('idbtnCerrarModalContacto').click();
 	}
@@ -432,16 +476,22 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	}
 	
 	$scope.editarContacto = function(id){
+		$scope.idContacto = id;
 		$scope.nuevoContacto();
 		for (var i=0; i<$scope.listaContactos.length; i++){
 			if (id == $scope.listaContactos[i].id	){
 				$scope.contacto = $scope.listaContactos[i];
+				$scope.contacto.idtipodocumento = $scope.contacto.documentoIdentidad.tipoDocumento.codigoEntero;
+				$scope.contacto.numeroDocumento = $scope.contacto.documentoIdentidad.numeroDocumento;
 				break;
 			}
 		}
 		$scope.listaTeleContacto = $scope.contacto.listaTelefonos;
-		
-		document.getElementById('idbtnAddContacto').click();
+		for (var i=0; i<$scope.listaTeleContacto.length; i++){
+			$scope.listaTeleContacto[i].numero = $scope.listaTeleContacto[i].numeroTelefono;
+		}
+		$scope.editaContacto = true;
+		document.getElementById('idbtnModalContacto').click();
 	}
 	
 	$scope.uploadDocumento = function (file) {
@@ -580,6 +630,9 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	  
 	$scope.guardarCliente = function(){
 		document.getElementById('btnCerrarModalConfirmacion').click();
+		for (var i=0; i<$scope.cliente.listaAdjuntos.length; i++ ){
+			$scope.cliente.listaAdjuntos[i].archivo.datos = null;
+		}
 		if (validarCliente()){
 			$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'guardar', cliente: $scope.cliente}}).then(
 					 function successCallback(response) {
@@ -604,10 +657,17 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	
 	var validarCliente = function(){
 		var correcto = true;
-		if ($scope.cliente.tipoDocumento == null && $scope.cliente.tipoDocumento == undefined){
+		if ($scope.cliente != undefined){
+			if ($scope.cliente.tipoDocumento == null && $scope.cliente.tipoDocumento == undefined){
+				$('#idseltipodocumento').addClass('error');
+				correcto = false;
+			}
+		}
+		else{
 			$('#idseltipodocumento').addClass('error');
 			correcto = false;
 		}
+		
 		return correcto;
 	}
 	
@@ -616,6 +676,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	}
 	
 	$scope.editarCliente = function(codigoEntero){
+		console.log(codigoEntero);
 		$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'consultaCliente', codigoCliente : codigoEntero}}).then(
 				 function successCallback(response) {
 					 if (response.data.exito == undefined){
@@ -623,6 +684,15 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 					 }
 					 else{
 						 if (response.data.exito){
+							 $scope.cliente = response.data.objeto;
+							 $scope.cliente.numeroDocumento = $scope.cliente.documentoIdentidad.numeroDocumento;
+							 $scope.cliente.tipoDocumento = $scope.cliente.documentoIdentidad.tipoDocumento.codigoEntero;
+							 $scope.cliente.nombreComercial = $scope.cliente.razonSocial;
+							 $scope.cliente.idEstadoCivil = $scope.cliente.estadoCivil.codigoEntero;
+							 $scope.cliente.idGenero = $scope.cliente.genero.codigoCadena;
+							 $scope.cliente.numeroPasaporte = $scope.cliente.nroPasaporte;
+							 //$scope.cliente.fechaVctoPasaporte = $scope.cliente.
+							 
 							 location.href="/RHViajes2/paginas/negocio/cliente/nuevocliente.jsp";
 						 }
 						 else{
@@ -636,4 +706,44 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 			  });
 		//location.href="/RHViajes2/paginas/negocio/cliente/nuevocliente.jsp";
 	}
+	
+	$scope.descargarArchivo = function(id){
+		for (var i=0; i<$scope.listaAdjuntos.length; i++){
+			if ($scope.listaAdjuntos[i].id == id){
+				var adjunto = $scope.listaAdjuntos[i];
+				var datos = adjunto.archivo.datos;
+				var byteArray = new Uint8Array(datos);
+				var a = window.document.createElement('a');
+				a.href = window.URL.createObjectURL(new Blob([byteArray], { type: adjunto.archivo.tipoContenido }));
+				//a.href = window.URL.createObjectURL(new Blob([datos], { type: adjunto.tipoContenido }));
+				a.download = adjunto.archivo.nombreArchivo;
+				// Append anchor to body.
+				document.body.appendChild(a);
+				a.click();
+				// Remove anchor from body
+				document.body.removeChild(a);
+				break;
+			}
+		}
+	}
+	
+	$scope.eliminarArchivo = function(id){
+		var listaNueva = [];
+		for (var i=0; i<$scope.listaAdjuntos.length; i++){
+			if ($scope.listaAdjuntos[i].id != id){
+				var adjuntoNuevo = $scope.listaAdjuntos[i];
+				adjuntoNuevo.id = listaNueva.length + 1;
+				listaNueva.push(adjuntoNuevo);
+			}
+		}
+		$scope.listaAdjuntos = listaNueva;
+		$scope.cliente.listaAdjuntos = listaNueva;
+		document.getElementById('btnCerrarModalConfirmaElimina').click();
+	}
+	
+	$scope.confirmaElimina = function(id){
+		$scope.idElimaArchivo = id;
+		document.getElementById('idbtnModalConfirElimina').click();
+	}
+	
 });

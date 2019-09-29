@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="es" ng-app="clientesapp">
+<html lang="es" ng-app="formclientesapp">
 <head>
 <!-- META SECTION -->
 <title>RHViajes 2</title>
@@ -279,6 +279,22 @@
 																id="fechavctopasaporte">
 														</div>
 													</div>
+													<div class="form-group" ng-show="mostrarPersona">
+														<label class="col-md-2 col-xs-12 control-label">Fecha
+															Registro</label>
+														<div class="col-md-4 col-xs-12">
+															<p class="form-control-static">{{fechaHoy | date :
+																'dd/MM/yyyy'}}</p>
+														</div>
+														<label class="col-md-2 col-xs-12 control-label">Nacionalidad</label>
+														<div class="col-md-4 col-xs-12">
+															<select class="form-control" ng-model="cliente.idPais">
+																<option value="">-Seleccione-</option>
+																<option ng-repeat="item in listaPaises"
+																	ng-value="item.codigoEntero">{{item.nombre}}</option>
+															</select>
+														</div>
+													</div>
 												</div>
 											</div>
 											<div class="tab-pane" id="tab-direcciones">
@@ -292,6 +308,10 @@
 																			id="idbtnAddDireccion" type="button"
 																			data-target="#modalDireccion"
 																			ng-click="nuevaDireccion()">Agregar</button>
+																		<button class="btn btn-primary" data-toggle="modal"
+																			id="idbtnModalDireccion" type="button"
+																			data-target="#modalDireccion" style="display: none;">Mostrar
+																			modal</button>
 																	</th>
 																</tr>
 																<tr>
@@ -506,6 +526,9 @@
 																			id="idbtnAddContacto" type="button"
 																			data-target="#modalContacto"
 																			ng-click="nuevoContacto()">Agregar</button>
+																		<button class="btn btn-primary" data-toggle="modal"
+																			id="idbtnModalContacto" type="button"
+																			style="display: none;" data-target="#modalContacto">mostrarmodal</button>
 																	</th>
 																</tr>
 																<tr>
@@ -637,7 +660,7 @@
 																										<td></td>
 																										<td><input type="text"
 																											class="form-control" style="width: 50%"
-																											ng-model="item.numero"></td>
+																											ng-model="item.numero" maxlength="12"></td>
 																									</tr>
 																								</tbody>
 																							</table>
@@ -683,8 +706,16 @@
 																	<td>{{item.id}}</td>
 																	<td>{{item.tipoAdjunto.nombre}}</td>
 																	<td>{{item.descripcion}}</td>
-																	<td><a href="#"><span class="fa fa-trash-o"></span></a>
-																		<a href="#"><span class="fa fa-download"></span></a></td>
+																	<td><a href="#"
+																		ng-click="confirmaElimina(item.id)"><span
+																			class="fa fa-trash-o"></span></a> <a href="#"
+																		ng-click="descargarArchivo(item.id)"><span
+																			class="fa fa-download"></span></a>
+																		<button class="btn btn-primary" data-toggle="modal"
+																			id="idbtnModalConfirElimina" type="button"
+																			style="display: none;"
+																			data-target="#modal_confirm_elimina">mostrarmodal</button>
+																	</td>
 																</tr>
 															</tbody>
 														</table>
@@ -783,13 +814,35 @@
 										</div>
 									</div>
 								</div>
+								<div class="modal" id="modal_confirm_elimina" tabindex="-1"
+									role="dialog" aria-labelledby="defModalHead" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal"
+													id="btnCerrarModalConfirmaElimina">
+													<span aria-hidden="true">&times;</span><span
+														class="sr-only">Close</span>
+												</button>
+												<h4 class="modal-title" id="defModalHead">Confirmación</h4>
+											</div>
+											<div class="modal-body">¿Estas seguro de eliminar?</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-default"
+													ng-click="eliminarArchivo(idElimaArchivo)">Si</button>
+												<button type="button" class="btn btn-default"
+													data-dismiss="modal">No</button>
+											</div>
+										</div>
+									</div>
+								</div>
 								<button class="btn btn-success mb-control"
 									data-box="#message-box-success" id="idbtnExito" type="button"
 									style="display: none;">BotonExito</button>
-								<button class="btn btn-danger mb-control" data-box="#message-box-danger" type="button"
+								<button class="btn btn-danger mb-control"
+									data-box="#message-box-danger" type="button"
 									style="display: none;" id="idbtnError">BotonError</button>
-								<button type="button"
-									style="display: none;" id="idbtnError">CierraModalConfir</button>
+								<button type="button" style="display: none;" id="idbtnError">CierraModalConfir</button>
 								<div class="message-box message-box-success animated fadeIn"
 									id="message-box-success">
 									<div class="mb-container">
@@ -933,8 +986,7 @@
 		type="text/javascript">
 		
 	</script>
-
 	<script type="text/javascript"
-		src="/RHViajes2/paginas/negocio/cliente/js/controlador.js"></script>
+		src="/RHViajes2/paginas/negocio/cliente/js/controladorformcliente.js"></script>
 </body>
 </html>

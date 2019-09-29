@@ -33,6 +33,7 @@ import pe.com.viajes.bean.negocio.ArchivoAdjunto2;
 import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.Contacto;
 import pe.com.viajes.bean.negocio.Direccion;
+import pe.com.viajes.bean.negocio.DocumentoAdicional;
 import pe.com.viajes.bean.negocio.Telefono;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
@@ -111,13 +112,19 @@ public class ServletCliente extends BaseServlet {
 					if (mapeo.get("nombreCliente") != null) {
 						cliente.setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
 					}
+					Properties parametrosSistema = (Properties) getServletContext().getAttribute("parametrosSistema");
+					cliente.setNumPagina(UtilWeb.convertirStringAInteger(request.getParameter("numPagina")));
+					cliente.setTamPagina(UtilWeb.convertirStringAInteger(parametrosSistema.get("pe.com.rhviajes.web.tampagina").toString()));
 					cliente.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
-					retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente2(cliente));
+					retorno.put("objeto", consultaNegocioSessionRemote.consultarCliente3(cliente));
 				}
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
 			} else if ("cargaArchivo".equals(accion)) {
 				HttpSession session = request.getSession(false);
+				if (session.getAttribute("listaAdjuntosCliente") instanceof List) {
+					
+				}
 				List<ArchivoAdjunto2> adjuntos = (List<ArchivoAdjunto2>) session.getAttribute("listaAdjuntosCliente");
 				String nombreArchivo = "";
 				if (request.getHeader("Content-Type") != null
@@ -170,6 +177,7 @@ public class ServletCliente extends BaseServlet {
 				SimpleDateFormat sdf = new SimpleDateFormat(UtilWeb.PATTERN_GSON);
 				Cliente cliente = new Cliente();
 				Double val = Double.valueOf(UtilWeb.parseDouble(UtilWeb.obtenerCadenaMapeo(mapeo.get("tipoDocumento"))));
+				cliente.setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("codigoEntero")));
 				cliente.getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(val.intValue());
 				cliente.getDocumentoIdentidad().getTipoDocumento().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("tipoDocumento")));
 				cliente.getDocumentoIdentidad().setNumeroDocumento(mapeo.get("numeroDocumento").toString());
@@ -177,10 +185,13 @@ public class ServletCliente extends BaseServlet {
 				cliente.setApellidoPaterno(UtilWeb.obtenerCadenaMapeo(mapeo.get("apellidoPaterno")));
 				cliente.setApellidoMaterno(UtilWeb.obtenerCadenaMapeo(mapeo.get("apellidoMaterno")));
 				cliente.getEstadoCivil().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idEstadoCivil")));
+				cliente.getEstadoCivil().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("idEstadoCivil")));
 				cliente.getGenero().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idGenero")));
 				cliente.setFechaNacimiento(sdf.parse(UtilWeb.obtenerCadenaMapeo(mapeo.get("fechaNacimiento"))));
 				cliente.setNroPasaporte(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroPasaporte")));
 				cliente.setFechaVctoPasaporte(sdf.parse(UtilWeb.obtenerCadenaMapeo(mapeo.get("fechaVctoPasaporte"))));
+				cliente.getNacionalidad().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("idPais")));
+				cliente.getNacionalidad().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idPais")));
 				cliente.setEmpresa(this.obtenerEmpresa(request));
 				cliente.setUsuarioCreacion(this.obtenerUsuario(request));
 				cliente.setUsuarioModificacion(this.obtenerUsuario(request));
@@ -199,12 +210,15 @@ public class ServletCliente extends BaseServlet {
 						direccion.getUbigeo().getDepartamento().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idDepartamento")));
 						direccion.getUbigeo().getProvincia().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idProvincia")));
 						direccion.getUbigeo().getDistrito().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idDistrito")));
+						String codigoUbigeo = UtilWeb.obtenerCadenaMapeo(map.get("idDepartamento"))+UtilWeb.obtenerCadenaMapeo(map.get("idProvincia"))+UtilWeb.obtenerCadenaMapeo(map.get("idDistrito"));
+						direccion.getUbigeo().setCodigoCadena(codigoUbigeo);
+						direccion.getUbigeo().setCodigoEntero(UtilWeb.convertirStringAInteger(codigoUbigeo));
 						direccion.getUbigeo().setNombre(UtilWeb.obtenerCadenaMapeo(map.get("ubigeo")));
 						direccion.getPais().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("idPais")));
 						direccion.getPais().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("idPais")));
 						val = Double.valueOf(UtilWeb.parseDouble(UtilWeb.obtenerCadenaMapeo(map.get("idVia"))));
 						direccion.getVia().setCodigoEntero(val.intValue());
-						direccion.getVia().setNombre(UtilWeb.obtenerCadenaMapeo(map.get("nombreVia")));
+						direccion.setNombreVia(UtilWeb.obtenerCadenaMapeo(map.get("nombreVia")));
 						direccion.setNumero(UtilWeb.obtenerCadenaMapeo(map.get("numero")));
 						direccion.setInterior(UtilWeb.obtenerCadenaMapeo(map.get("interior")));
 						direccion.setManzana(UtilWeb.obtenerCadenaMapeo(map.get("manzana")));
@@ -212,6 +226,7 @@ public class ServletCliente extends BaseServlet {
 						direccion.setReferencia(UtilWeb.obtenerCadenaMapeo(map.get("referencia")));
 						direccion.setObservaciones(UtilWeb.obtenerCadenaMapeo(map.get("observaciones")));
 						direccion.setDireccion(UtilWeb.obtenerCadenaMapeo(map.get("direccion")));
+						direccion.setPrincipal(UtilWeb.obtenerBooleanMapeo(map.get("esPrincipal")));
 						
 						List<Map<String, Object>> listaTelefonos = (List<Map<String, Object>>) map.get("listaTelefonos");
 						if (listaTelefonos != null && !listaTelefonos.isEmpty()){
@@ -243,6 +258,10 @@ public class ServletCliente extends BaseServlet {
 						contacto.getArea().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(map.get("area")));
 						contacto.getArea().setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("area")));
 						contacto.setAnexo(UtilWeb.obtenerCadenaMapeo(map.get("anexo")));
+						contacto.setUsuarioCreacion(this.obtenerUsuario(request));
+						contacto.setUsuarioModificacion(this.obtenerUsuario(request));
+						contacto.setIpCreacion(this.obtenerIp(request));
+						contacto.setIpModificacion(this.obtenerIp(request));
 						
 						List<Map<String, Object>> listaTelefonos = (List<Map<String, Object>>) map.get("listaTelefonos");
 						if (listaTelefonos != null && !listaTelefonos.isEmpty()){
@@ -257,11 +276,51 @@ public class ServletCliente extends BaseServlet {
 								contacto.getListaTelefonos().add(telefono);
 							}
 						}
+						cliente.getListaContactos().add(contacto);
 					}
 				}
+				//List<Map<String, Object>> listaAdjuntos = (List<Map<String, Object>>) mapeo.get("listaAdjuntos");
+				HttpSession session = request.getSession(false);
+				List<ArchivoAdjunto2> listaAdjuntos = (List<ArchivoAdjunto2>) session.getAttribute("listaAdjuntosCliente");
+				if (listaAdjuntos != null && !listaAdjuntos.isEmpty()) {
+					List<DocumentoAdicional> listaAdicional = new ArrayList<DocumentoAdicional>();
+					DocumentoAdicional docAdicional = null;
+					for (ArchivoAdjunto2 aa : listaAdjuntos) {
+						docAdicional = new DocumentoAdicional();
+						docAdicional.setDescripcionArchivo(aa.getDescripcion());
+						docAdicional.getDocumento().setCodigoEntero(aa.getIdTipoDocumento());
+						docAdicional.setArchivo(aa);
+						listaAdicional.add(docAdicional);
+					}
+					cliente.setListaAdjuntos(listaAdicional);
+				}
+				if (cliente.getCodigoEntero() == null) {
+					retorno.put("mensaje", "Registrado Correctamente");
+					retorno.put("exito", negocioSessionRemote.registrarCliente(cliente));
+				}
+				else {
+					retorno.put("mensaje", "Actualizado Correctamente");
+					retorno.put("exito", negocioSessionRemote.actualizarCliente(cliente));
+				}
 				
-				retorno.put("mensaje", "Registrado Correctamente");
-				retorno.put("exito", negocioSessionRemote.registrarCliente(cliente));
+			}
+			else if ("consultaCliente".equals(accion)) {
+				String codigoCliente = request.getParameter("codigoCliente");
+				Cliente cliente = consultaNegocioSessionRemote.consultarCliente(UtilWeb.convertirStringAInteger(codigoCliente), this.obtenerIdEmpresa(request));
+				HttpSession session = this.obtenerSession(request);
+				session.setAttribute("infoCliente", cliente);
+				
+				retorno.put("mensaje", "Consulta Exitosa");
+				retorno.put("exito", true);
+			}
+			else if ("consultarInfoCliente".equals(accion)) {
+				HttpSession session = this.obtenerSession(request);
+				Cliente cliente = (Cliente) session.getAttribute("infoCliente");
+				
+				retorno.put("objeto", cliente);
+				retorno.put("mensaje", "Consulta de Cliente");
+				retorno.put("exito", true);
+				session.removeAttribute("infoCliente");
 			}
 		} catch (ErrorConsultaDataException e) {
 			log.error(e.getMessage(), e);
