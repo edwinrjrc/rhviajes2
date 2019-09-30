@@ -703,9 +703,9 @@
 															</thead>
 															<tbody>
 																<tr ng-repeat="item in listaAdjuntos">
-																	<td>{{item.id}}</td>
-																	<td>{{item.tipoAdjunto.nombre}}</td>
-																	<td>{{item.descripcion}}</td>
+																	<td>{{item.codigoEntero}}</td>
+																	<td>{{item.documento.nombre}}</td>
+																	<td>{{item.descripcionArchivo}}</td>
 																	<td><a href="#"
 																		ng-click="confirmaElimina(item.id)"><span
 																			class="fa fa-trash-o"></span></a> <a href="#"

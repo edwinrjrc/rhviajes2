@@ -69,14 +69,14 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 							 
 							 $scope.listaAdjuntos = [];
 							 for (var i=0; i<$scope.cliente.listaAdjuntos.length; i++){
-								 var adjunto = {};
+								 /*var adjunto = {};
 								 adjunto.id = i+1;
 								 adjunto.tipoAdjunto = {};
 								 adjunto.tipoAdjunto.nombre = $scope.cliente.listaAdjuntos[i].documento.nombre;
 								 adjunto.descripcion= $scope.cliente.listaAdjuntos[i].descripcionArchivo;
 								 adjunto.archivo = $scope.cliente.listaAdjuntos[i].archivo;
-								 adjunto.codigoEntero = $scope.cliente.listaAdjuntos[i].codigoEntero;
-								 $scope.listaAdjuntos.push(adjunto);
+								 adjunto.codigoEntero = $scope.cliente.listaAdjuntos[i].codigoEntero;*/
+								 $scope.listaAdjuntos.push($scope.cliente.listaAdjuntos[i]);
 							 }
 							 
 							 //$scope.cliente.fechaVctoPasaporte = $scope.cliente
@@ -275,7 +275,7 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	listarAreas();
 	
 	listarTipoAdjuntos = function(){
-		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:22}}).then(
+		$http({method: 'POST', url: '../../../servlets/ServletCatalogo', params:{accion:'listar',tipoMaestro:17}}).then(
 				 function successCallback(response) {
 					 if (response.data.exito == undefined){
 						 location.href="../../../";
@@ -540,11 +540,10 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 					adjunto.setContent(content);
 	    	   * */
 	    	  for (var i=0; i<$scope.listaAdjuntos.length; i++){
-	    		  $scope.listaAdjuntos[i].tipoAdjunto = {};
-	    		  $scope.listaAdjuntos[i].tipoAdjunto.nombre = buscaTipoAdjunto($scope.listaAdjuntos[i].idTipoDocumento);
+	    		  $scope.listaAdjuntos[i].documento.nombre = buscaTipoAdjunto($scope.listaAdjuntos[i].documento.codigoEntero);
 	    		  miadjunto.idTipoDocumento = $scope.listaAdjuntos[i].idTipoDocumento;
 	    		  miadjunto.nombreArchivo = $scope.listaAdjuntos[i].nombreArchivo;
-	    		  miadjunto.id = $scope.listaAdjuntos[i].id;
+	    		  miadjunto.id = $scope.listaAdjuntos[i].codigoEntero;
 	    		  miadjunto.content = $scope.listaAdjuntos[i].content;
 	    		  $scope.cliente.listaAdjuntos.push(miadjunto);
 	    	  }
@@ -631,7 +630,9 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	$scope.guardarCliente = function(){
 		document.getElementById('btnCerrarModalConfirmacion').click();
 		for (var i=0; i<$scope.cliente.listaAdjuntos.length; i++ ){
-			$scope.cliente.listaAdjuntos[i].archivo.datos = null;
+			if ($scope.cliente.listaAdjuntos[i].archivo != undefined && $scope.cliente.listaAdjuntos[i].archivo.datos != undefined){
+				$scope.cliente.listaAdjuntos[i].archivo.datos = null;
+			}
 		}
 		if (validarCliente()){
 			$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'guardar', cliente: $scope.cliente}}).then(

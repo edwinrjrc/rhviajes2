@@ -540,7 +540,8 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 				if (documento.getCodigoEntero() == null || documento.getCodigoEntero().intValue() == 0) {
 					resultado = clienteDao.ingresarArchivosAdjuntos(documento, cliente, conexion);
 				} else {
-					resultado = clienteDao.actualizarArchivoAdjunto(documento, cliente, conexion);
+					//resultado = clienteDao.actualizarArchivoAdjunto(documento, cliente, conexion);
+					resultado = clienteDao.ingresarArchivosAdjuntos(documento, cliente, conexion);
 				}
 				if (!resultado) {
 					throw new ErrorRegistroDataException("Error actualizar documento adjunto");

@@ -122,10 +122,7 @@ public class ServletCliente extends BaseServlet {
 				retorno.put("exito", true);
 			} else if ("cargaArchivo".equals(accion)) {
 				HttpSession session = request.getSession(false);
-				if (session.getAttribute("listaAdjuntosCliente") instanceof List) {
-					
-				}
-				List<ArchivoAdjunto2> adjuntos = (List<ArchivoAdjunto2>) session.getAttribute("listaAdjuntosCliente");
+				List<DocumentoAdicional> adjuntos = (List<DocumentoAdicional>) session.getAttribute("listaAdjuntosCliente");
 				String nombreArchivo = "";
 				if (request.getHeader("Content-Type") != null
 						&& request.getHeader("Content-Type").startsWith("multipart/form-data")) {
@@ -156,15 +153,17 @@ public class ServletCliente extends BaseServlet {
 					String descripcion = UtilWeb.obtenerCadenaMapeo(mapeo.get("descripcion"));
 					
 					if (adjuntos == null){
-						adjuntos = new ArrayList<ArchivoAdjunto2>();
+						adjuntos = new ArrayList<DocumentoAdicional>();
 					}
-					ArchivoAdjunto2 adjunto = new ArchivoAdjunto2();
-					adjunto.setIdTipoDocumento(Double.valueOf(idtipodocumento).intValue());
-					adjunto.setDescripcion(descripcion);
-					adjunto.setNombreArchivo(nombreArchivo);
-					adjunto.setId(adjuntos.size()+1);
-					adjunto.setDatos(bytesArchivo);
-					adjunto.setContent(content);
+					DocumentoAdicional adjunto = new DocumentoAdicional();
+					adjunto.getDocumento().setCodigoEntero(Double.valueOf(idtipodocumento).intValue());
+					adjunto.setDescripcionArchivo(descripcion);
+					adjunto.getArchivo().setNombreArchivo(nombreArchivo);
+					String extension = nombreArchivo.substring(nombreArchivo.indexOf(".")+1);
+					adjunto.getArchivo().setExtensionArchivo(extension);
+					adjunto.setCodigoEntero(adjuntos.size()+1);
+					adjunto.getArchivo().setDatos(bytesArchivo);
+					adjunto.getArchivo().setTipoContenido(content);
 					adjuntos.add(adjunto);
 					is.close();
 					session.setAttribute("listaAdjuntosCliente", adjuntos);
@@ -279,21 +278,8 @@ public class ServletCliente extends BaseServlet {
 						cliente.getListaContactos().add(contacto);
 					}
 				}
-				//List<Map<String, Object>> listaAdjuntos = (List<Map<String, Object>>) mapeo.get("listaAdjuntos");
 				HttpSession session = request.getSession(false);
-				List<ArchivoAdjunto2> listaAdjuntos = (List<ArchivoAdjunto2>) session.getAttribute("listaAdjuntosCliente");
-				if (listaAdjuntos != null && !listaAdjuntos.isEmpty()) {
-					List<DocumentoAdicional> listaAdicional = new ArrayList<DocumentoAdicional>();
-					DocumentoAdicional docAdicional = null;
-					for (ArchivoAdjunto2 aa : listaAdjuntos) {
-						docAdicional = new DocumentoAdicional();
-						docAdicional.setDescripcionArchivo(aa.getDescripcion());
-						docAdicional.getDocumento().setCodigoEntero(aa.getIdTipoDocumento());
-						docAdicional.setArchivo(aa);
-						listaAdicional.add(docAdicional);
-					}
-					cliente.setListaAdjuntos(listaAdicional);
-				}
+				cliente.setListaAdjuntos((List<DocumentoAdicional>) session.getAttribute("listaAdjuntosCliente"));
 				if (cliente.getCodigoEntero() == null) {
 					retorno.put("mensaje", "Registrado Correctamente");
 					retorno.put("exito", negocioSessionRemote.registrarCliente(cliente));
@@ -302,7 +288,6 @@ public class ServletCliente extends BaseServlet {
 					retorno.put("mensaje", "Actualizado Correctamente");
 					retorno.put("exito", negocioSessionRemote.actualizarCliente(cliente));
 				}
-				
 			}
 			else if ("consultaCliente".equals(accion)) {
 				String codigoCliente = request.getParameter("codigoCliente");
