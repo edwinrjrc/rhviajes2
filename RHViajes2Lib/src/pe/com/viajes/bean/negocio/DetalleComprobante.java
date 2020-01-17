@@ -27,6 +27,7 @@ public class DetalleComprobante extends BaseNegocio {
 	private boolean tieneDetraccion;
 	private boolean tieneRetencion;
 	private boolean impresion;
+	private boolean flagMoverDetalle;
 
 	/**
 	 * 
@@ -167,6 +168,20 @@ public class DetalleComprobante extends BaseNegocio {
 	 */
 	public void setImpresion(boolean impresion) {
 		this.impresion = impresion;
+	}
+
+	/**
+	 * @return the flagMoverDetalle
+	 */
+	public boolean isFlagMoverDetalle() {
+		return flagMoverDetalle;
+	}
+
+	/**
+	 * @param flagMoverDetalle the flagMoverDetalle to set
+	 */
+	public void setFlagMoverDetalle(boolean flagMoverDetalle) {
+		this.flagMoverDetalle = flagMoverDetalle;
 	}
 
 }

@@ -719,8 +719,7 @@ public class ConsultaNegocioSession implements ConsultaNegocioSessionRemote,
 			throws ErrorConsultaDataException {
 		try {
 			ComprobanteNovaViajesDao comprobanteNovaViajesDao = new ComprobanteNovaViajesDaoImpl();
-			return comprobanteNovaViajesDao
-					.consultarComprobantes(comprobanteBusqueda);
+			return comprobanteNovaViajesDao.consultarComprobantes(comprobanteBusqueda);
 		} catch (SQLException e) {
 			throw new ErrorConsultaDataException(e);
 		} catch (Exception e) {

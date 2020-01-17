@@ -22,7 +22,7 @@
 			<jsp:include page="/recursos/include/menu.jsp"></jsp:include>
 		</div>
 		<!-- PAGE CONTENT -->
-		<div class="page-content">
+		<div class="page-content" ng-controller="consultacomproctrl">
 			<!-- START X-NAVIGATION VERTICAL -->
 			<ul class="x-navigation x-navigation-horizontal x-navigation-panel">
 				<!-- TOGGLE NAVIGATION -->
@@ -151,249 +151,8 @@
 			</ul>
 			<!-- END BREADCRUMB -->
 			<!-- PAGE CONTENT WRAPPER -->
-			<div class="page-content-wrap" ng-controller="consultacomproctrl">
-				<div class="row" ng-show="buscador">
-					<div class="col-md-12">
-						<form class="form-horizontal">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<h5 class="panel-title">Consulta Comprobantes Generados</h5>
-								</div>
-								<div class="panel-body">
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Cliente</label>
-										<div class="col-md-8 col-xs-12">
-											<input type="text" class="form-control"
-												ng-model="formularioBusqueda.nombreCliente">
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Tipo
-											Documento</label>
-										<div class="col-md-3 col-xs-12">
-											<select class="form-control"
-												ng-model="formularioBusqueda.tipoDocumento">
-												<option value="">-Seleccione-</option>
-												<option ng-repeat="item in listaTipoDocumento"
-													ng-value="item.codigoEntero">{{item.nombre}}</option>
-											</select>
-										</div>
-										<label class="col-md-2 col-xs-12 control-label">Número
-											Documento</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="text" class="form-control"
-												name="numeroDocumento"
-												ng-model="formularioBusqueda.numeroDocumento">
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Tipo
-											Comprobante</label>
-										<div class="col-md-3 col-xs-12">
-											<select class="form-control"
-												ng-model="formularioBusqueda.tipoComprobante">
-												<option value="">-Seleccione-</option>
-												<option ng-repeat="item in listaTipoComprobante"
-													ng-value="item.codigoEntero">{{item.nombre}}</option>
-											</select>
-										</div>
-										<label class="col-md-2 col-xs-12 control-label">Número
-											Comprobante</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="text" class="form-control"
-												name="numeroDocumento"
-												ng-model="formularioBusqueda.numeroComprobante">
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-2 col-xs-12 control-label">Fecha
-											Desde</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="date" ng-model="formularioBusqueda.fechaDesde"
-												class="form-control" />
-										</div>
-										<label class="col-md-2 col-xs-12 control-label">Fecha
-											Hasta</label>
-										<div class="col-md-3 col-xs-12">
-											<input type="date" ng-model="formularioBusqueda.fechaHasta"
-												class="form-control" />
-										</div>
-									</div>
-									<div class="form-group">
-										<div class="col-md-10 col-xs-12" align="center">
-											<button class="btn btn-primary" ng-click="limpiarBusqueda()">Limpiar</button>
-											<button class="btn btn-primary"
-												ng-click="consultaComprobantes()">Buscar</button>
-											<button class="btn btn-primary"
-												ng-click="nuevoRegistroCliente()">Nuevo</button>
-										</div>
-									</div>
-								</div>
-								<div class="panel-body">
-									<table class="table">
-										<thead>
-											<tr>
-												<th style="width: 1%; text-align: center;"></th>
-												<th style="width: 19%; text-align: center;">Tipo</th>
-												<th style="width: 10%; text-align: center;">Número</th>
-												<th style="width: 10%; text-align: center;">Fecha</h>
-												<th style="width: 30%; text-align: center;">Adquiriente</h>
-												<th style="width: 20%; text-align: center;">Monto Total</th>
-												<th style="width: 5%; text-align: center;">Opcion</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr ng-repeat="item in listaFiltrada">
-												<td style="width: 1%; text-align: center;"></td>
-												<td style="width: 19%; text-align: left;">{{item.tipoComprobante.nombre}}</td>
-												<td style="width: 10%; text-align: center;">{{item.numeroComprobante}}</td>
-												<td style="width: 10%; text-align: center;">{{item.fechaComprobante
-													| date: 'dd/MM/yyyy'}}</td>
-												<td style="width: 30%; text-align: left;">{{item.titular.nombres}}
-													{{item.titular.apellidoPaterno}}
-													{{item.titular.apellidoMaterno}}</td>
-												<td style="width: 20%; text-align: center;">{{item.moneda.abreviatura}}
-													{{item.totalComprobante}}</td>
-												<td style="width: 5%; text-align: center;"><a href="#"
-													ng-click=verDetalleComprobante(item.codigoEntero)
-													data-toggle="modal" data-target="#modalDetalleComprobante"><span
-														class="fa fa-file-text-o"></span></a><a href="#"
-													ng-click=verDetalleComprobante2(item.codigoEntero)><span
-														class="fa fa-edit"></span></a></td>
-											</tr>
-										</tbody>
-										<tfoot>
-											<tr>
-												<td colspan="7" align="center">
-													<ul uib-pagination total-items="totalItems"
-														ng-model="currentPage" max-size="maxSize"
-														class="pagination-sm" boundary-links="true"
-														ng-change="pageChanged()" items-per-page="itemsXpagina"
-														first-text="Inicio" last-text="Fin" next-text="Siguiente"
-														previous-text="anterior"></ul>
-												</td>
-											</tr>
-										</tfoot>
-									</table>
-									<div class="modal" id="modalDetalleComprobante" tabindex="-1"
-										role="dialog" aria-labelledby="largeModalHead"
-										aria-hidden="true">
-										<div class="modal-dialog modal-lg">
-											<div class="modal-content">
-												<div class="modal-header">
-													<button type="button" class="close" data-dismiss="modal">
-														<span aria-hidden="true">&times;</span><span
-															class="sr-only">Close</span>
-													</button>
-													<h4 class="modal-title" id="largeModalHead">Detalle
-														Comprobante</h4>
-												</div>
-												<div class="modal-body">
-													<div class="row">
-														<div class="col-md-12">
-															<div class="panel panel-default tabs">
-																<ul class="nav nav-tabs" role="tablist">
-																	<li class="active"><a href="#tab-cabecera"
-																		role="tab" data-toggle="tab">Cabecera</a></li>
-																	<li><a href="#tab-detalle" role="tab"
-																		data-toggle="tab">Detalle</a></li>
-																</ul>
-																<div class="panel-body tab-content">
-																	<div class="tab-pane active" id="tab-cabecera">
-																		<div class="form-group">
-																			<label class="col-md-2 col-xs-12 control-label">Id</label>
-																			<div class="col-md-4 col-xs-12">
-																				<p class="form-control-static">{{detalle.codigoEntero}}</p>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<label class="col-md-2 col-xs-12 control-label">Tipo</label>
-																			<div class="col-md-4 col-xs-12">
-																				<p class="form-control-static">{{detalle.tipoComprobante.nombre}}</p>
-																			</div>
-																			<label class="col-md-2 col-xs-12 control-label">Número</label>
-																			<div class="col-md-4 col-xs-12">
-																				<p class="form-control-static">{{detalle.numeroComprobante}}</p>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<label class="col-md-2 col-xs-12 control-label">Adquiriente</label>
-																			<div class="col-md-4 col-xs-12">
-																				<p class="form-control-static">{{detalle.titular.nombreCompleto}}</p>
-																			</div>
-																		</div>
-																		<div class="form-group">
-																			<label class="col-md-2 col-xs-12 control-label">Fecha
-																			</label>
-																			<div class="col-md-4 col-xs-12">
-																				<p class="form-control-static">{{detalle.fechaComprobante
-																					| date : 'dd/MM/yyyy'}}</p>
-																			</div>
-																			<label class="col-md-2 col-xs-12 control-label">Total</label>
-																			<div class="col-md-4 col-xs-12">
-																				<p class="form-control-static">{{detalle.moneda.abreviatura}}
-																					{{detalle.totalComprobante | number : 2}}</p>
-																			</div>
-																		</div>
-																	</div>
-																	<div class="tab-pane" id="tab-detalle">
-																		<div class="row">
-																			<div class="col-md-12">
-																				<table class="table">
-																					<thead>
-																						<tr>
-																							<th style="width: 2%; text-align: center;"></th>
-																							<th style="width: 8%; text-align: right;">Cantidad</th>
-																							<th style="width: 50%; text-align: left;">Concepto</th>
-																							<th style="width: 20%; text-align: right;">Precio
-																								Unitario</th>
-																							<th style="width: 20%; text-align: right;">Monto
-																								Total</th>
-																						</tr>
-																					</thead>
-																					<tbody>
-																						<tr ng-repeat="item in detalle.detalle">
-																							<td style="width: 2%; text-align: center;"><input
-																								type="checkbox" ng-model="item.flagImprimir"></td>
-																							<td style="width: 8%; text-align: right;">{{item.cantidad}}</td>
-																							<td style="width: 50%; text-align: left;">{{item.concepto}}</td>
-																							<td style="width: 20%; text-align: right;">{{detalle.moneda.abreviatura}}
-																								{{item.precioUnitario | number : 2}}</td>
-																							<td style="width: 20%; text-align: right;">{{detalle.moneda.abreviatura}}
-																								{{item.totalDetalle | number : 2}}</td>
-																						</tr>
-																					</tbody>
-																				</table>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="modal-footer">
-													<button type="button" id="idbtnAgregarDireccion"
-														class="btn btn-primary"
-														ng-click="generaComprobanteImpresion()">Comprobante
-														Impresión</button>
-													<button type="button" id="idbtnAgregarDireccion2"
-														class="btn btn-primary"
-														ng-click="generaComprobanteDigital()">Comprobante
-														Digital</button>
-													<button type="button" id="idbtnCerrarModal"
-														class="btn btn-default" data-dismiss="modal">Cerrar</button>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-					<!-- END PAGE CONTENT WRAPPER -->
-				</div>
-				<div class="row" ng-show="editor">
+			<div class="page-content-wrap">
+				<div class="row">
 					<div class="col-md-12">
 						<form class="form-horizontal" enctype="multipart/mixed stream">
 							<div class="panel panel-default">
@@ -403,12 +162,12 @@
 								<div class="panel-body">
 									<div class="panel panel-default tabs">
 										<ul class="nav nav-tabs" role="tablist">
-											<li class="active"><a href="#tab-cabecera-edit" role="tab"
+											<li class="active"><a href="#tab-cabecera" role="tab"
 												data-toggle="tab">Cabecera</a></li>
-											<li><a href="#tab-detalle-edit" role="tab" data-toggle="tab">Detalle</a></li>
+											<li><a href="#tab-detalle" role="tab" data-toggle="tab">Detalle</a></li>
 										</ul>
 										<div class="panel-body tab-content">
-											<div class="tab-pane active" id="tab-cabecera-edit">
+											<div class="tab-pane active" id="tab-cabecera">
 												<div class="form-group">
 													<label class="col-md-2 col-xs-12 control-label">Id</label>
 													<div class="col-md-4 col-xs-12">
@@ -436,8 +195,8 @@
 													<label class="col-md-2 col-xs-12 control-label">Fecha
 													</label>
 													<div class="col-md-4 col-xs-12">
-														<input type="date" class="form-control"
-															ng-model="detalle.feComprobante">
+														<input type="text" class="form-control"
+															ng-model="detalle.fechaComprobante">
 													</div>
 													<label class="col-md-2 col-xs-12 control-label">Total</label>
 													<div class="col-md-4 col-xs-12">
@@ -446,15 +205,15 @@
 													</div>
 												</div>
 											</div>
-											<div class="tab-pane" id="tab-detalle-edit">
+											<div class="tab-pane" id="tab-detalle">
 												<div class="row">
 													<div class="col-md-12">
 														<table class="table">
 															<thead>
 																<tr>
-																	<th style="width: 10%; text-align: center;">Enviar al otro</th>
+																	<th style="width: 2%; text-align: center;"></th>
 																	<th style="width: 8%; text-align: right;">Cantidad</th>
-																	<th style="width: 42%; text-align: left;">Concepto</th>
+																	<th style="width: 50%; text-align: left;">Concepto</th>
 																	<th style="width: 20%; text-align: right;">Precio
 																		Unitario</th>
 																	<th style="width: 20%; text-align: right;">Monto
@@ -463,16 +222,22 @@
 															</thead>
 															<tbody>
 																<tr ng-repeat="item in detalle.detalle">
-																	<td style="width: 10%; text-align: center;"><input
-																		type="checkbox" ng-model="item.flagMoverDetalle" ng-value="true"></td>
+																	<td style="width: 2%; text-align: center;"><input
+																		type="checkbox" ng-model="item.flagImprimir"></td>
 																	<td style="width: 8%; text-align: right;">{{item.cantidad}}</td>
-																	<td style="width: 42%; text-align: left;">{{item.concepto}}</td>
+																	<td style="width: 50%; text-align: left;">{{item.concepto}}</td>
 																	<td style="width: 20%; text-align: right;">{{detalle.moneda.abreviatura}}
 																		{{item.precioUnitario | number : 2}}</td>
 																	<td style="width: 20%; text-align: right;">{{detalle.moneda.abreviatura}}
 																		{{item.totalDetalle | number : 2}}</td>
 																</tr>
 															</tbody>
+															<tfoot>
+																<tr>
+																	<td colspan="5"><button>Enviar al otro
+																			comprobante</button></td>
+																</tr>
+															</tfoot>
 														</table>
 													</div>
 												</div>
@@ -483,11 +248,9 @@
 								<div class="panel-footer">
 									<div class="row">
 										<div class="col-md-12 col-xs-12">
-											<button class="btn btn-primary" type="button" ng-click="enviarAOtroComprobante()">
+											<button class="btn btn-primary" type="button"
+												data-toggle="modal" data-target="#modal_confirmacion">
 												<span class="fa fa-save"></span>Grabar
-											</button>
-											<button class="btn btn-default" type="button" ng-click="regresar()">
-												<span class="fa fa-save"></span>Regresar
 											</button>
 										</div>
 									</div>
@@ -552,7 +315,7 @@
 												<span class="fa fa-check"></span> Exito
 											</div>
 											<div class="mb-content">
-												<p>{{mensajeError}}</p>
+												<p>Se grabo venta satisfactoriamente</p>
 											</div>
 											<div class="mb-footer">
 												<button ng-click="aceptarMensajeExito()"
@@ -678,9 +441,7 @@
 	<script type="text/javascript"
 		src="/RHViajes2/recursos/js/angular-sanitize.min.js"></script>
 	<script src="/RHViajes2/recursos/js/ui-bootstrap-tpls-2.1.1.js"
-		type="text/javascript">
-		
-	</script>
+		type="text/javascript"></script>
 	<script src="/RHViajes2/recursos/js/ng-file-upload-shim.min.js"
 		type="text/javascript">
 		

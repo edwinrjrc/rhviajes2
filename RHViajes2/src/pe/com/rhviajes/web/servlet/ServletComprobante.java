@@ -56,6 +56,7 @@ import pe.com.viajes.bean.negocio.Pasajero;
 import pe.com.viajes.bean.negocio.Usuario;
 import pe.com.viajes.bean.util.UtilProperties;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
+import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
 
@@ -71,6 +72,8 @@ public class ServletComprobante extends BaseServlet {
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
 	@EJB(lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/UtilNegocioSession!pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote")
 	private UtilNegocioSessionRemote utilNegocioSessionRemote;
+	@EJB(lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/NegocioSession!pe.com.viajes.negocio.ejb.NegocioSessionRemote")
+	private NegocioSessionRemote negocioSessionRemote;
 	
 
 	/**
@@ -219,11 +222,9 @@ public class ServletComprobante extends BaseServlet {
 				String nombreDominio = usuario.getNombreDominioEmpresa();
 				ruta = ruta + nombreDominio;
 
-				if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilWeb
-						.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
+				if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilWeb.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
 
-				} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilWeb
-						.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
+				} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilWeb.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
 					String plantilla = ruta + File.separator + "dc-digital.jasper";
 					File archivo = new File(plantilla);
 					InputStream streamJasper = new FileInputStream(archivo);
@@ -241,6 +242,12 @@ public class ServletComprobante extends BaseServlet {
 					retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 					retorno.put("exito", true);
 				}
+			} else if ("grabarEditar".equals(accion)) {
+				comprobante = this.obtenerComprobanteRequest2(request);
+				
+				retorno.put("objeto", negocioSessionRemote.moverComprobantes(comprobante));
+				retorno.put("mensaje", "Movimiento realizado satisfactoriamente");
+				retorno.put("exito", true);
 			}
 		} catch (ErrorConsultaDataException e) {
 			log.error(e.getMessage(), e);
@@ -514,6 +521,67 @@ public class ServletComprobante extends BaseServlet {
 				if (detalleComprobante.isImpresion()) {
 					comprobante.getDetalleComprobante().add(detalleComprobante);
 				}
+			}
+		}
+
+		return comprobante;
+	}
+	
+	Comprobante obtenerComprobanteRequest2(HttpServletRequest request) {
+		Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("comprobante"));
+		Map<String, Object> mapTipoComprobante = (Map<String, Object>) (mapeo.get("tipoComprobante"));
+		Comprobante comprobante = new Comprobante();
+		comprobante.getTipoComprobante().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapTipoComprobante.get("codigoEntero")));
+		comprobante.getTipoComprobante().setNombre(UtilWeb.obtenerCadenaMapeo(mapTipoComprobante.get("nombre")));
+		comprobante.setNumeroSerie(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroSerie")));
+		comprobante.setNumeroComprobante(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroComprobante")));
+		Map<String, Object> mapTitular = (Map<String, Object>) mapeo.get("titular");
+		Map<String, Object> mapDocIdentidad = (Map<String, Object>) mapTitular.get("documentoIdentidad");
+		Map<String, Object> mapTipoDocumento = (Map<String, Object>) mapDocIdentidad.get("tipoDocumento");
+		comprobante.getTitular().getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapTipoDocumento.get("codigoEntero")));
+		comprobante.getTitular().getDocumentoIdentidad().getTipoDocumento().setNombre(UtilWeb.obtenerCadenaMapeo(mapTipoDocumento.get("nombre")));
+		comprobante.getTitular().getDocumentoIdentidad().getTipoDocumento().setAbreviatura(UtilWeb.obtenerCadenaMapeo(mapTipoDocumento.get("abreviatura")));
+		comprobante.getTitular().getDocumentoIdentidad().setNumeroDocumento(UtilWeb.obtenerCadenaMapeo(mapDocIdentidad.get("numeroDocumento")));
+		comprobante.getTitular().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapTitular.get("codigoEntero")));
+		comprobante.getTitular().setNombres(UtilWeb.obtenerCadenaMapeo(mapTitular.get("nombres")));
+		comprobante.getTitular().setApellidoPaterno(UtilWeb.obtenerCadenaMapeo(mapTitular.get("apellidoPaterno")));
+		comprobante.getTitular().setApellidoMaterno(UtilWeb.obtenerCadenaMapeo(mapTitular.get("apellidoMaterno")));
+		comprobante.getTitular().setNombreCompleto(UtilWeb.obtenerCadenaMapeo(mapTitular.get("nombreCompleto")));
+		comprobante.setFechaComprobante(UtilWeb.obtenerFechaMapeo(mapeo.get("fechaComprobante")));
+		Map<String, Object> mapeoMoneda = (Map<String, Object>) (mapeo.get("moneda"));
+		comprobante.getMoneda().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeoMoneda.get("codigoEntero")));
+		comprobante.getMoneda().setNombre(UtilWeb.obtenerCadenaMapeo(mapeoMoneda.get("nombre")));
+		comprobante.getMoneda().setAbreviatura(UtilWeb.obtenerCadenaMapeo(mapeoMoneda.get("abreviatura")));
+		comprobante.setSubTotal(UtilWeb.obtenerBigDecimalMapeo(mapeo.get("subTotal")));
+		comprobante.setTotalIGV(UtilWeb.obtenerBigDecimalMapeo(mapeo.get("totalIGV")));
+		comprobante.setTotalComprobante(UtilWeb.obtenerBigDecimalMapeo(mapeo.get("totalComprobante")));
+		comprobante.setIdServicio(UtilWeb.obtenerIntMapeo(mapeo.get("idServicio")));
+		comprobante.setTieneDetraccion(UtilWeb.obtenerBooleanMapeo(mapeo.get("tieneDetraccion")));
+		comprobante.setTieneRetencion(UtilWeb.obtenerBooleanMapeo(mapeo.get("tieneRetencion")));
+		comprobante.setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("codigoEntero")));
+		comprobante.setEmpresa(this.obtenerEmpresa(request));
+		comprobante.setUsuarioCreacion(this.obtenerUsuario(request));
+		comprobante.setUsuarioModificacion(this.obtenerUsuario(request));
+		comprobante.setIpCreacion(this.obtenerIp(request));
+		comprobante.setIpModificacion(this.obtenerIp(request));
+		List<Map<String, Object>> listaDetalle = (List<Map<String, Object>>) mapeo.get("detalle");
+		if (listaDetalle != null && !listaDetalle.isEmpty()) {
+			DetalleComprobante detalleComprobante = null;
+			for (Map<String, Object> map : listaDetalle) {
+				detalleComprobante = new DetalleComprobante();
+				detalleComprobante.setFlagMoverDetalle(UtilWeb.obtenerBooleanMapeo(map.get("flagMoverDetalle")));
+				detalleComprobante.setCantidad(UtilWeb.obtenerIntMapeo(map.get("cantidad")));
+				detalleComprobante.setConcepto(UtilWeb.obtenerCadenaMapeo(map.get("concepto")));
+				detalleComprobante.setPrecioUnitario(UtilWeb.obtenerBigDecimalMapeo(map.get("precioUnitario")));
+				detalleComprobante.setTotalDetalle(UtilWeb.obtenerBigDecimalMapeo(map.get("totalDetalle")));
+				detalleComprobante.setIdServicioDetalle(UtilWeb.obtenerIntMapeo(map.get("idServicioDetalle")));
+				detalleComprobante.setCodigoEntero(UtilWeb.obtenerIntMapeo(map.get("codigoEntero")));
+				detalleComprobante.setImpresion(UtilWeb.obtenerBooleanMapeo(map.get("flagImprimir")));
+				detalleComprobante.setUsuarioCreacion(this.obtenerUsuario(request));
+				detalleComprobante.setUsuarioModificacion(this.obtenerUsuario(request));
+				detalleComprobante.setIpCreacion(this.obtenerIp(request));
+				detalleComprobante.setIpModificacion(this.obtenerIp(request));
+				comprobante.getDetalleComprobante().add(detalleComprobante);
 			}
 		}
 

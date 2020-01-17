@@ -629,11 +629,14 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 	  
 	$scope.guardarCliente = function(){
 		document.getElementById('btnCerrarModalConfirmacion').click();
-		for (var i=0; i<$scope.cliente.listaAdjuntos.length; i++ ){
-			if ($scope.cliente.listaAdjuntos[i].archivo != undefined && $scope.cliente.listaAdjuntos[i].archivo.datos != undefined){
-				$scope.cliente.listaAdjuntos[i].archivo.datos = null;
+		if ($scope.cliente.listaAdjuntos != null && $scope.cliente.listaAdjuntos != undefined){
+			for (var i=0; i<$scope.cliente.listaAdjuntos.length; i++ ){
+				if ($scope.cliente.listaAdjuntos[i].archivo != undefined && $scope.cliente.listaAdjuntos[i].archivo.datos != undefined){
+					$scope.cliente.listaAdjuntos[i].archivo.datos = null;
+				}
 			}
 		}
+		
 		if (validarCliente()){
 			$http({method: 'POST', url: '../../../servlets/ServletCliente', params:{accion:'guardar', cliente: $scope.cliente}}).then(
 					 function successCallback(response) {

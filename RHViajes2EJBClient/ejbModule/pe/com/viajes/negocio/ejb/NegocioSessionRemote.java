@@ -113,4 +113,6 @@ public interface NegocioSessionRemote {
 	boolean grabarDocumentosAdicionales(
 			List<DocumentoAdicional> listaDocumentos, Integer idEmpresa)
 			throws ErrorRegistroDataException, SQLException, Exception;
+	
+	Comprobante moverComprobantes(Comprobante comprobante) throws ErrorRegistroDataException;
 }

@@ -29,6 +29,7 @@ import pe.com.viajes.bean.cargaexcel.ColumnasExcel;
 import pe.com.viajes.bean.cargaexcel.ReporteArchivo;
 import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.Comprobante;
+import pe.com.viajes.bean.negocio.ComprobanteBusqueda;
 import pe.com.viajes.bean.negocio.Consolidador;
 import pe.com.viajes.bean.negocio.Contacto;
 import pe.com.viajes.bean.negocio.CorreoClienteMasivo;
@@ -431,6 +432,9 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 			userTransaction.rollback();
 			throw new ResultadoCeroDaoException(e.getMensajeError(), e);
 		} catch (SQLException e) {
+			userTransaction.rollback();
+			throw new ErrorRegistroDataException("Error en registro de cliente",e);
+		} catch (Exception e) {
 			userTransaction.rollback();
 			throw new ErrorRegistroDataException("Error en registro de cliente",e);
 		} finally {
@@ -1381,6 +1385,63 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 		tipoCambio.setMonedaOrigen(monedaOrigen);
 
 		return tipoCambioDao.registrarTipoCambio(tipoCambio);
+	}
+	
+	@Override
+	public Comprobante moverComprobantes(Comprobante comprobante) throws ErrorRegistroDataException {
+		Connection conn = null;
+		try {
+			ComprobanteNovaViajesDao comprobanteDao = new ComprobanteNovaViajesDaoImpl();
+			try {
+				conn = UtilConexion.obtenerConexion();
+				conn.setAutoCommit(false);
+				int idComprobanteOtro = comprobanteDao.consultarOtroComprobanteServicio(comprobante.getIdServicio(), comprobante.getEmpresa().getCodigoEntero(), comprobante.getCodigoEntero(), conn);
+				
+				if (idComprobanteOtro == 0) {
+					throw new ValidacionException("No existe otro comprobante");
+				}
+				comprobanteDao.actualizarDetalleMovimiento(comprobante, idComprobanteOtro, conn);
+				
+				if (comprobanteDao.actualizarDatosComprobante(comprobante, conn)) {
+					ComprobanteBusqueda comprobanteBusqueda = new ComprobanteBusqueda();
+					comprobanteBusqueda.setCodigoEntero(comprobante.getCodigoEntero());
+					comprobanteBusqueda.setTipoComprobante(comprobante.getTipoComprobante());
+					comprobanteBusqueda.setNumeroComprobante(comprobante.getNumeroComprobante());
+					comprobanteBusqueda.setEmpresa(comprobante.getEmpresa());
+
+					List<Comprobante> comprobantes = comprobanteDao
+							.consultarComprobantes(comprobanteBusqueda, conn);
+
+					comprobante = comprobantes.get(0);
+					comprobante.setDetalleComprobante(comprobanteDao
+							.consultarDetalleComprobante(comprobante.getCodigoEntero(), comprobante.getEmpresa().getCodigoEntero(),conn));
+					
+					conn.commit();
+				}
+				else {
+					throw new ValidacionException("No se completo la actualizacion de datos de comprobante");
+				}
+				
+			} catch (SQLException e) {
+				conn.rollback();
+				throw new ErrorRegistroDataException(e);
+			} catch (ValidacionException e) {
+				conn.rollback();
+				throw new ErrorRegistroDataException(e);
+			} 
+		} catch (SQLException e) {
+			throw new ErrorRegistroDataException(e);
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				throw new ErrorRegistroDataException(e);
+			}
+		}
+		
+		return comprobante;
 	}
 
 }

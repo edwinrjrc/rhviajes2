@@ -33,6 +33,8 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
+		$scope.editor = false;
+		$scope.buscador = true;
 	};
 	listarTipoDocumento();
 	
@@ -127,6 +129,78 @@ comprobantesapp.controller('consultacomproctrl',function($scope,$http,$document,
 			  }, function errorCallback(response) {
 				     console.log('Error en la llamada');
 			  });
+	}
+	
+	$scope.verDetalleComprobante2 = function(idComprobante){
+		$scope.detalle = {};
+		for (var i=0; i<$scope.listaComprobantes.length; i++){
+			if ($scope.listaComprobantes[i].codigoEntero == idComprobante){
+				$scope.detalle = $scope.listaComprobantes[i];
+				break;
+			}
+		}
+		$scope.detalle.titular.nombreCompleto = $scope.detalle.titular.nombres+" "+$scope.detalle.titular.apellidoPaterno+" "+$scope.detalle.titular.apellidoMaterno;
+		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'consultaDetalle',idComprobante:$scope.detalle.codigoEntero}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == undefined){
+						 location.href="../../../";
+					 }
+					 else{
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.estadoConsulta = response.data.exito;
+							 if ($scope.estadoConsulta){
+								 $scope.detalle.detalle = response.data.objeto.detalleComprobante;
+								 $scope.detalle.feComprobante = new Date($scope.detalle.fechaComprobante);
+								 for (var i=0; i<$scope.detalle.detalle.length; i++){
+									 $scope.detalle.detalle[i].flagMoverDetalle = false;
+								 }
+							 }
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+		$scope.editor = true;
+		$scope.buscador = false;
+	}
+	
+	$scope.enviarAOtroComprobante = function(){
+		$scope.detalle.fechaComprobante = $scope.detalle.feComprobante;
+		$http({method: 'POST', url: '../../../servlets/ServletComprobante', params:{accion:'grabarEditar',comprobante:$scope.detalle}}).then(
+				 function successCallback(response) {
+					 if (response.data.exito == undefined){
+						 location.href="../../../";
+					 }
+					 else{
+						 $scope.mensajeError = response.data.mensaje;
+						 if (response.data.exito){
+							 console.log('Exito en la llamada');
+							 $scope.estadoConsulta = response.data.exito;
+							 if ($scope.estadoConsulta){
+								 $scope.detalle = response.data.objeto;
+								 $scope.detalle.titular.nombreCompleto = $scope.detalle.titular.nombres+" "+$scope.detalle.titular.apellidoPaterno+" "+$scope.detalle.titular.apellidoMaterno;
+								 $scope.detalle.detalle = response.data.objeto.detalleComprobante;
+								 $scope.detalle.feComprobante = new Date($scope.detalle.fechaComprobante);
+								 for (var i=0; i<$scope.detalle.detalle.length; i++){
+									 $scope.detalle.detalle[i].flagMoverDetalle = false;
+								 }
+							 }
+							 document.getElementById("idbtnExito").click();
+						 }
+						 else {
+							 document.getElementById("idbtnError").click();
+						 }
+					 }
+			  }, function errorCallback(response) {
+				     console.log('Error en la llamada');
+			  });
+	}
+	
+	$scope.regresar = function(){
+		$scope.editor = false;
+		$scope.buscador = true;
+		$scope.detalle = null;
 	}
 	
 	$scope.generaComprobanteImpresion = function(){

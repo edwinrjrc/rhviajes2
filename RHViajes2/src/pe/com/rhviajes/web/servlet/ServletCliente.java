@@ -173,7 +173,6 @@ public class ServletCliente extends BaseServlet {
 				retorno.put("exito", true);
 			} else if (ACCION_GUARDAR.equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("cliente"));
-				SimpleDateFormat sdf = new SimpleDateFormat(UtilWeb.PATTERN_GSON);
 				Cliente cliente = new Cliente();
 				Double val = Double.valueOf(UtilWeb.parseDouble(UtilWeb.obtenerCadenaMapeo(mapeo.get("tipoDocumento"))));
 				cliente.setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("codigoEntero")));
@@ -186,9 +185,9 @@ public class ServletCliente extends BaseServlet {
 				cliente.getEstadoCivil().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idEstadoCivil")));
 				cliente.getEstadoCivil().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("idEstadoCivil")));
 				cliente.getGenero().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idGenero")));
-				cliente.setFechaNacimiento(sdf.parse(UtilWeb.obtenerCadenaMapeo(mapeo.get("fechaNacimiento"))));
+				cliente.setFechaNacimiento(UtilWeb.obtenerFechaMapeo(mapeo.get("fechaNacimiento")));
 				cliente.setNroPasaporte(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroPasaporte")));
-				cliente.setFechaVctoPasaporte(sdf.parse(UtilWeb.obtenerCadenaMapeo(mapeo.get("fechaVctoPasaporte"))));
+				cliente.setFechaVctoPasaporte(UtilWeb.obtenerFechaMapeo(mapeo.get("fechaVctoPasaporte")));
 				cliente.getNacionalidad().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("idPais")));
 				cliente.getNacionalidad().setCodigoCadena(UtilWeb.obtenerCadenaMapeo(mapeo.get("idPais")));
 				cliente.setEmpresa(this.obtenerEmpresa(request));
@@ -237,6 +236,8 @@ public class ServletCliente extends BaseServlet {
 								telefono.setUsuarioModificacion(this.obtenerUsuario(request));
 								telefono.setIpCreacion(this.obtenerIp(request));
 								telefono.setIpModificacion(this.obtenerIp(request));
+								telefono.setEmpresa(this.obtenerEmpresa(request));
+								telefono.getEmpresaOperadora().setCodigoEntero(1);
 								direccion.getTelefonos().add(telefono);
 							}
 						}
@@ -261,6 +262,7 @@ public class ServletCliente extends BaseServlet {
 						contacto.setUsuarioModificacion(this.obtenerUsuario(request));
 						contacto.setIpCreacion(this.obtenerIp(request));
 						contacto.setIpModificacion(this.obtenerIp(request));
+						contacto.setEmpresa(this.obtenerEmpresa(request));
 						
 						List<Map<String, Object>> listaTelefonos = (List<Map<String, Object>>) map.get("listaTelefonos");
 						if (listaTelefonos != null && !listaTelefonos.isEmpty()){
@@ -272,6 +274,8 @@ public class ServletCliente extends BaseServlet {
 								telefono.setUsuarioModificacion(this.obtenerUsuario(request));
 								telefono.setIpCreacion(this.obtenerIp(request));
 								telefono.setIpModificacion(this.obtenerIp(request));
+								telefono.setEmpresa(this.obtenerEmpresa(request));
+								telefono.getEmpresaOperadora().setCodigoEntero(1);
 								contacto.getListaTelefonos().add(telefono);
 							}
 						}
@@ -280,7 +284,7 @@ public class ServletCliente extends BaseServlet {
 				}
 				HttpSession session = request.getSession(false);
 				cliente.setListaAdjuntos((List<DocumentoAdicional>) session.getAttribute("listaAdjuntosCliente"));
-				if (cliente.getCodigoEntero() == null) {
+				if (cliente.getCodigoEntero() == null || cliente.getCodigoEntero().intValue() == 0) {
 					retorno.put("mensaje", "Registrado Correctamente");
 					retorno.put("exito", negocioSessionRemote.registrarCliente(cliente));
 				}
