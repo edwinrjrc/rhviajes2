@@ -834,7 +834,8 @@
 								<button class="btn btn-success mb-control"
 									data-box="#message-box-success" id="idbtnExito" type="button"
 									style="display: none;">BotonExito</button>
-								<button type="button" style="display: none;">BotonError</button>
+								<button type="button" style="display: none;" id="idbtnError" class="btn btn-success mb-control"
+									data-box="#message-box-danger">BotonError</button>
 							</div>
 							<div class="modal" id="modal_confirmacion" tabindex="-1"
 								role="dialog" aria-labelledby="defModalHead" aria-hidden="true">
@@ -875,7 +876,7 @@
 								</div>
 							</div>
 							<div class="message-box message-box-danger animated fadeIn"
-								data-sound="fail" id="message-box-sound-2">
+								data-sound="fail" id="message-box-danger">
 								<div class="mb-container">
 									<div class="mb-middle">
 										<div class="mb-title">

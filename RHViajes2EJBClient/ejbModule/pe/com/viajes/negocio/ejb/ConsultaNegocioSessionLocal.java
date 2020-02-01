@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.DetalleServicioAgencia;
 import pe.com.viajes.bean.negocio.MaestroServicio;
 import pe.com.viajes.bean.negocio.Proveedor;
@@ -19,5 +20,8 @@ public interface ConsultaNegocioSessionLocal {
 			int idDetServicio, Integer idEmpresa) throws SQLException;
 
 	List<MaestroServicio> listarMaestroServicioPadre(Integer idEmpresa)
+			throws SQLException, Exception;
+	
+	Cliente consultarCliente(int idcliente, Integer idEmpresa)
 			throws SQLException, Exception;
 }

@@ -177,4 +177,8 @@ public interface ServicioNovaViajesDao {
 			Integer idEmpresa, Integer idServicio) throws SQLException;
 
 	boolean aplicaIgv(int idServicio, int idEmpresa) throws SQLException;
+
+	boolean generarComprobantes(ServicioAgencia servicio, Connection conn) throws SQLException;
+
+	boolean generarComprobantes(ServicioAgencia servicio) throws SQLException;
 }

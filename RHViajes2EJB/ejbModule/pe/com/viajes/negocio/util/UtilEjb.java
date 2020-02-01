@@ -379,6 +379,10 @@ public class UtilEjb extends UtilApp {
 		return pasajeros;
 	}
 	
+	public static String completarCerosIzquierda(String cadena, int cantidad) {
+		return completarCaracter(cadena, "0", cantidad, "I");
+	}
+	
 	public static DetalleServicioAgencia clonarDetalleServicioAgencia(DetalleServicioAgencia detalleServicio){
 		DetalleServicioAgencia clonada = new DetalleServicioAgencia();
 		clonada.setAerolinea(detalleServicio.getAerolinea());
@@ -397,5 +401,9 @@ public class UtilEjb extends UtilApp {
 		clonada.setDescripcionServicio(detalleServicio.getDescripcionServicio());
 		clonada.setDias(detalleServicio.getDias());
 		return clonada;
+	}
+	
+	public static String parseaCadena(String cadena) {
+		return (cadena == null ? "" : cadena);
 	}
 }

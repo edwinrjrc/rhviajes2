@@ -10,6 +10,8 @@ import pe.com.viajes.bean.jasper.DetalleServicio;
 import pe.com.viajes.bean.negocio.Contacto;
 import pe.com.viajes.bean.negocio.DetalleServicioAgencia;
 import pe.com.viajes.bean.negocio.Direccion;
+import pe.com.viajes.bean.negocio.Pasajero;
+import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
 import pe.com.viajes.negocio.exception.ErrorRegistroDataException;
 
 @Local
@@ -49,4 +51,6 @@ public interface UtilNegocioSessionLocal {
 	BigDecimal desglozarMontoSinIGV(BigDecimal monto, Integer idEmpresa) throws SQLException;
 
 	BigDecimal obtenerMontoIGV(BigDecimal monto, Integer idEmpresa) throws SQLException;
+	
+	List<Pasajero> consultarPasajerosServicio(int idServicio, int idEmpresa) throws ErrorConsultaDataException;
 }

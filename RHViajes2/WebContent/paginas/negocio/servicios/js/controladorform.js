@@ -695,18 +695,16 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 						 location.href="../../../";
 					 }
 					 else{
-						 if (response.data.exito){
-							 console.log('Exito en la llamada');
-							 $scope.estadoConsulta = response.data.exito;
-							 if ($scope.estadoConsulta){
-								 /*$scope.mensaje = response.data.mensaje;
-								 location.href="/RHViajes2/paginas/negocio/servicios/adm.jsp";*/
-								 document.getElementById('idbtnExito').click();
-							 }
-							 else{
-								 $scope.mensajeError = response.data.mensaje;
-								 document.getElementById('idbtnError').click();
-							 }
+						 console.log('Exito en la llamada');
+						 $scope.estadoConsulta = response.data.exito;
+						 if ($scope.estadoConsulta){
+							 /*$scope.mensaje = response.data.mensaje;
+							 location.href="/RHViajes2/paginas/negocio/servicios/adm.jsp";*/
+							 document.getElementById('idbtnExito').click();
+						 }
+						 else{
+							 $scope.mensajeError = response.data.mensaje;
+							 document.getElementById('idbtnError').click();
 						 }
 					 }
 			  }, function errorCallback(response) {

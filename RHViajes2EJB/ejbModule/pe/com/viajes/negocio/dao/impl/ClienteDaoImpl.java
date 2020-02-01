@@ -308,7 +308,6 @@ public class ClienteDaoImpl implements ClienteDao {
 
 		try {
 			conn = UtilConexion.obtenerConexion();
-
 			cs = conn.prepareCall(sql);
 			cs.registerOutParameter(1, Types.OTHER);
 			cs.setInt(2, idEmpresa);
@@ -571,30 +570,31 @@ public class ClienteDaoImpl implements ClienteDao {
 		try {
 			conn = UtilConexion.obtenerConexion();
 			cs = conn.prepareCall(sql);
-			int i = 1;
-			cs.registerOutParameter(i++, Types.OTHER);
-			cs.setInt(i++, persona.getEmpresa().getCodigoEntero().intValue());
-			cs.setInt(i++, persona.getTipoPersona());
+			cs.registerOutParameter(1, Types.OTHER);
+			cs.setInt(2, persona.getEmpresa().getCodigoEntero().intValue());
+			cs.setInt(3, persona.getTipoPersona());
 			if (UtilJdbc.enteroNoNuloNoCero(persona.getDocumentoIdentidad()
 					.getTipoDocumento().getCodigoEntero())) {
-				cs.setInt(i++, persona.getDocumentoIdentidad()
+				cs.setInt(4, persona.getDocumentoIdentidad()
 						.getTipoDocumento().getCodigoEntero().intValue());
 			} else {
-				cs.setNull(i++, Types.INTEGER);
+				cs.setNull(4, Types.INTEGER);
 			}
 			if (StringUtils.isNotBlank(persona.getDocumentoIdentidad()
 					.getNumeroDocumento())) {
-				cs.setString(i++, persona.getDocumentoIdentidad()
+				cs.setString(5, persona.getDocumentoIdentidad()
 						.getNumeroDocumento());
 			} else {
-				cs.setNull(i++, Types.VARCHAR);
+				cs.setNull(5, Types.VARCHAR);
 			}
 			if (StringUtils.isNotBlank(persona.getNombres())) {
-				cs.setString(i++,
+				cs.setString(6,
 						UtilJdbc.borrarEspacioMayusculas(persona.getNombres()));
 			} else {
-				cs.setNull(i++, Types.VARCHAR);
+				cs.setNull(6, Types.VARCHAR);
 			}
+			cs.setInt(7, tamPagina==0?5:tamPagina);
+			cs.setInt(8, numPagina==0?1:numPagina);
 			cs.execute();
 			
 			rs = (ResultSet) cs.getObject(1);

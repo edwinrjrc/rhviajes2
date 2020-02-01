@@ -1,20 +1,35 @@
 package pe.com.viajes.negocio.ejb;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.internet.AddressException;
@@ -24,6 +39,14 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.bean.cargaexcel.ColumnasExcel;
 import pe.com.viajes.bean.cargaexcel.ReporteArchivo;
@@ -35,6 +58,7 @@ import pe.com.viajes.bean.negocio.Contacto;
 import pe.com.viajes.bean.negocio.CorreoClienteMasivo;
 import pe.com.viajes.bean.negocio.CorreoMasivo;
 import pe.com.viajes.bean.negocio.CuentaBancaria;
+import pe.com.viajes.bean.negocio.DetalleComprobante;
 import pe.com.viajes.bean.negocio.DetalleServicioAgencia;
 import pe.com.viajes.bean.negocio.Direccion;
 import pe.com.viajes.bean.negocio.DocumentoAdicional;
@@ -50,6 +74,8 @@ import pe.com.viajes.bean.negocio.ServicioProveedor;
 import pe.com.viajes.bean.negocio.Telefono;
 import pe.com.viajes.bean.negocio.TipoCambio;
 import pe.com.viajes.bean.negocio.Tramo;
+import pe.com.viajes.bean.negocio.Usuario;
+import pe.com.viajes.bean.util.UtilProperties;
 import pe.com.viajes.negocio.dao.ArchivoReporteDao;
 import pe.com.viajes.negocio.dao.ClienteDao;
 import pe.com.viajes.negocio.dao.ComprobanteNovaViajesDao;
@@ -85,10 +111,13 @@ import pe.com.viajes.negocio.dao.impl.ServicioNoviosDaoImpl;
 import pe.com.viajes.negocio.dao.impl.TelefonoDaoImpl;
 import pe.com.viajes.negocio.dao.impl.TipoCambioDaoImpl;
 import pe.com.viajes.negocio.exception.EnvioCorreoException;
+import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
 import pe.com.viajes.negocio.exception.ErrorRegistroDataException;
+import pe.com.viajes.negocio.exception.RHViajesException;
 import pe.com.viajes.negocio.exception.ResultadoCeroDaoException;
 import pe.com.viajes.negocio.exception.ValidacionException;
 import pe.com.viajes.negocio.util.UtilConexion;
+import pe.com.viajes.negocio.util.UtilConvertirNumeroLetras;
 import pe.com.viajes.negocio.util.UtilCorreo;
 import pe.com.viajes.negocio.util.UtilEjb;
 
@@ -601,105 +630,123 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 		}
 	}
 
+	//@Override
+	private Integer registrarVentaServicio1(ServicioAgencia servicioAgencia)
+			throws ErrorRegistroDataException {
+		int idVenta = registrarVentaServicio1(servicioAgencia);
+		servicioAgencia.setCodigoEntero(idVenta);
+		
+		return idVenta;
+	}
+	
 	@Override
 	public Integer registrarVentaServicio(ServicioAgencia servicioAgencia)
-			throws ErrorRegistroDataException, SQLException, Exception {
-		ServicioNovaViajesDao servicioNovaViajesDao = new ServicioNovaViajesDaoImpl(
-				servicioAgencia.getEmpresa().getCodigoEntero());
-		ServicioNegocioDao servicioNegocioDao = new ServicioNegocioDaoImpl();
-
-		userTransaction.begin();
-		Connection conexion = null;
-		Integer idServicio = 0;
+			throws ErrorRegistroDataException {
 		try {
-			conexion = UtilConexion.obtenerConexion();
+			ServicioNovaViajesDao servicioNovaViajesDao = new ServicioNovaViajesDaoImpl(
+					servicioAgencia.getEmpresa().getCodigoEntero());
+			ServicioNegocioDao servicioNegocioDao = new ServicioNegocioDaoImpl();
 
-			if (servicioAgencia.getFechaServicio() == null) {
-				Date fechaSer = servicioAgencia.getListaDetalleServicio().get(0).getFechaIda();
-				servicioAgencia.setFechaServicio(fechaSer);
-			}
+			Connection conexion = null;
+			Integer idServicio = 0;
+			try {
+				conexion = UtilConexion.obtenerConexion();
+				conexion.setAutoCommit(false);
 
-			if (!servicioAgencia.getListaDetalleServicio().isEmpty()) {
-				servicioAgencia.setCantidadServicios(servicioAgencia.getListaDetalleServicio().size());
-			}
+				if (servicioAgencia.getFechaServicio() == null) {
+					Date fechaSer = servicioAgencia.getListaDetalleServicio().get(0).getFechaIda();
+					servicioAgencia.setFechaServicio(fechaSer);
+				}
 
-			servicioAgencia.getEstadoServicio().setCodigoEntero(ServicioAgencia.ESTADO_CERRADO);
-			idServicio = servicioNovaViajesDao.ingresarCabeceraServicio(servicioAgencia, conexion);
+				if (!servicioAgencia.getListaDetalleServicio().isEmpty()) {
+					servicioAgencia.setCantidadServicios(servicioAgencia.getListaDetalleServicio().size());
+				}
 
-			servicioAgencia.setCodigoEntero(idServicio);
+				servicioAgencia.getEstadoServicio().setCodigoEntero(ServicioAgencia.ESTADO_CERRADO);
+				idServicio = servicioNovaViajesDao.ingresarCabeceraServicio(servicioAgencia, conexion);
 
-			if (idServicio == 0) {
-				throw new ErrorRegistroDataException("No se pudo registrar los servicios de los novios");
-			}
-			if (servicioAgencia.getListaDetalleServicio() != null
-					&& !servicioAgencia.getListaDetalleServicio().isEmpty()) {
+				servicioAgencia.setCodigoEntero(idServicio);
 
-				for (DetalleServicioAgencia detalleServicio : servicioAgencia.getListaDetalleServicio()) {
-					if (detalleServicio.getTipoServicio().isServicioPadre()) {
-						Integer idRuta = null;
-						for (Tramo tramo : detalleServicio.getRuta().getTramos()) {
-							tramo = servicioNovaViajesDao.registrarTramo(tramo, conexion);
-							if (tramo.getCodigoEntero() == null || tramo.getCodigoEntero().intValue() == 0) {
+				if (idServicio == 0) {
+					throw new ErrorRegistroDataException("No se pudo registrar los servicios de los novios");
+				}
+				if (servicioAgencia.getListaDetalleServicio() != null
+						&& !servicioAgencia.getListaDetalleServicio().isEmpty()) {
+
+					for (DetalleServicioAgencia detalleServicio : servicioAgencia.getListaDetalleServicio()) {
+						if (detalleServicio.getTipoServicio().isServicioPadre()) {
+							Integer idRuta = null;
+							for (Tramo tramo : detalleServicio.getRuta().getTramos()) {
+								tramo = servicioNovaViajesDao.registrarTramo(tramo, conexion);
+								if (tramo.getCodigoEntero() == null || tramo.getCodigoEntero().intValue() == 0) {
+									throw new ErrorRegistroDataException("No se pudo registrar los servicios de la venta");
+								}
+								detalleServicio.getRuta().setTramo(tramo);
+								if (idRuta == null) {
+									idRuta = servicioNovaViajesDao.obtenerSiguienteRuta(conexion);
+								}
+								detalleServicio.getRuta().setCodigoEntero(idRuta);
+								if (!servicioNovaViajesDao.registrarRuta(detalleServicio.getRuta(), conexion)) {
+									throw new ErrorRegistroDataException("No se pudo registrar los servicios de la venta");
+								}
+							}
+
+							// INGRESO DE DETALLE DE SERVICIO PADRE
+							Integer idSerDetaPadre = servicioNovaViajesDao.ingresarDetalleServicio(detalleServicio,
+									idServicio, conexion);
+							// INGRESO DE DETALLE DE SERVICIO HIJOS DEL PADRE
+							if (idSerDetaPadre == null || idSerDetaPadre.intValue() == 0) {
 								throw new ErrorRegistroDataException("No se pudo registrar los servicios de la venta");
-							}
-							detalleServicio.getRuta().setTramo(tramo);
-							if (idRuta == null) {
-								idRuta = servicioNovaViajesDao.obtenerSiguienteRuta(conexion);
-							}
-							detalleServicio.getRuta().setCodigoEntero(idRuta);
-							if (!servicioNovaViajesDao.registrarRuta(detalleServicio.getRuta(), conexion)) {
-								throw new ErrorRegistroDataException("No se pudo registrar los servicios de la venta");
-							}
-						}
-
-						// INGRESO DE DETALLE DE SERVICIO PADRE
-						Integer idSerDetaPadre = servicioNovaViajesDao.ingresarDetalleServicio(detalleServicio,
-								idServicio, conexion);
-						// INGRESO DE DETALLE DE SERVICIO HIJOS DEL PADRE
-						if (idSerDetaPadre == null || idSerDetaPadre.intValue() == 0) {
-							throw new ErrorRegistroDataException("No se pudo registrar los servicios de la venta");
-						} else {
-							for (DetalleServicioAgencia detalleServicio2 : servicioAgencia.getListaDetalleServicio()) {
-								if (!detalleServicio2.getTipoServicio().isServicioPadre()) {
-									if (detalleServicio2.getServicioPadre().getCodigoEntero()
-											.intValue() == detalleServicio.getCodigoEntero().intValue()) {
-										detalleServicio2.getServicioPadre().setCodigoEntero(idSerDetaPadre);
-										Integer resultado = servicioNovaViajesDao
-												.ingresarDetalleServicio(detalleServicio2, idServicio, conexion);
-										if (resultado == null || resultado.intValue() == 0) {
-											throw new ErrorRegistroDataException(
-													"No se pudo registrar los servicios de la venta");
+							} else {
+								for (DetalleServicioAgencia detalleServicio2 : servicioAgencia.getListaDetalleServicio()) {
+									if (!detalleServicio2.getTipoServicio().isServicioPadre()) {
+										if (detalleServicio2.getServicioPadre().getCodigoEntero()
+												.intValue() == detalleServicio.getCodigoEntero().intValue()) {
+											detalleServicio2.getServicioPadre().setCodigoEntero(idSerDetaPadre);
+											Integer resultado = servicioNovaViajesDao
+													.ingresarDetalleServicio(detalleServicio2, idServicio, conexion);
+											if (resultado == null || resultado.intValue() == 0) {
+												throw new ErrorRegistroDataException(
+														"No se pudo registrar los servicios de la venta");
+											}
 										}
 									}
 								}
 							}
-						}
 
-						// INGRESO DE LOS PASAJEROS DEL SERVICIO
-						for (Pasajero pasajero : detalleServicio.getListaPasajeros()) {
-							pasajero.setIdServicio(idServicio);
-							pasajero.setIdServicioDetalle(idSerDetaPadre);
-							servicioNegocioDao.ingresarPasajero(pasajero, conexion);
+							// INGRESO DE LOS PASAJEROS DEL SERVICIO
+							for (Pasajero pasajero : detalleServicio.getListaPasajeros()) {
+								pasajero.setIdServicio(idServicio);
+								pasajero.setIdServicioDetalle(idSerDetaPadre);
+								servicioNegocioDao.ingresarPasajero(pasajero, conexion);
+							}
 						}
 					}
+				} else {
+					throw new ErrorRegistroDataException("No se agregaron servicios a la venta");
 				}
-			} else {
-				throw new ErrorRegistroDataException("No se agregaron servicios a la venta");
-			}
 
-			servicioNovaViajesDao.registrarSaldosServicio(servicioAgencia, conexion);
-			userTransaction.commit();
-			return idServicio;
-		} catch (SQLException e) {
-			userTransaction.rollback();
-			throw new ErrorRegistroDataException(e.getMessage(), e);
-		} catch (ErrorRegistroDataException e) {
-			userTransaction.rollback();
-			throw new ErrorRegistroDataException(e.getMensajeError(), e);
-		} finally {
-			if (conexion != null) {
-				conexion.close();
+				servicioNovaViajesDao.registrarSaldosServicio(servicioAgencia, conexion);
+				
+				servicioNovaViajesDao.generarComprobantes(servicioAgencia, conexion);
+				
+				conexion.commit();
+				return idServicio;
+			} catch (SQLException e) {
+				conexion.rollback();
+				throw new ErrorRegistroDataException(e.getMessage(), e);
+			} catch (ErrorRegistroDataException e) {
+				conexion.rollback();
+				throw new ErrorRegistroDataException(e.getMensajeError(), e);
+			} finally {
+				if (conexion != null) {
+					conexion.close();
+				}
 			}
+		} catch (SQLException e) {
+			throw new ErrorRegistroDataException(e.getMessage(), e);
+		} catch (Exception e) {
+			throw new ErrorRegistroDataException(e.getMessage(), e);
 		}
 	}
 
@@ -1442,6 +1489,338 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 		}
 		
 		return comprobante;
+	}
+	
+	@Override
+	public byte[] exportarComprobantes(List<Comprobante> listaComprobantes, Usuario usuario) throws RHViajesException{
+		ByteArrayOutputStream baos = null;
+		Connection conn = null;
+		try {
+			ZipOutputStream zos = null;
+			baos = new ByteArrayOutputStream();
+			zos = new ZipOutputStream(baos);
+			ZipEntry ze = null;
+			conn = UtilConexion.obtenerConexion();
+			conn.setAutoCommit(false);
+			for (Comprobante comprobante : listaComprobantes) {
+				
+				ComprobanteNovaViajesDao comprobanteNovaViajesDao = new ComprobanteNovaViajesDaoImpl();
+
+				ComprobanteBusqueda comprobanteBusqueda = new ComprobanteBusqueda();
+				comprobanteBusqueda.setCodigoEntero(comprobante.getCodigoEntero());
+				comprobanteBusqueda.setEmpresa(comprobante.getEmpresa());
+
+				List<Comprobante> comprobantes = comprobanteNovaViajesDao.consultarComprobantes(comprobanteBusqueda,conn);
+
+				comprobante = comprobantes.get(0);
+				comprobante.setDetalleComprobante(comprobanteNovaViajesDao.consultarDetalleComprobante(comprobante.getCodigoEntero(), comprobante.getEmpresa().getCodigoEntero(),conn));
+				
+				Map<String, Object> mapDatos = generaComprobantePdf(comprobante, usuario);
+				ze= new ZipEntry(mapDatos.get("nombreArchivo").toString());
+				zos.putNextEntry(ze);
+				zos.write((byte[])mapDatos.get("datos"));
+			}
+			zos.closeEntry();
+			zos.close();
+			return baos.toByteArray();
+		} catch (IOException e) {
+			throw new RHViajesException(e);
+		} catch (SQLException e) {
+			throw new RHViajesException(e);
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				throw new RHViajesException(e);
+			}
+		}
+		
+	}
+	
+	private Map<String, Object> generaComprobantePdf(Comprobante comprobante, Usuario usuario) throws RHViajesException {
+		Connection conn = null;
+		try {
+			Map<String, Object> mapDatos = new HashMap<String, Object>();
+			Properties prop = UtilProperties.cargaArchivo("aplicacionConfiguracion.properties");
+			String ruta = prop.getProperty("ruta.formatos.excel.comprobantes");
+			String nombreDominio = usuario.getNombreDominioEmpresa();
+			ruta = ruta + nombreDominio;
+
+			if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
+					.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
+				String plantilla = ruta + File.separator + "bl-plantilla.jasper";
+				/**
+				 * Inicio data de documento de cobranza
+				 */
+				String nombreArchivo = "bol_" + comprobante.getNumeroSerie() + "-"
+						+ comprobante.getNumeroComprobante();
+				nombreArchivo = nombreArchivo + ".pdf";
+				conn = UtilConexion.obtenerConexion();
+				byte[] datos = imprimirPDFBoleta(enviarParametrosBoleta(ruta, comprobante, conn), new FileInputStream(new File(plantilla)), comprobante);
+
+				mapDatos.put("nombreArchivo", nombreArchivo);
+				mapDatos.put("contentType", "application/pdf");
+				mapDatos.put("datos", datos);
+
+			} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
+					.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
+				String plantilla = ruta + File.separator + "dc-plantilla.jasper";
+				File archivo = new File(plantilla);
+				InputStream streamJasper = new FileInputStream(archivo);
+
+				/**
+				 * Inicio data de documento de cobranza
+				 */
+				String nombreArchivo = "dc_" + comprobante.getNumeroSerie() + "-"
+						+ comprobante.getNumeroComprobante();
+				nombreArchivo = nombreArchivo + ".pdf";
+				conn = UtilConexion.obtenerConexion();
+				byte[] datos = imprimirPDFDocumentoCobranza(enviarParametrosDocumentoCobranza(ruta, comprobante, conn), streamJasper, comprobante);
+
+				mapDatos.put("nombreArchivo", nombreArchivo);
+				mapDatos.put("contentType", "application/pdf");
+				mapDatos.put("datos", datos);
+
+			} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
+					.obtenerEnteroPropertieMaestro("comprobanteFactura", "aplicacionDatos")) {
+				String plantilla = ruta + File.separator + "fc-plantilla.jasper";
+				File archivo = new File(plantilla);
+				InputStream streamJasper = new FileInputStream(archivo);
+
+				/**
+				 * Inicio data de factura
+				 */
+				String nombreArchivo = "fc_" + comprobante.getNumeroSerie() + "-"
+						+ comprobante.getNumeroComprobante();
+				nombreArchivo = nombreArchivo + ".pdf";
+				byte[] datos = imprimirPDFFactura(this.enviarParametrosFactura(comprobante), streamJasper, comprobante);
+				mapDatos.put("nombreArchivo", nombreArchivo);
+				mapDatos.put("contentType", "application/pdf");
+				mapDatos.put("datos", datos);
+			}
+			
+			return mapDatos;
+		} catch (FileNotFoundException e) {
+			throw new RHViajesException(e);
+		} catch (ErrorConsultaDataException e) {
+			throw new RHViajesException(e);
+		} catch (IOException e) {
+			throw new RHViajesException(e);
+		} catch (JRException e) {
+			throw new RHViajesException(e);
+		} catch (SQLException e) {
+			throw new RHViajesException(e);
+		} catch (Exception e) {
+			throw new RHViajesException(e);
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				throw new RHViajesException(e);
+			}
+		}
+		
+	}
+	
+	private Map<String, Object> enviarParametrosBoleta(String ruta, Comprobante comprobante, Connection conn)
+			throws SQLException, Exception {
+		Map<String, Object> mapeo = new HashMap<String, Object>();
+		Cliente cliente = null;
+		cliente = consultaNegocioSessionLocal.consultarCliente(comprobante.getTitular().getCodigoEntero(),
+				comprobante.getEmpresa().getCodigoEntero());
+		mapeo.put("p_nombrecliente", comprobante.getTitular().getNombreCompleto());
+		mapeo.put("p_direccion", "");
+		List<Direccion> listaDirecciones = cliente.getListaDirecciones();
+		if (listaDirecciones != null && !listaDirecciones.isEmpty()) {
+			mapeo.put("p_direccion", listaDirecciones.get(0).getDireccion());
+		}
+		mapeo.put("p_docidentidad", cliente.getDocumentoIdentidad().getTipoDocumento().getAbreviatura() + " - "
+				+ cliente.getDocumentoIdentidad().getNumeroDocumento());
+		mapeo.put("p_numeroruc", cliente.getDocumentoIdentidad().getNumeroDocumento());
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(comprobante.getFechaComprobante());
+		mapeo.put("p_diafecha", UtilEjb.completarCerosIzquierda(String.valueOf(cal.get(Calendar.DATE)), 2));
+		mapeo.put("p_mesfecha", UtilEjb.completarCerosIzquierda(String.valueOf(cal.get(Calendar.MONTH) + 1), 2));
+		String anio = String.valueOf(cal.get(Calendar.YEAR));
+		mapeo.put("p_aniofecha", anio.substring(2));
+		String montoLetras = UtilConvertirNumeroLetras.convertirNumeroALetras(
+				comprobante.getTotalComprobante().doubleValue()) + " " + comprobante.getMoneda().getNombre();
+		mapeo.put("p_montoletras", montoLetras);
+
+		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
+		mapeo.put("p_montosubtotal",
+				comprobante.getMoneda().getAbreviatura() + " " + df.format(comprobante.getSubTotal().doubleValue()));
+		mapeo.put("p_montoigv",
+				comprobante.getMoneda().getAbreviatura() + " " + df.format(comprobante.getTotalIGV().doubleValue()));
+		mapeo.put("p_montototal", comprobante.getMoneda().getAbreviatura() + " "
+				+ df.format(comprobante.getTotalComprobante().doubleValue()));
+		mapeo.put("p_idempresa", comprobante.getEmpresa().getCodigoEntero());
+		mapeo.put("p_idservicio", comprobante.getIdServicio());
+		mapeo.put("SUBREPORT_DIR", ruta + File.separator);
+		mapeo.put("REPORT_CONNECTION", conn);
+
+		String rutaImagen = ruta + File.separator + "logocomprobante.jpg";
+		File imagen = new File(rutaImagen);
+		BufferedImage image = ImageIO.read(imagen);
+		mapeo.put("p_imagen", image);
+
+		return mapeo;
+	}
+
+	private Map<String, Object> enviarParametrosDocumentoCobranza(String ruta, Comprobante comprobante, Connection conn)
+			throws SQLException, Exception {
+		Map<String, Object> mapeo = new HashMap<String, Object>();
+
+		Cliente cliente = null;
+		cliente = consultaNegocioSessionLocal.consultarCliente(comprobante.getTitular().getCodigoEntero(),
+				comprobante.getEmpresa().getCodigoEntero());
+		mapeo.put("p_numserie", comprobante.getNumeroSerie());
+		mapeo.put("p_numdocumento", UtilEjb.completarCerosIzquierda(comprobante.getNumeroComprobante(), 6));
+		mapeo.put("p_nombrecliente", comprobante.getTitular().getNombreCompleto());
+		mapeo.put("p_direccion", "");
+		List<Direccion> listaDirecciones = cliente.getListaDirecciones();
+		if (listaDirecciones != null && !listaDirecciones.isEmpty()) {
+			mapeo.put("p_direccion", listaDirecciones.get(0).getDireccion());
+		}
+		mapeo.put("p_docidentidad", cliente.getDocumentoIdentidad().getTipoDocumento().getAbreviatura() + " - "
+				+ cliente.getDocumentoIdentidad().getNumeroDocumento());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(comprobante.getFechaComprobante());
+		mapeo.put("p_diafecha", UtilEjb.completarCerosIzquierda(String.valueOf(cal.get(Calendar.DATE)), 2));
+		mapeo.put("p_mesfecha", UtilEjb.completarCerosIzquierda(String.valueOf(cal.get(Calendar.MONTH) + 1), 2));
+		mapeo.put("p_aniofecha", String.valueOf(cal.get(Calendar.YEAR)));
+		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
+		mapeo.put("p_montototal", comprobante.getMoneda().getAbreviatura() + " "
+				+ df.format(comprobante.getTotalComprobante().doubleValue()));
+		mapeo.put("p_idempresa", comprobante.getEmpresa().getCodigoEntero());
+		mapeo.put("p_idservicio", comprobante.getIdServicio());
+		mapeo.put("SUBREPORT_DIR", ruta + File.separator);
+		mapeo.put("REPORT_CONNECTION", conn);
+		String rutaImagen = ruta + File.separator + "logocomprobante.jpg";
+		File imagen = new File(rutaImagen);
+		BufferedImage image = ImageIO.read(imagen);
+		mapeo.put("p_imagen", image);
+
+		return mapeo;
+	}
+
+	private Map<String, Object> enviarParametrosFactura(Comprobante comprobante) throws SQLException, Exception {
+		Map<String, Object> mapeo = new HashMap<String, Object>();
+
+		Cliente cliente = null;
+		cliente = consultaNegocioSessionLocal.consultarCliente(comprobante.getTitular().getCodigoEntero(),
+				comprobante.getEmpresa().getCodigoEntero());
+
+		mapeo.put("p_nombrecliente", comprobante.getTitular().getNombreCompleto());
+		mapeo.put("p_direccion", "");
+		List<Direccion> listaDirecciones = cliente.getListaDirecciones();
+		if (listaDirecciones != null && !listaDirecciones.isEmpty()) {
+			mapeo.put("p_direccion", listaDirecciones.get(0).getDireccion());
+		}
+		mapeo.put("p_numeroruc", cliente.getDocumentoIdentidad().getNumeroDocumento());
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(comprobante.getFechaComprobante());
+		mapeo.put("p_diafecha", UtilEjb.completarCerosIzquierda(String.valueOf(cal.get(Calendar.DATE)), 2));
+		mapeo.put("p_mesfecha", UtilEjb.completarCerosIzquierda(String.valueOf(cal.get(Calendar.MONTH) + 1), 2));
+		String anio = String.valueOf(cal.get(Calendar.YEAR));
+		mapeo.put("p_aniofecha", anio.substring(2));
+		String montoLetras = UtilConvertirNumeroLetras.convertirNumeroALetras(
+				comprobante.getTotalComprobante().doubleValue()) + " " + comprobante.getMoneda().getNombre();
+		mapeo.put("p_montoletras", montoLetras);
+
+		DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
+		mapeo.put("p_montosubtotal",
+				comprobante.getMoneda().getAbreviatura() + " " + df.format(comprobante.getSubTotal().doubleValue()));
+		mapeo.put("p_montoigv",
+				comprobante.getMoneda().getAbreviatura() + " " + df.format(comprobante.getTotalIGV().doubleValue()));
+		mapeo.put("p_montototal", comprobante.getMoneda().getAbreviatura() + " "
+				+ df.format(comprobante.getTotalComprobante().doubleValue()));
+
+		return mapeo;
+	}
+	
+	private byte[] imprimirPDFBoleta(Map<String, Object> map, InputStream streamJasper,
+			Comprobante comprobante) throws JRException, IOException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		List<JasperPrint> printList = new ArrayList<JasperPrint>();
+		List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
+		DetalleServicioAgencia detalleServicio = null;
+		for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
+			if (detalleComprobante.isImpresion()) {
+				detalleServicio = new DetalleServicioAgencia();
+				detalleServicio.setDescripcionServicio(detalleComprobante.getConcepto());
+				detalleServicio.setCodigoEntero(detalleComprobante.getIdServicioDetalle());
+				listaDetalleFinal.add(detalleServicio);
+			}
+		}
+		printList.add(JasperFillManager.fillReport(streamJasper, map, new JRBeanCollectionDataSource(listaDetalleFinal)));
+		JRPdfExporter exporter = new JRPdfExporter();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		exporter.exportReport();
+		streamJasper.close();
+		stream.flush();
+		stream.close();
+		return stream.toByteArray();
+	}
+
+	private byte[] imprimirPDFDocumentoCobranza(Map<String, Object> map, InputStream jasperStream,
+			Comprobante comprobante) throws JRException, IOException {
+		List<DetalleServicioAgencia> listaDetalleFinal = new ArrayList<DetalleServicioAgencia>();
+		DetalleServicioAgencia detalleServicio = null;
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		for (DetalleComprobante detalleComprobante : comprobante.getDetalleComprobante()) {
+			if (detalleComprobante.isImpresion()) {
+				detalleServicio = new DetalleServicioAgencia();
+				detalleServicio.setDescripcionServicio(detalleComprobante.getConcepto());
+				detalleServicio.setCodigoEntero(detalleComprobante.getIdServicioDetalle());
+				listaDetalleFinal.add(detalleServicio);
+			}
+		}
+		List<JasperPrint> printList = new ArrayList<JasperPrint>();
+		printList.add(
+				JasperFillManager.fillReport(jasperStream, map, new JRBeanCollectionDataSource(listaDetalleFinal)));
+
+		JRPdfExporter exporter = new JRPdfExporter();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		exporter.exportReport();
+		jasperStream.close();
+		stream.flush();
+		stream.close();
+		return stream.toByteArray();
+	}
+
+	private byte[] imprimirPDFFactura(Map<String, Object> map, InputStream jasperStream,
+			Comprobante comprobante) throws JRException, ErrorConsultaDataException, IOException {
+		List<JasperPrint> printList = new ArrayList<JasperPrint>();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		List<Pasajero> listaPasajeros = utilNegocioSessionLocal.consultarPasajerosServicio(
+				comprobante.getIdServicio(), comprobante.getEmpresa().getCodigoEntero());
+		printList.add(
+				JasperFillManager.fillReport(jasperStream, map, new JRBeanCollectionDataSource(listaPasajeros)));
+
+		JRPdfExporter exporter = new JRPdfExporter();
+		exporter.setExporterInput(SimpleExporterInput.getInstance(printList));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		// exporter.setConfiguration(configuration);
+		exporter.exportReport();
+		jasperStream.close();
+		outputStream.flush();
+		outputStream.close();
+		return outputStream.toByteArray();
 	}
 
 }

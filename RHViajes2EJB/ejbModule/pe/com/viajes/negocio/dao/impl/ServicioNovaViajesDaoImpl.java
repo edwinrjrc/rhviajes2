@@ -3733,6 +3733,57 @@ public class ServicioNovaViajesDaoImpl implements ServicioNovaViajesDao {
 	}
 	
 	@Override
+	public boolean generarComprobantes(ServicioAgencia servicio, Connection conn) throws SQLException {
+		CallableStatement cs = null;
+		String sql = "";
+		
+		try{
+			sql = "{ ? = call negocio.fn_generacionAutomaticaComprobantes(?,?,?,?)}";
+			cs = conn.prepareCall(sql);
+			cs.registerOutParameter(1, Types.BOOLEAN);
+			cs.setInt(2, servicio.getEmpresa().getCodigoEntero());
+			cs.setInt(3, servicio.getCodigoEntero());
+			cs.setInt(4, servicio.getUsuarioCreacion().getCodigoEntero());
+			cs.setString(5, servicio.getIpCreacion());
+			cs.execute();
+			return cs.getBoolean(1);
+		}
+		finally{
+			if (cs != null){
+				cs.close();
+			}
+		}
+	}
+	
+	@Override
+	public boolean generarComprobantes(ServicioAgencia servicio) throws SQLException {
+		Connection conn = null;
+		CallableStatement cs = null;
+		String sql = "";
+		
+		try{
+			sql = "{ ? = call negocio.fn_generacionAutomaticaComprobantes(?,?,?,?)}";
+			conn = UtilConexion.obtenerConexion();
+			cs = conn.prepareCall(sql);
+			cs.registerOutParameter(1, Types.BOOLEAN);
+			cs.setInt(2, servicio.getEmpresa().getCodigoEntero());
+			cs.setInt(3, servicio.getCodigoEntero());
+			cs.setInt(4, servicio.getUsuarioCreacion().getCodigoEntero());
+			cs.setString(5, servicio.getIpCreacion());
+			cs.execute();
+			return cs.getBoolean(1);
+		}
+		finally{
+			if (cs != null){
+				cs.close();
+			}
+			if (conn != null){
+				conn.close();
+			}
+		}
+	}
+	
+	@Override
 	public boolean aplicaIgv(int idServicio, int idEmpresa) throws SQLException{
 		Connection conn = null;
 		CallableStatement cs = null;

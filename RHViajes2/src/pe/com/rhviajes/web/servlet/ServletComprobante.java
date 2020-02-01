@@ -29,6 +29,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -44,7 +45,6 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
-import pe.com.rhviajes.web.util.UtilConvertirNumeroLetras;
 import pe.com.rhviajes.web.util.UtilWeb;
 import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.Comprobante;
@@ -59,6 +59,7 @@ import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
+import pe.com.viajes.negocio.util.UtilConvertirNumeroLetras;
 
 /**
  * Servlet implementation class ServletComprobante
@@ -128,6 +129,9 @@ public class ServletComprobante extends BaseServlet {
 				comprobanteBusqueda.setEmpresa(this.obtenerEmpresa(request));
 				List<Comprobante> listaComprobantes = consultaNegocioSessionRemote
 						.consultarComprobantesGenerados(comprobanteBusqueda);
+				HttpSession session = this.obtenerSession(request);
+				session.removeAttribute("comprobantesConsultados");
+				session.setAttribute("comprobantesConsultados", listaComprobantes);
 				retorno.put("objeto", listaComprobantes);
 				retorno.put("mensaje", "Busqueda realizada satisfactoriamente");
 				retorno.put("exito", true);
@@ -247,6 +251,18 @@ public class ServletComprobante extends BaseServlet {
 				
 				retorno.put("objeto", negocioSessionRemote.moverComprobantes(comprobante));
 				retorno.put("mensaje", "Movimiento realizado satisfactoriamente");
+				retorno.put("exito", true);
+			} else if ("exportarTodo".equals(accion)) {
+				Map<String, Object> mapDatos = new HashMap<String, Object>();
+				Usuario usuario = this.obtenerUsuario(request);
+				HttpSession session = this.obtenerSession(request);
+				List<Comprobante> listaComprobantes = (List<Comprobante>) session.getAttribute("comprobantesConsultados");
+				mapDatos.put("nombreArchivo", "comprobantes.zip");
+				mapDatos.put("contentType", "application/zip");
+				mapDatos.put("datos", negocioSessionRemote.exportarComprobantes(listaComprobantes, usuario));
+
+				retorno.put("objeto", mapDatos);
+				retorno.put("mensaje", "Proceso realizada satisfactoriamente");
 				retorno.put("exito", true);
 			}
 		} catch (ErrorConsultaDataException e) {

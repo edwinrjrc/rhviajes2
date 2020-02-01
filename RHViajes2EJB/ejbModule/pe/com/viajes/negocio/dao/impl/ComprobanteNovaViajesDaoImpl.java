@@ -195,6 +195,8 @@ public class ComprobanteNovaViajesDaoImpl implements ComprobanteNovaViajesDao {
 						UtilJdbc.obtenerCadena(rs, "apellidopaterno"));
 				comprobante.getTitular().setApellidoMaterno(
 						UtilJdbc.obtenerCadena(rs, "apellidomaterno"));
+				comprobante.getTitular().setNombreCompleto(UtilEjb.parseaCadena(comprobante.getTitular().getNombres())+" "+UtilEjb.parseaCadena(comprobante.getTitular().getApellidoPaterno())+" "+UtilEjb.parseaCadena(comprobante.getTitular().getApellidoMaterno()));
+				comprobante.getTitular().setNombreCompleto(StringUtils.normalizeSpace(comprobante.getTitular().getNombreCompleto()));
 				comprobante.setFechaComprobante(UtilJdbc.obtenerFecha(rs,
 						"fechacomprobante"));
 				comprobante.getMoneda().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idmoneda"));
@@ -204,6 +206,7 @@ public class ComprobanteNovaViajesDaoImpl implements ComprobanteNovaViajesDao {
 				comprobante.setTotalIGV(UtilJdbc.obtenerBigDecimal(rs, "totaligv"));
 				comprobante.setTotalComprobante(UtilJdbc.obtenerBigDecimal(rs,
 						"totalcomprobante"));
+				comprobante.getEmpresa().setCodigoEntero(comprobanteBusqueda.getEmpresa().getCodigoEntero());
 				resultado.add(comprobante);
 			}
 		} catch (SQLException e) {
@@ -316,6 +319,8 @@ public class ComprobanteNovaViajesDaoImpl implements ComprobanteNovaViajesDao {
 						UtilJdbc.obtenerCadena(rs, "apellidopaterno"));
 				comprobante.getTitular().setApellidoMaterno(
 						UtilJdbc.obtenerCadena(rs, "apellidomaterno"));
+				comprobante.getTitular().setNombreCompleto(UtilEjb.parseaCadena(comprobante.getTitular().getNombres())+" "+UtilEjb.parseaCadena(comprobante.getTitular().getApellidoPaterno())+" "+UtilEjb.parseaCadena(comprobante.getTitular().getApellidoMaterno()));
+				comprobante.getTitular().setNombreCompleto(StringUtils.normalizeSpace(comprobante.getTitular().getNombreCompleto()));
 				comprobante.setFechaComprobante(UtilJdbc.obtenerFecha(rs,
 						"fechacomprobante"));
 				comprobante.getMoneda().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idmoneda"));
@@ -596,7 +601,7 @@ public class ComprobanteNovaViajesDaoImpl implements ComprobanteNovaViajesDao {
 			cs = conn.prepareCall(sql);
 			cs.registerOutParameter(1, Types.BOOLEAN);
 			cs.setInt(2, comprobante.getEmpresa().getCodigoEntero());
-			cs.setInt(3, comprobante.getCodigoEntero());
+			cs.setInt(3, comprobante.getIdServicio());
 			cs.setInt(4, comprobante.getUsuarioModificacion().getCodigoEntero());
 			cs.setString(5, comprobante.getIpModificacion());
 

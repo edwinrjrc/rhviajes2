@@ -20,8 +20,10 @@ import pe.com.viajes.bean.negocio.ProgramaNovios;
 import pe.com.viajes.bean.negocio.Proveedor;
 import pe.com.viajes.bean.negocio.ServicioAgencia;
 import pe.com.viajes.bean.negocio.TipoCambio;
+import pe.com.viajes.bean.negocio.Usuario;
 import pe.com.viajes.negocio.exception.EnvioCorreoException;
 import pe.com.viajes.negocio.exception.ErrorRegistroDataException;
+import pe.com.viajes.negocio.exception.RHViajesException;
 import pe.com.viajes.negocio.exception.ResultadoCeroDaoException;
 import pe.com.viajes.negocio.exception.ValidacionException;
 
@@ -115,4 +117,6 @@ public interface NegocioSessionRemote {
 			throws ErrorRegistroDataException, SQLException, Exception;
 	
 	Comprobante moverComprobantes(Comprobante comprobante) throws ErrorRegistroDataException;
+
+	byte[] exportarComprobantes(List<Comprobante> listaComprobantes, Usuario usuario) throws RHViajesException;
 }

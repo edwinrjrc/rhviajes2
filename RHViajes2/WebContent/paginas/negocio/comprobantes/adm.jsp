@@ -388,6 +388,15 @@
 										</div>
 									</div>
 								</div>
+								<div class="panel-footer">
+									<div class="row">
+										<div class="col-md-12 col-xs-12">
+											<button class="btn btn-primary" type="button" ng-click="exportarTodo()">
+												<span class="fa fa-download"></span>Exportar Todo
+											</button>
+										</div>
+									</div>
+								</div>
 							</div>
 						</form>
 					</div>
