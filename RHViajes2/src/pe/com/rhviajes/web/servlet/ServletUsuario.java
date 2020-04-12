@@ -32,6 +32,7 @@ import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
 import pe.com.viajes.negocio.exception.ErrorEncriptacionException;
 import pe.com.viajes.negocio.exception.ErrorRegistroDataException;
 import pe.com.viajes.negocio.exception.RHViajesException;
+import pe.com.viajes.negocio.util.UtilConstantes;
 
 /**
  * Servlet implementation class ServletUsuario
@@ -82,7 +83,7 @@ public class ServletUsuario extends BaseServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
-		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		
 		String accion = request.getParameter("accion");
 		String lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/SeguridadSession!pe.com.viajes.negocio.ejb.SeguridadRemote";

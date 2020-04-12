@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import pe.com.rhviajes.web.util.UtilWeb;
 import pe.com.viajes.negocio.ejb.ParametroRemote;
 import pe.com.viajes.negocio.exception.ConvertirStringAIntegerException;
+import pe.com.viajes.negocio.util.UtilConstantes;
 
 /**
  * Servlet implementation class ServletParametros
@@ -55,7 +56,7 @@ public class ServletParametros extends BaseServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
-		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		String accion = request.getParameter("accion");
 		Map<String,Object> retorno = new HashMap<String, Object>();
 		try {

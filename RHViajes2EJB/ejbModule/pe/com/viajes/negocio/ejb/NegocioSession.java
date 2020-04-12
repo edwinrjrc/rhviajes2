@@ -117,6 +117,7 @@ import pe.com.viajes.negocio.exception.RHViajesException;
 import pe.com.viajes.negocio.exception.ResultadoCeroDaoException;
 import pe.com.viajes.negocio.exception.ValidacionException;
 import pe.com.viajes.negocio.util.UtilConexion;
+import pe.com.viajes.negocio.util.UtilConstantes;
 import pe.com.viajes.negocio.util.UtilConvertirNumeroLetras;
 import pe.com.viajes.negocio.util.UtilCorreo;
 import pe.com.viajes.negocio.util.UtilEjb;
@@ -630,15 +631,6 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 		}
 	}
 
-	//@Override
-	private Integer registrarVentaServicio1(ServicioAgencia servicioAgencia)
-			throws ErrorRegistroDataException {
-		int idVenta = registrarVentaServicio1(servicioAgencia);
-		servicioAgencia.setCodigoEntero(idVenta);
-		
-		return idVenta;
-	}
-	
 	@Override
 	public Integer registrarVentaServicio(ServicioAgencia servicioAgencia)
 			throws ErrorRegistroDataException {
@@ -728,7 +720,12 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 
 				servicioNovaViajesDao.registrarSaldosServicio(servicioAgencia, conexion);
 				
-				servicioNovaViajesDao.generarComprobantes(servicioAgencia, conexion);
+				Properties prop = UtilProperties
+						.cargaArchivo("aplicacionConfiguracion.properties");
+				
+				if (UtilEjb.parseaBoolean(prop.getProperty("pe.com.rhviajes.negocio.generacomprobantes"))) {
+					servicioNovaViajesDao.generarComprobantes(servicioAgencia, conexion);
+				}
 				
 				conexion.commit();
 				return idServicio;
@@ -1492,7 +1489,7 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 	}
 	
 	@Override
-	public byte[] exportarComprobantes(List<Comprobante> listaComprobantes, Usuario usuario) throws RHViajesException{
+	public byte[] exportarComprobantes(List<Comprobante> listaComprobantes, Usuario usuario, String tipoExportacion) throws RHViajesException{
 		ByteArrayOutputStream baos = null;
 		Connection conn = null;
 		try {
@@ -1515,7 +1512,7 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 				comprobante = comprobantes.get(0);
 				comprobante.setDetalleComprobante(comprobanteNovaViajesDao.consultarDetalleComprobante(comprobante.getCodigoEntero(), comprobante.getEmpresa().getCodigoEntero(),conn));
 				
-				Map<String, Object> mapDatos = generaComprobantePdf(comprobante, usuario);
+				Map<String, Object> mapDatos = generaComprobantePdf(comprobante, usuario, tipoExportacion);
 				ze= new ZipEntry(mapDatos.get("nombreArchivo").toString());
 				zos.putNextEntry(ze);
 				zos.write((byte[])mapDatos.get("datos"));
@@ -1539,7 +1536,7 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 		
 	}
 	
-	private Map<String, Object> generaComprobantePdf(Comprobante comprobante, Usuario usuario) throws RHViajesException {
+	private Map<String, Object> generaComprobantePdf(Comprobante comprobante, Usuario usuario, String tipoExportacion) throws RHViajesException {
 		Connection conn = null;
 		try {
 			Map<String, Object> mapDatos = new HashMap<String, Object>();
@@ -1547,58 +1544,77 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 			String ruta = prop.getProperty("ruta.formatos.excel.comprobantes");
 			String nombreDominio = usuario.getNombreDominioEmpresa();
 			ruta = ruta + nombreDominio;
+			
+			if (UtilConstantes.EXPORTA_DIGITAL.equals(tipoExportacion)) {
+				if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
 
-			if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
-					.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
-				String plantilla = ruta + File.separator + "bl-plantilla.jasper";
-				/**
-				 * Inicio data de documento de cobranza
-				 */
-				String nombreArchivo = "bol_" + comprobante.getNumeroSerie() + "-"
-						+ comprobante.getNumeroComprobante();
-				nombreArchivo = nombreArchivo + ".pdf";
-				conn = UtilConexion.obtenerConexion();
-				byte[] datos = imprimirPDFBoleta(enviarParametrosBoleta(ruta, comprobante, conn), new FileInputStream(new File(plantilla)), comprobante);
+				} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
+					String plantilla = ruta + File.separator + "dc-digital.jasper";
+					File archivo = new File(plantilla);
+					InputStream streamJasper = new FileInputStream(archivo);
+					conn = UtilConexion.obtenerConexion();
+					byte[] datos = imprimirPDFDocumentoCobranza(this.enviarParametrosDocumentoCobranza(ruta, comprobante, conn), streamJasper, comprobante);
+					String nombreArchivo = "dc_" + comprobante.getNumeroSerie() + "-"
+							+ comprobante.getNumeroComprobante();
+					nombreArchivo = nombreArchivo + ".pdf";
+					mapDatos.put("nombreArchivo", nombreArchivo);
+					mapDatos.put("contentType", "application/pdf");
+					mapDatos.put("datos", datos);
+				}
+			}
+			else {
+				if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
+						.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
+					String plantilla = ruta + File.separator + "bl-plantilla.jasper";
+					/**
+					 * Inicio data de documento de cobranza
+					 */
+					String nombreArchivo = "bol_" + comprobante.getNumeroSerie() + "-"
+							+ comprobante.getNumeroComprobante();
+					nombreArchivo = nombreArchivo + ".pdf";
+					conn = UtilConexion.obtenerConexion();
+					byte[] datos = imprimirPDFBoleta(enviarParametrosBoleta(ruta, comprobante, conn), new FileInputStream(new File(plantilla)), comprobante);
 
-				mapDatos.put("nombreArchivo", nombreArchivo);
-				mapDatos.put("contentType", "application/pdf");
-				mapDatos.put("datos", datos);
+					mapDatos.put("nombreArchivo", nombreArchivo);
+					mapDatos.put("contentType", "application/pdf");
+					mapDatos.put("datos", datos);
 
-			} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
-					.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
-				String plantilla = ruta + File.separator + "dc-plantilla.jasper";
-				File archivo = new File(plantilla);
-				InputStream streamJasper = new FileInputStream(archivo);
+				} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
+						.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
+					String plantilla = ruta + File.separator + "dc-plantilla.jasper";
+					File archivo = new File(plantilla);
+					InputStream streamJasper = new FileInputStream(archivo);
 
-				/**
-				 * Inicio data de documento de cobranza
-				 */
-				String nombreArchivo = "dc_" + comprobante.getNumeroSerie() + "-"
-						+ comprobante.getNumeroComprobante();
-				nombreArchivo = nombreArchivo + ".pdf";
-				conn = UtilConexion.obtenerConexion();
-				byte[] datos = imprimirPDFDocumentoCobranza(enviarParametrosDocumentoCobranza(ruta, comprobante, conn), streamJasper, comprobante);
+					/**
+					 * Inicio data de documento de cobranza
+					 */
+					String nombreArchivo = "dc_" + comprobante.getNumeroSerie() + "-"
+							+ comprobante.getNumeroComprobante();
+					nombreArchivo = nombreArchivo + ".pdf";
+					conn = UtilConexion.obtenerConexion();
+					byte[] datos = imprimirPDFDocumentoCobranza(enviarParametrosDocumentoCobranza(ruta, comprobante, conn), streamJasper, comprobante);
 
-				mapDatos.put("nombreArchivo", nombreArchivo);
-				mapDatos.put("contentType", "application/pdf");
-				mapDatos.put("datos", datos);
+					mapDatos.put("nombreArchivo", nombreArchivo);
+					mapDatos.put("contentType", "application/pdf");
+					mapDatos.put("datos", datos);
 
-			} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
-					.obtenerEnteroPropertieMaestro("comprobanteFactura", "aplicacionDatos")) {
-				String plantilla = ruta + File.separator + "fc-plantilla.jasper";
-				File archivo = new File(plantilla);
-				InputStream streamJasper = new FileInputStream(archivo);
+				} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilEjb
+						.obtenerEnteroPropertieMaestro("comprobanteFactura", "aplicacionDatos")) {
+					String plantilla = ruta + File.separator + "fc-plantilla.jasper";
+					File archivo = new File(plantilla);
+					InputStream streamJasper = new FileInputStream(archivo);
 
-				/**
-				 * Inicio data de factura
-				 */
-				String nombreArchivo = "fc_" + comprobante.getNumeroSerie() + "-"
-						+ comprobante.getNumeroComprobante();
-				nombreArchivo = nombreArchivo + ".pdf";
-				byte[] datos = imprimirPDFFactura(this.enviarParametrosFactura(comprobante), streamJasper, comprobante);
-				mapDatos.put("nombreArchivo", nombreArchivo);
-				mapDatos.put("contentType", "application/pdf");
-				mapDatos.put("datos", datos);
+					/**
+					 * Inicio data de factura
+					 */
+					String nombreArchivo = "fc_" + comprobante.getNumeroSerie() + "-"
+							+ comprobante.getNumeroComprobante();
+					nombreArchivo = nombreArchivo + ".pdf";
+					byte[] datos = imprimirPDFFactura(this.enviarParametrosFactura(comprobante), streamJasper, comprobante);
+					mapDatos.put("nombreArchivo", nombreArchivo);
+					mapDatos.put("contentType", "application/pdf");
+					mapDatos.put("datos", datos);
+				}
 			}
 			
 			return mapDatos;

@@ -45,7 +45,7 @@ public class UtilEjb extends UtilApp {
 
 			return resourceMaestros.getString(llave);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return "";
 	}
@@ -58,7 +58,7 @@ public class UtilEjb extends UtilApp {
 
 			return convertirCadenaEntero(resourceMaestros.getString(llave));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return 0;
 	}
@@ -76,7 +76,7 @@ public class UtilEjb extends UtilApp {
 				return Integer.parseInt(cadena);
 			}
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return 0;
 	}
@@ -234,7 +234,7 @@ public class UtilEjb extends UtilApp {
 			comp.setIpCreacion(servicioAgencia.getIpCreacion());
 			comp.setIdServicio(servicioAgencia.getCodigoEntero());
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return comp;
 	}
@@ -405,5 +405,16 @@ public class UtilEjb extends UtilApp {
 	
 	public static String parseaCadena(String cadena) {
 		return (cadena == null ? "" : cadena);
+	}
+	
+	public static boolean parseaBoolean(String valor) {
+		try {
+			if (StringUtils.isNotBlank(valor)) {
+				return Boolean.valueOf(valor);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return false;
 	}
 }

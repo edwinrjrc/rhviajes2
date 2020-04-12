@@ -545,7 +545,7 @@
 																	<td>{{item.nombres}}</td>
 																	<td>{{item.apellidoPaterno}}
 																		{{item.apellidoMaterno}}</td>
-																	<td></td>
+																	<td>{{item.numeroTelefono}}</td>
 																	<td><a href="#" ng-click="editarContacto(item.id)"><span
 																			class="fa fa-edit"></span></a><a href="#"><span
 																			class="fa fa-trash-o"></span></a></td>

@@ -1168,7 +1168,7 @@ var formctrl = serviciosformapp.controller('formctrl', function($scope, $http,se
 								 $scope.pasajero.apePaterno = paxs.apellidoPaterno;
 								 $scope.pasajero.apeMaterno = paxs.apellidoMaterno;
 								 if (typeof paxs.telefonoMovil != undefined){
-									 $scope.pasajero.telefono1 = paxs.telefonoMovil.numeroTelefono;
+									 $scope.pasajero.telefono1 = paxs.telefono1;
 								 }
 								 $scope.pasajero.correoElectronico = paxs.correoElectronico;
 								 $scope.pasajero.fechaVctoPasaporte = new Date(paxs.fechaVctoPasaporte);

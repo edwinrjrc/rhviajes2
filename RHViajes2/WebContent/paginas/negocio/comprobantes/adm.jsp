@@ -391,8 +391,11 @@
 								<div class="panel-footer">
 									<div class="row">
 										<div class="col-md-12 col-xs-12">
-											<button class="btn btn-primary" type="button" ng-click="exportarTodo()">
-												<span class="fa fa-download"></span>Exportar Todo
+											<button class="btn btn-primary" type="button" ng-click="exportarTodoDigital()">
+												<span class="fa fa-download"></span>Exportar Todo Digital
+											</button>
+											<button class="btn btn-primary" type="button" ng-click="exportarTodoImpresion()">
+												<span class="fa fa-download"></span>Exportar Todo Impresion
 											</button>
 										</div>
 									</div>

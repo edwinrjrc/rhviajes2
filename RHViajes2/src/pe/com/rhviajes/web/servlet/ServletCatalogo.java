@@ -22,6 +22,7 @@ import pe.com.viajes.bean.base.BaseVO;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.SoporteRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
+import pe.com.viajes.negocio.util.UtilConstantes;
 
 /**
  * Servlet implementation class ServletCatalogo
@@ -62,7 +63,7 @@ public class ServletCatalogo extends BaseServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
-		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		String accion = request.getParameter("accion");
 		Map<String, Object> retorno = new HashMap<String, Object>();
 		try {

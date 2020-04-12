@@ -38,6 +38,7 @@ import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.SeguridadRemote;
 import pe.com.viajes.negocio.ejb.SoporteRemote;
 import pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote;
+import pe.com.viajes.negocio.util.UtilConstantes;
 
 /**
  * Servlet implementation class ServletServicioAgencia
@@ -79,14 +80,14 @@ public class ServletServicioAgencia extends BaseServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
-		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		String accion = request.getParameter("accion");
 		Map<String,Object> retorno = new HashMap<String, Object>();
 		try {
 			if (ACCION_LISTAR.equals(accion)){
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
 				ServicioAgenciaBusqueda servicioAgencia = new ServicioAgenciaBusqueda();
-				SimpleDateFormat sdf = new SimpleDateFormat(UtilWeb.PATTERN_GSON);
+				SimpleDateFormat sdf = new SimpleDateFormat(UtilConstantes.PATTERN_GSON);
 				servicioAgencia.setFechaDesde(sdf.parse(mapeo.get("fechaDesde").toString()));
 				servicioAgencia.setFechaHasta(sdf.parse(mapeo.get("fechaHasta").toString()));
 				servicioAgencia.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));
@@ -102,7 +103,7 @@ public class ServletServicioAgencia extends BaseServlet {
 				servicioAgencia.getCliente().setNombres(UtilWeb.obtenerCadenaMapeo(mapeo.get("nombreCliente")));
 				servicioAgencia.getCliente().getDocumentoIdentidad().getTipoDocumento().setCodigoEntero(UtilWeb.obtenerIntMapeo(mapeo.get("tipoDocumento")));
 				servicioAgencia.getCliente().getDocumentoIdentidad().setNumeroDocumento(UtilWeb.obtenerCadenaMapeo(mapeo.get("numeroDocumento")));
-				SimpleDateFormat sdf = new SimpleDateFormat(UtilWeb.PATTERN_GSON);
+				SimpleDateFormat sdf = new SimpleDateFormat(UtilConstantes.PATTERN_GSON);
 				servicioAgencia.setFechaDesde(sdf.parse(mapeo.get("fechaDesde").toString()));
 				servicioAgencia.setFechaHasta(sdf.parse(mapeo.get("fechaHasta").toString()));
 				servicioAgencia.getEmpresa().setCodigoEntero(this.obtenerIdEmpresa(request));

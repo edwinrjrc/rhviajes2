@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pe.com.rhviajes.web.util.UtilWeb;
-import pe.com.viajes.bean.negocio.ArchivoAdjunto2;
 import pe.com.viajes.bean.negocio.Cliente;
 import pe.com.viajes.bean.negocio.Contacto;
 import pe.com.viajes.bean.negocio.Direccion;
@@ -38,6 +36,7 @@ import pe.com.viajes.bean.negocio.Telefono;
 import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
+import pe.com.viajes.negocio.util.UtilConstantes;
 
 /**
  * Servlet implementation class ServletCliente
@@ -51,10 +50,6 @@ public class ServletCliente extends BaseServlet {
 	private ConsultaNegocioSessionRemote consultaNegocioSessionRemote;
 	@EJB(lookup = "java:jboss/exported/RHViajes2EJBEAR/RHViajes2EJB/NegocioSession!pe.com.viajes.negocio.ejb.NegocioSessionRemote")
 	private NegocioSessionRemote negocioSessionRemote;
-
-	private int MEMORY_THRESHOLD = 50 * 1024;
-	private int MAX_FILE_SIZE = 1024 * 1024 * 5;
-	private int MAX_REQUEST_SIZE = 1024 * 1024 * 5 * 5;
 
 	/**
 	 * @see BaseServlet#BaseServlet()
@@ -83,7 +78,7 @@ public class ServletCliente extends BaseServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
-		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		String accion = request.getParameter("accion");
 		Map<String, Object> retorno = new HashMap<String, Object>();
 		try {

@@ -434,7 +434,9 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 		}
 		$scope.listaTelefonos = $scope.direccion.listaTelefonos;
 		for (var i=0; i<$scope.listaTelefonos.length; i++){
-			$scope.listaTelefonos[i].numero = $scope.listaTelefonos[i].numeroTelefono;
+			if ($scope.listaTelefonos[i].numeroTelefono != null){
+				$scope.listaTelefonos[i].numero = $scope.listaTelefonos[i].numeroTelefono;
+			}
 		}
 		$scope.editaDireccion = true;
 		$scope.idDireccion = id;
@@ -448,6 +450,9 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 		}
 		$scope.contacto.id = $scope.listaContactos.length +1 ;
 		$scope.contacto.listaTelefonos = $scope.listaTeleContacto;
+		if ($scope.listaTeleContacto != undefined && $scope.listaTeleContacto.length>0){
+			$scope.contacto.numeroTelefono = $scope.listaTeleContacto[0].numero;
+		}
 		if ($scope.editaContacto){
 			for (var i=0; i<$scope.listaContactos.length; i++){
 				if ($scope.listaContactos[i].id == $scope.idContacto){
@@ -481,14 +486,18 @@ clientesapp.controller('admclientectrl',function($scope,$http,$document,$timeout
 		for (var i=0; i<$scope.listaContactos.length; i++){
 			if (id == $scope.listaContactos[i].id	){
 				$scope.contacto = $scope.listaContactos[i];
-				$scope.contacto.idtipodocumento = $scope.contacto.documentoIdentidad.tipoDocumento.codigoEntero;
-				$scope.contacto.numeroDocumento = $scope.contacto.documentoIdentidad.numeroDocumento;
+				if ($scope.contacto.documentoIdentidad != undefined){
+					$scope.contacto.idtipodocumento = $scope.contacto.documentoIdentidad.tipoDocumento.codigoEntero;
+					$scope.contacto.numeroDocumento = $scope.contacto.documentoIdentidad.numeroDocumento;
+				}
 				break;
 			}
 		}
 		$scope.listaTeleContacto = $scope.contacto.listaTelefonos;
 		for (var i=0; i<$scope.listaTeleContacto.length; i++){
-			$scope.listaTeleContacto[i].numero = $scope.listaTeleContacto[i].numeroTelefono;
+			if ($scope.listaTeleContacto[i].numeroTelefono != null){
+				$scope.listaTeleContacto[i].numero = $scope.listaTeleContacto[i].numeroTelefono;
+			}
 		}
 		$scope.editaContacto = true;
 		document.getElementById('idbtnModalContacto').click();

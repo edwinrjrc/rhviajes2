@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 
 import pe.com.viajes.negocio.exception.ConversionStringDateException;
 import pe.com.viajes.negocio.exception.ConvertirStringAIntegerException;
+import pe.com.viajes.negocio.util.UtilConstantes;
 
 /**
  * @author Edwin
@@ -29,10 +30,8 @@ import pe.com.viajes.negocio.exception.ConvertirStringAIntegerException;
  */
 public class UtilWeb {
 	
-	public final static String PATTERN_GSON = "yyyy-MM-dd'T'HH:mm:ss";
-
 	public static Map<String, Object> convertirJsonAMap(String json){
-		Gson gson = new GsonBuilder().setDateFormat(PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		Type type = new TypeToken<Map<String, Object>>(){}.getType();
 		return gson.fromJson(json, type);
 	}
@@ -53,7 +52,7 @@ public class UtilWeb {
 	
 	public static Date convertirStringADate(String fecha) throws ConversionStringDateException{
 		try {
-			SimpleDateFormat sdf =  new SimpleDateFormat(PATTERN_GSON);
+			SimpleDateFormat sdf =  new SimpleDateFormat(UtilConstantes.PATTERN_GSON);
 			return sdf.parse(fecha);
 		} catch (ParseException e) {
 			throw new ConversionStringDateException(e);

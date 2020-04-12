@@ -59,6 +59,7 @@ import pe.com.viajes.negocio.ejb.ConsultaNegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.NegocioSessionRemote;
 import pe.com.viajes.negocio.ejb.UtilNegocioSessionRemote;
 import pe.com.viajes.negocio.exception.ErrorConsultaDataException;
+import pe.com.viajes.negocio.util.UtilConstantes;
 import pe.com.viajes.negocio.util.UtilConvertirNumeroLetras;
 
 /**
@@ -102,7 +103,7 @@ public class ServletComprobante extends BaseServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter respuesta = response.getWriter();
-		Gson gson = new GsonBuilder().setDateFormat(UtilWeb.PATTERN_GSON).create();
+		Gson gson = new GsonBuilder().setDateFormat(UtilConstantes.PATTERN_GSON).create();
 		String accion = request.getParameter("accion");
 		Map<String, Object> retorno = new HashMap<String, Object>();
 		Connection conn = null;
@@ -252,14 +253,26 @@ public class ServletComprobante extends BaseServlet {
 				retorno.put("objeto", negocioSessionRemote.moverComprobantes(comprobante));
 				retorno.put("mensaje", "Movimiento realizado satisfactoriamente");
 				retorno.put("exito", true);
-			} else if ("exportarTodo".equals(accion)) {
+			} else if ("exportarTodoDigital".equals(accion)) {
 				Map<String, Object> mapDatos = new HashMap<String, Object>();
 				Usuario usuario = this.obtenerUsuario(request);
 				HttpSession session = this.obtenerSession(request);
 				List<Comprobante> listaComprobantes = (List<Comprobante>) session.getAttribute("comprobantesConsultados");
-				mapDatos.put("nombreArchivo", "comprobantes.zip");
+				mapDatos.put("nombreArchivo", "comprobantesDigital.zip");
 				mapDatos.put("contentType", "application/zip");
-				mapDatos.put("datos", negocioSessionRemote.exportarComprobantes(listaComprobantes, usuario));
+				mapDatos.put("datos", negocioSessionRemote.exportarComprobantes(listaComprobantes, usuario, "digital"));
+
+				retorno.put("objeto", mapDatos);
+				retorno.put("mensaje", "Proceso realizada satisfactoriamente");
+				retorno.put("exito", true);
+			} else if ("exportarTodoImpresion".equals(accion)) {
+				Map<String, Object> mapDatos = new HashMap<String, Object>();
+				Usuario usuario = this.obtenerUsuario(request);
+				HttpSession session = this.obtenerSession(request);
+				List<Comprobante> listaComprobantes = (List<Comprobante>) session.getAttribute("comprobantesConsultados");
+				mapDatos.put("nombreArchivo", "comprobantesImpresion.zip");
+				mapDatos.put("contentType", "application/zip");
+				mapDatos.put("datos", negocioSessionRemote.exportarComprobantes(listaComprobantes, usuario, "impresion"));
 
 				retorno.put("objeto", mapDatos);
 				retorno.put("mensaje", "Proceso realizada satisfactoriamente");

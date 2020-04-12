@@ -118,5 +118,5 @@ public interface NegocioSessionRemote {
 	
 	Comprobante moverComprobantes(Comprobante comprobante) throws ErrorRegistroDataException;
 
-	byte[] exportarComprobantes(List<Comprobante> listaComprobantes, Usuario usuario) throws RHViajesException;
+	public byte[] exportarComprobantes(List<Comprobante> listaComprobantes, Usuario usuario, String tipoExportacion) throws RHViajesException;
 }

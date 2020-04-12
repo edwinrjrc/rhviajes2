@@ -24,7 +24,6 @@ public class ServletCargaParametros extends HttpServlet {
 	private static Logger log = Logger.getLogger(ServletCargaParametros.class);
 	
 	private static final long serialVersionUID = 1L;
-	private static final String List = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
