@@ -24,6 +24,7 @@ public class UtilProperties {
 		String nombreOS = System.getProperty("os.name");
 		String c = "";
 		String d = "";
+		System.out.println("nombreOS ::"+nombreOS);
 		if (StringUtils.contains(nombreOS, "Linux")){
 			c = "/usr/local/share/aplicacion"
 					+ File.separator + archivoProperties;

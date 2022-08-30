@@ -828,23 +828,21 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 		int respuesta = 0;
 		try {
 			UtilCorreo utilCorreo = new UtilCorreo();
+			utilCorreo.conectarCorreo();
 			for (CorreoClienteMasivo envio : correoMasivo.getListaCorreoMasivo()) {
 				try {
 					if (envio.isEnviarCorreo() && UtilEjb.correoValido(envio.getCorreoElectronico().getDireccion())) {
 						if (!correoMasivo.isArchivoCargado()) {
-							utilCorreo.enviarCorreo(envio.getCorreoElectronico().getDireccion(),
+							utilCorreo.enviarCorreoMasivo(envio.getCorreoElectronico().getDireccion(),
 									correoMasivo.getAsunto(), correoMasivo.getContenidoCorreo());
 						} else {
-							utilCorreo.enviarCorreo(envio.getCorreoElectronico().getDireccion(),
+							utilCorreo.enviarCorreoMasivo(envio.getCorreoElectronico().getDireccion(),
 									correoMasivo.getAsunto(), correoMasivo.getContenidoCorreo(),
 									correoMasivo.getArchivoAdjunto());
 						}
 					}
 				} catch (AddressException e) {
 					respuesta = 1;
-					logger.error("ERROR EN ENVIO DE CORREO ::" + envio.getCorreoElectronico().getDireccion(), e);
-				} catch (FileNotFoundException e) {
-					respuesta = 2;
 					logger.error("ERROR EN ENVIO DE CORREO ::" + envio.getCorreoElectronico().getDireccion(), e);
 				} catch (NoSuchProviderException e) {
 					respuesta = 3;
@@ -855,13 +853,16 @@ public class NegocioSession implements NegocioSessionRemote, NegocioSessionLocal
 				} catch (MessagingException e) {
 					respuesta = 5;
 					logger.error("ERROR EN ENVIO DE CORREO ::" + envio.getCorreoElectronico().getDireccion(), e);
+				} catch (RHViajesException e) {
+					logger.error("ERROR EN ENVIO DE CORREO ::" + envio.getCorreoElectronico().getDireccion(), e);
 				}
 			}
+			utilCorreo.desconectarCorreo();
 			logger.debug("respuesta de envio de correo ::" + respuesta);
 
 			return respuesta;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new EnvioCorreoException("0001", "Error en envio de correo masivo", e.getMessage(), e);
 		}
 

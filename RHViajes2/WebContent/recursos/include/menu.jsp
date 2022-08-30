@@ -29,10 +29,12 @@
 		<ul>
 			<li><a href="/RHViajes2/paginas/negocio/cliente/adm.jsp"><span class="fa fa-user"></span>
 					Administrar Clientes</a></li>
-			<li><a href="/RHViajes2/paginas/negocio/servicios/adm.jsp"><span class="fa fa-image"></span>
+			<li><a href="/RHViajes2/paginas/negocio/servicios/adm.jsp"><span class="fa fa-shopping-cart"></span>
 					Registrar Venta Servicio</a></li>
-			<li><a href="/RHViajes2/paginas/negocio/comprobantes/adm.jsp"><span class="fa fa-image"></span>
+			<li><a href="/RHViajes2/paginas/negocio/comprobantes/adm.jsp"><span class="fa fa-print"></span>
 					Consulta Comprobantes</a></li>
+			<li><a href="/RHViajes2/paginas/negocio/correomasivo/adm.jsp"><span class="fa fa-envelope-o"></span>
+					Correo Masivo</a></li>
 		</ul></li>
 </ul>
 <!-- END X-NAVIGATION -->

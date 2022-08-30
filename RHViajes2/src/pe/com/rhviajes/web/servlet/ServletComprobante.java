@@ -109,6 +109,7 @@ public class ServletComprobante extends BaseServlet {
 		Connection conn = null;
 		try {
 			Comprobante comprobante = null;
+			System.out.println("accion ::"+accion);
 			if ("consulta".equals(accion)) {
 				Map<String, Object> mapeo = UtilWeb.convertirJsonAMap(request.getParameter("formulario"));
 				ComprobanteBusqueda comprobanteBusqueda = new ComprobanteBusqueda();
@@ -219,6 +220,7 @@ public class ServletComprobante extends BaseServlet {
 					retorno.put("exito", true);
 				}
 			} else if ("comprobanteDigital".equals(accion)) {
+				System.out.println("en la generacion de comprobante digital");
 				Properties prop = UtilProperties.cargaArchivo("aplicacionConfiguracion.properties");
 				String ruta = prop.getProperty("ruta.formatos.excel.comprobantes");
 				comprobante = this.obtenerComprobanteRequest(request);
@@ -227,6 +229,7 @@ public class ServletComprobante extends BaseServlet {
 				String nombreDominio = usuario.getNombreDominioEmpresa();
 				ruta = ruta + nombreDominio;
 
+				System.out.println("ruta ::"+ruta);
 				if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilWeb.obtenerEnteroPropertieMaestro("comprobanteBoleta", "aplicacionDatos")) {
 
 				} else if (comprobante.getTipoComprobante().getCodigoEntero().intValue() == UtilWeb.obtenerEnteroPropertieMaestro("comprobanteDocumentoCobranza", "aplicacionDatos")) {
@@ -283,6 +286,7 @@ public class ServletComprobante extends BaseServlet {
 			retorno.put("mensaje", e.getMessage());
 			retorno.put("exito", false);
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage(), e);
 			retorno.put("mensaje", e.getMessage());
 			retorno.put("exito", false);

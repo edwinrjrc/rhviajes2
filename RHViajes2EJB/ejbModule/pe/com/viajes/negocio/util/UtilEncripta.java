@@ -14,13 +14,6 @@ import pe.com.viajes.negocio.exception.ErrorEncriptacionException;
  */
 public class UtilEncripta {
 
-	/**
-	 * 
-	 */
-	public UtilEncripta() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public static String encriptaCadena(String cadena)
 			throws ErrorEncriptacionException {
 		try {
@@ -44,9 +37,10 @@ public class UtilEncripta {
 			return s.decrypt(cadena);
 
 		} catch (EncryptionOperationNotPossibleException e) {
-			throw new ErrorEncriptacionException("Error en la Desencriptacion");
+			throw new ErrorEncriptacionException("Error en la Desencriptacion",e);
 		} catch (Exception e) {
-			throw new ErrorEncriptacionException("Error en la Desencriptacion");
+			throw new ErrorEncriptacionException("Error en la Desencriptacion",e);
 		}
 	}
+	
 }

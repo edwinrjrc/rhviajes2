@@ -49,26 +49,25 @@ public class CorreoMasivoDaoImpl implements CorreoMasivoDao {
 			CorreoClienteMasivo correoClienteMasivo = null;
 			while (rs.next()) {
 				correoClienteMasivo = new CorreoClienteMasivo();
-				correoClienteMasivo.getCliente().setCodigoEntero(
-						UtilJdbc.obtenerNumero(rs, "idcliente"));
-				correoClienteMasivo.getCliente().setNombres(
-						UtilJdbc.obtenerCadena(rs, "nomcliente"));
-				correoClienteMasivo.getCliente().setApellidoPaterno(
-						UtilJdbc.obtenerCadena(rs, "apepatcliente"));
-				correoClienteMasivo.getCliente().setApellidoMaterno(
-						UtilJdbc.obtenerCadena(rs, "apematcliente"));
-				correoClienteMasivo.getContacto().setCodigoEntero(
-						UtilJdbc.obtenerNumero(rs, "idcontacto"));
-				correoClienteMasivo.getContacto().setNombres(
-						UtilJdbc.obtenerCadena(rs, "nomcontacto"));
-				correoClienteMasivo.getContacto().setApellidoPaterno(
-						UtilJdbc.obtenerCadena(rs, "apepatcontacto"));
-				correoClienteMasivo.getContacto().setApellidoMaterno(
-						UtilJdbc.obtenerCadena(rs, "apematcontacto"));
-				correoClienteMasivo.getCorreoElectronico().setDireccion(
-						UtilJdbc.obtenerCadena(rs, "correo"));
-				correoClienteMasivo.setEnviarCorreo(UtilJdbc.obtenerBoolean(rs,
-						"recibirPromociones"));
+				correoClienteMasivo.getCliente().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idcliente"));
+				correoClienteMasivo.getCliente().setNombres(UtilJdbc.obtenerCadena(rs, "nomcliente"));
+				correoClienteMasivo.getCliente().setApellidoPaterno(UtilJdbc.obtenerCadena(rs, "apepatcliente"));
+				correoClienteMasivo.getCliente().setApellidoMaterno(UtilJdbc.obtenerCadena(rs, "apematcliente"));
+				correoClienteMasivo.getCliente()
+						.setNombreCompleto(correoClienteMasivo.getCliente().getNombres() + " "
+								+ correoClienteMasivo.getCliente().getApellidoPaterno() + " "
+								+ correoClienteMasivo.getCliente().getApellidoMaterno());
+
+				correoClienteMasivo.getContacto().setCodigoEntero(UtilJdbc.obtenerNumero(rs, "idcontacto"));
+				correoClienteMasivo.getContacto().setNombres(UtilJdbc.obtenerCadena(rs, "nomcontacto"));
+				correoClienteMasivo.getContacto().setApellidoPaterno(UtilJdbc.obtenerCadena(rs, "apepatcontacto"));
+				correoClienteMasivo.getContacto().setApellidoMaterno(UtilJdbc.obtenerCadena(rs, "apematcontacto"));
+				correoClienteMasivo.getContacto()
+						.setNombreCompleto(correoClienteMasivo.getContacto().getNombres() + " "
+								+ correoClienteMasivo.getContacto().getApellidoPaterno() + " "
+								+ correoClienteMasivo.getContacto().getApellidoMaterno());
+				correoClienteMasivo.getCorreoElectronico().setDireccion(UtilJdbc.obtenerCadena(rs, "correo"));
+				correoClienteMasivo.setEnviarCorreo(UtilJdbc.obtenerBoolean(rs, "recibirPromociones"));
 
 				resultado.add(correoClienteMasivo);
 			}

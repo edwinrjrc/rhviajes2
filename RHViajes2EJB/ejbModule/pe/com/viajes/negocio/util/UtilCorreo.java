@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import pe.com.viajes.bean.negocio.ArchivoAdjunto;
 import pe.com.viajes.bean.util.UtilProperties;
 import pe.com.viajes.negocio.exception.ErrorEncriptacionException;
+import pe.com.viajes.negocio.exception.RHViajesException;
 
 /**
  * @author edwreb
@@ -38,6 +39,7 @@ public class UtilCorreo {
 
 	private final Properties properties = new Properties();
 	private Session session;
+	Transport transport = null;
 
 	/**
 	 * @throws IOException
@@ -68,6 +70,26 @@ public class UtilCorreo {
 		properties.put("mail.smtp.user", propiedades.getProperty("smtp.user"));
 		properties.put("mail.smtp.auth", propiedades.getProperty("smtp.auth"));
 		session = Session.getDefaultInstance(properties);
+	}
+	
+	public void conectarCorreo() throws RHViajesException {
+		try {
+			transport = session.getTransport("smtp");
+			transport.connect((String) properties.get("mail.smtp.user"),
+					(String) properties.get("mail.smtp.password"));
+		} catch (NoSuchProviderException e) {
+			throw new RHViajesException(e);
+		} catch (MessagingException e) {
+			throw new RHViajesException(e);
+		}
+	}
+	
+	public void desconectarCorreo() throws RHViajesException {
+		try {
+			transport.close();
+		} catch (MessagingException e) {
+			throw new RHViajesException(e);
+		}
 	}
 
 	public void enviarCorreo(String correoDestino, String asunto, String mensaje)
@@ -194,6 +216,62 @@ public class UtilCorreo {
 				(String) properties.get("mail.smtp.password"));
 		t.sendMessage(message, message.getAllRecipients());
 		t.close();
+	}
+	
+	public void enviarCorreoMasivo(String correoDestino, String asunto,
+			String mensaje, ArchivoAdjunto archivo) throws RHViajesException {
+		try {
+			MimeMessage message = new MimeMessage(session);
+			InternetAddress internetAdd = new InternetAddress(
+					(String) properties.get("mail.smtp.mail.sender"),
+					(String) properties.get("mail.smtp.mail.senderName"));
+			message.setFrom(internetAdd);
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(
+					correoDestino));
+			message.setSubject(asunto);
+			message.setSentDate(new Date());
+
+			MimeBodyPart messageBodyPart = new MimeBodyPart();
+			messageBodyPart.setContent(mensaje, "text/html");
+
+			// creates multi-part
+			Multipart multipart = new MimeMultipart();
+			multipart.addBodyPart(messageBodyPart);
+
+			MimeBodyPart attachPart = new MimeBodyPart();
+
+			attachPart.setDataHandler(new DataHandler(archivo.getDatos(), archivo
+					.getContent()));
+			attachPart.setFileName(archivo.getNombreArchivo());
+			attachPart.setHeader("Content-ID", "<imagenCorreo>");
+			multipart.addBodyPart(attachPart);
+
+			message.setContent(multipart);
+			transport.sendMessage(message, message.getAllRecipients());
+		} catch (AddressException e) {
+			throw new RHViajesException(e);
+		} catch (UnsupportedEncodingException e) {
+			throw new RHViajesException(e);
+		} catch (MessagingException e) {
+			throw new RHViajesException(e);
+		}
+	}
+	
+	public void enviarCorreoMasivo(String correoDestino, String asunto, String mensaje)
+			throws AddressException, NoSuchProviderException,
+			MessagingException, UnsupportedEncodingException {
+
+		MimeMessage message = new MimeMessage(session);
+
+		InternetAddress internetAdd = new InternetAddress(
+				(String) properties.get("mail.smtp.mail.sender"),
+				(String) properties.get("mail.smtp.mail.senderName"));
+		message.setFrom(internetAdd);
+		message.addRecipient(Message.RecipientType.TO, new InternetAddress(
+				correoDestino));
+		message.setSubject(asunto);
+		message.setContent(mensaje, "text/html");
+		transport.sendMessage(message, message.getAllRecipients());
 	}
 	
 	public void enviarCorreo(String correoDestino, String asunto, String mensaje, String correoRespuesta)
